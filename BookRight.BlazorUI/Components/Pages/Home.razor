@@ -1,0 +1,263 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using BookRight.Facade.Interfaces
+@using BookRight.Facade.DTOs.GetAllCustomersDTOs
+@using BookRight.Facade.DTOs.GetAllTherapistsDTOs
+@using BookRight.Facade.DTOs.CreateTherapistDTOs
+@using BookRight.Facade.DTOs.CreateCustomerDTOs
+@inject ICreateTherapistUseCase CreateTherapistUseCase
+@inject ICreateCustomerUseCase CreateCustomerUseCase
+@inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
+@inject IGetAllCustomersUseCase GetAllCustomersUseCase
+
+<!--
+    Siden benytter Bootstrap klasser til styling
+-->
+
+<PageTitle>BookRight Small - Test</PageTitle>
+
+<div class="container mt-4">
+    <h1 class="mb-4">BookRight Small</h1>
+
+    <div class="row">
+
+        <!-- THERAPIST -->
+        <article class="col-md-6">
+            <section class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Opret Therapist</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Fornavn</label>
+                        <input class="form-control" @bind="therapistFirstName" placeholder="Skriv fornavn her..." />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Efternavn</label>
+                        <input class="form-control" @bind="therapistLastName" placeholder="Skriv efternavn her..." />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" @bind="therapistEmail" placeholder="Skriv email her..." />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Speciale</label>
+                        <input class="form-control" @bind="therapistSpecialization" placeholder="Skriv speciale her..." />
+                    </div>
+
+                    <button class="btn btn-primary" @onclick="CreateTherapist">Opret Therapist</button>
+
+                    @if (!string.IsNullOrEmpty(therapistMessage))
+                    {
+                        <div class="alert @therapistAlertClass mt-3">@therapistMessage</div>
+                    }
+                </div>
+            </section>
+        </article>
+
+        <!-- CUSTOMER -->
+        <article class="col-md-6">
+            <section class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Opret Kunde</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Fornavn</label>
+                        <input class="form-control" @bind="customerFirstName" placeholder="Skriv fornavn her..." />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Efternavn</label>
+                        <input class="form-control" @bind="customerLastName" placeholder="Skriv efternavn her..." />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" @bind="customerEmail" placeholder="Skriv email her..." />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Telefon</label>
+                        <input class="form-control" @bind="customerPhone" placeholder="Skriv telefon-nummer her..." />
+                    </div>
+
+                    <button class="btn btn-primary" @onclick="CreateCustomer">Opret Kunde</button>
+
+                    @if (!string.IsNullOrEmpty(customerMessage))
+                    {
+                        <div class="alert @customerAlertClass mt-3">@customerMessage</div>
+                    }
+                </div>
+            </section>
+        </article>
+    </div>
+
+    <!-- THERAPIST TABLE -->
+    <div class="row mt-4">
+        <article class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Se oprettede terap.. hvad hedder det overhovedet på dansk?? Anyway, se dem her</h6>
+                </div>
+                <section class="card-body">
+                    @if (!therapists.Any())
+                    {
+                        <p class="text-muted">Ingen terapeuter oprettet endnu.</p>
+                    }
+                    else
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Navn</th>
+                                    <th>Email</th>
+                                    <th>Speciale</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var therapist in therapists)
+                                {
+                                    <tr>
+                                        <td>@therapist.FirstName @therapist.LastName</td>
+                                        <td>@therapist.Email</td>
+                                        <td>@therapist.Specialization</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </section>
+            </div>
+        </article>
+    </div>
+
+    <!-- CUSTOMER TABLE -->
+    <div class="row mt-4">
+        <article class="col-12">
+            <section class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Se oprettede kunder her, homie</h4>
+                </div>
+                <div class="card-body">
+                    @if (!customers.Any())
+                    {
+                        <p class="text-muted">Ingen kunder oprettet endnu.</p>
+                    }
+                    else
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Navn</th>
+                                    <th>Email</th>
+                                    <th>Telefon</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var customer in customers)
+                                {
+                                    <tr>
+                                        <td>@customer.FirstName @customer.LastName</td>
+                                        <td>@customer.Email</td>
+                                        <td>@customer.Phone</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </section>
+        </article>
+    </div>
+
+</div>
+
+@code {
+    // Therapist form fields. Holds the data that you enter into the HTML. HTML in this context just being the fields you type stuff in. 
+    private string therapistFirstName = "";
+    private string therapistLastName = "";
+    private string therapistEmail = "";
+    private string therapistSpecialization = "";
+    private string therapistMessage = "";
+    private string therapistAlertClass = "";
+
+    // Customer form fields.
+    private string customerFirstName = "";
+    private string customerLastName = "";
+    private string customerEmail = "";
+    private string customerPhone = "";
+    private string customerMessage = "";
+    private string customerAlertClass = "";
+
+    // Lister der holder data fra GetAll, til at vise nyligt oprettede entities
+    private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
+    private IReadOnlyList<GetAllCustomersResponse> customers = new List<GetAllCustomersResponse>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        therapists = await GetAllTherapistsUseCase.ExecuteAsync();
+        customers = await GetAllCustomersUseCase.ExecuteAsync();
+    }
+
+    private async Task CreateTherapist()
+    {
+        try
+        {
+            var request = new CreateTherapistRequest(
+                therapistFirstName,
+                therapistLastName,
+                therapistEmail,
+                therapistSpecialization
+            );
+
+            var response = await CreateTherapistUseCase.ExecuteAsync(request);
+            therapistMessage = $"Terapeut oprettet med ID: {response.therapistId}";
+            therapistAlertClass = "alert-success";
+
+            // Nulstil felter efter oprettelse
+            therapistFirstName = "";
+            therapistLastName = "";
+            therapistEmail = "";
+            therapistSpecialization = "";
+
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            therapistMessage = $"Fejl: {ex.Message}";
+            therapistAlertClass = "alert-danger";
+        }
+    }
+
+    private async Task CreateCustomer()
+    {
+        try
+        {
+            var request = new CreateCustomerRequest(
+                customerFirstName,
+                customerLastName,
+                customerEmail,
+                customerPhone
+            );
+
+            var response = await CreateCustomerUseCase.ExecuteAsync(request);
+            customerMessage = $"Kunde oprettet med ID: {response.customerId}";
+            customerAlertClass = "alert-success";
+
+            // Nulstil felter efter oprettelse
+            customerFirstName = "";
+            customerLastName = "";
+            customerPhone = "";
+
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            customerMessage = $"Fejl: {ex.Message}";
+            customerAlertClass = "alert-danger";
+        }
+    }
+}

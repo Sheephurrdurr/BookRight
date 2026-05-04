@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="BookRight.BlazorUI/BookRight.BlazorUI.csproj" />
+  <Project Path="BookRight.Domain/BookRight.Domain.csproj" />
+  <Project Path="BookRight.Facade/BookRight.Facade.csproj" />
+  <Project Path="BookRight.Infrastructure/BookRight.Infrastructure.csproj" />
+  <Project Path="BookRight.UseCases/BookRight.UseCases.csproj" />
+</Solution>
