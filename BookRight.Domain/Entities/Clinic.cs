@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BookRight.Domain.ValueObjects;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,6 +12,7 @@ namespace BookRight.Domain.Entities
         public string Address { get; private set; }
         public string Phone { get; private set; }
         public int NumTreatmentRooms { get; private set; }
+
 
         public Dictionary<DayOfWeek, OpeningHours> OpeningHours { get; private set; }
 
