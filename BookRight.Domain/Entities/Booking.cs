@@ -33,6 +33,36 @@ namespace BookRight.Domain.Entities
             Status = status;
         }
 
+        // Creating Booking
+        public static Booking CreateBooking(Guid Id, DateTime date, DateTime timeSlot, int duration, BookingStatus status)
+        {
+            return new Booking(Guid.NewGuid(), date, timeSlot, duration, BookingStatus.Completed);
+        }
+
+        //Edit Booking
+        public void EditBooking(DateTime newDate, DateTime newTimeSlot, int newDuration)
+        {
+            Date = newDate;
+            TimeSlot = newTimeSlot;
+            Duration = newDuration;
+        }
+        // Cancelling Booking
+        public void CancelBooking()
+        {
+            Status = BookingStatus.Cancelled;
+        }
+
+        // MarkAsNoshow
+        public void MarkAsNOShow()
+        {
+            Status = BookingStatus.NoShow;
+        }
+
+        // ConfirmBooking
+        public void ConfirmBooking()
+        {
+            Status = BookingStatus.Completed;
+        }
 
 
     }
