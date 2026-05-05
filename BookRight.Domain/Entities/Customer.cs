@@ -4,6 +4,7 @@ namespace BookRight.Domain.Entities
 {
     public record Customer
     {
+        //test om git fungerer
         public Guid Id { get; private set; }
         public FullName Name { get; private set; }
         public Email Email { get; private set; }
