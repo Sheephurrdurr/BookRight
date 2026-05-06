@@ -4,6 +4,7 @@ using System.Text;
 
 namespace BookRight.Domain.Enums
 {
+    //Lena
     public enum BookingStatus
     {
         Confirmed,//Booking er oprettet/bekræftet

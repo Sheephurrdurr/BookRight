@@ -4,6 +4,7 @@ using System.Text;
 
 namespace BookRight.Domain.Entities
 {
+    //Lena
     public record Clinic
     {
         public Guid Id { get; private set; }
