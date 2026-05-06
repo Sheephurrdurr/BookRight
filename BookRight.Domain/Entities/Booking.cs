@@ -18,10 +18,10 @@ namespace BookRight.Domain.Entities
         public BookingStatus Status { get; private set; }
 
         // Foreign key og Navigation property
-        public Guid CustomerId { get; set; }
-        public Customer Customer { get; set; }
+        public Guid CustomerId { get; private set; }
+        public Customer Customer { get; private set; }
 
-        public List<TreatmentType> CombinedTreatments { get; set; } = new(); // kan undgå null fejl på liste
+        public List<TreatmentType> CombinedTreatments { get; private set; } = new(); // kan undgå null fejl på liste
 
         private Booking() { }
         public Booking(Guid Id, DateTime date, DateTime timeSlot, int duration, BookingStatus status)
