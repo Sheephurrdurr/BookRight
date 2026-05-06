@@ -48,14 +48,14 @@ namespace BookRight.Infrastructure.Persistence.Configurations
             {
                 bl.ToTable("BookingLines");
                 bl.WithOwner()
-                    .HasForeignKey("BookingId"); // shadow property, gemmes kun i databasen
+                    .HasForeignKey("BookingId"); // 'shadow property', som kun gemmes i databasen
                 bl.Property<Guid>("Id");
                 bl.HasKey("Id");
 
                 bl.Property(x => x.TherapistTreatmentTypeId);
                 bl.Property(x => x.BasePrice)
                     .HasPrecision(18, 2); // Er præcis op til 18 cifre, med 2 efter kommaet. Så 16 før kommaet.
-                                         // SqlServers bruger som regel dette som udgangspunkt, men en eksplicit definition minimerer dumme fejl.
+                                         // SqlServers bruger som regel den samme præcision som udgangspunkt, men en eksplicit definition minimerer dumme fejl.
             });
 
             // Status konfiguration
