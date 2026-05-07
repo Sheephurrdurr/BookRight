@@ -6,8 +6,8 @@ namespace BookRight.Domain.Entities
     {
         public Guid Id { get; private set; }
         public FullName Name { get; private set; }
-        public Email Email { get; private set; }
-        public string Specialization { get; private set; }
+        public Email Email { get; private set; } 
+        public string Specialization { get; private set; } 
 
         private Therapist() { } // Kræves af EF Core
 

@@ -13,7 +13,7 @@ namespace BookRight.Domain.Entities
         public DateTime Date { get; private set; }
         public DateTime TimeSlot { get; private set; }
         public int Duration { get; private set; }
-        public decimal price_before_discount { get; private set; }
+        public decimal PriceBefore_discount { get; private set; }
         public decimal price_after_discount { get; private set; }
         public BookingStatus Status { get; private set; }
 
@@ -21,12 +21,14 @@ namespace BookRight.Domain.Entities
         public Guid CustomerId { get; private set; }
         public Customer Customer { get; private set; }
 
-        public List<TreatmentType> CombinedTreatments { get; private set; } = new(); // kan undgå null fejl på liste
+       // public List<TreatmentType> CombinedTreatments { get; private set; } = new(); // kan undgå null fejl på liste
 
         private Booking() { }
-        public Booking(Guid Id, DateTime date, DateTime timeSlot, int duration, BookingStatus status)
+        public Booking(Guid Id, Guid customerId, DateTime date, DateTime timeSlot, int duration, BookingStatus status)
         {
             BookingId = Id;
+            CustomerId=customerId;
+            CustomerId = CustomerId;
             Date = date;
             TimeSlot = timeSlot;
             Duration = duration;
@@ -34,9 +36,12 @@ namespace BookRight.Domain.Entities
         }
 
         // Creating Booking
-        public static Booking CreateBooking(Guid Id, DateTime date, DateTime timeSlot, int duration, BookingStatus status)
+        public static Booking CreateBooking(Guid BookingId, Guid CustomerId, DateTime date, DateTime timeSlot, int duration, BookingStatus status)
         {
-            return new Booking(Guid.NewGuid(), date, timeSlot, duration, BookingStatus.Completed);
+            return new Booking(BookingId, CustomerId, date, timeSlot, duration, status);
+               
+
+               
         }
 
         //Edit Booking

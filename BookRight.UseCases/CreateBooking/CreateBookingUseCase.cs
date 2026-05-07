@@ -34,6 +34,7 @@ namespace BookRight.UseCases.CreateBooking
             // 2. opret booking via domain factory
             var booking = Booking.CreateBooking(
                 Guid.NewGuid(),
+                request.CustomerId,
                 request.Date,
                 request.TimeSlot,
                 request.Duration,
@@ -41,7 +42,7 @@ namespace BookRight.UseCases.CreateBooking
                 );
 
             // 3. sæt Fremmed nøgle
-            booking.CustomerId = request.CustomerId;
+           /* Booking.CustomerId = request.CustomerId;*/
 
             // 4. Gem i databasen
             await _bookingRepository.CreateAsync(booking);
