@@ -13,7 +13,7 @@ namespace BookRight.Domain.Entities
         public DateTime Date { get; private set; }
         public DateTime TimeSlot { get; private set; }
         public int Duration { get; private set; }
-        public decimal price_before_discount { get; private set; }
+        public decimal PriceBefore_discount { get; private set; }
         public decimal price_after_discount { get; private set; }
         public BookingStatus Status { get; private set; }
 

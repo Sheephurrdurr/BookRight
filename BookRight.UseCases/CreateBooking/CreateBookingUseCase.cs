@@ -41,7 +41,7 @@ namespace BookRight.UseCases.CreateBooking
                 );
 
             // 3. sæt Fremmed nøgle
-            booking.CustomerId = request.CustomerId;
+            Booking.CustomerId = request.CustomerId;
 
             // 4. Gem i databasen
             await _bookingRepository.CreateAsync(booking);
