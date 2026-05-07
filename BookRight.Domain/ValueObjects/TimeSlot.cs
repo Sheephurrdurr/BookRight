@@ -4,7 +4,6 @@
     {
         public DateTime StartTime { get; private set; }
         public DateTime EndTime { get; private set; }
-
         public TimeSpan Duration { get; private set; }
 
         public TimeSlot(DateTime start, DateTime end, TimeSpan duration)
@@ -34,7 +33,5 @@
         {
             return $"{StartTime} - {EndTime}";
         }
-
-
     }
 }
