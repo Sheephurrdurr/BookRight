@@ -4,9 +4,11 @@ using System.Text;
 
 namespace BookRight.Domain.Enums
 {
+    //Lena
     public enum BookingStatus
     {
-        Completed,
+        Confirmed,//Booking er oprettet/bekræftet
+        Completed,//Kunden er mødt op og behandlingen er gennemført
         Cancelled,
         NoShow
     }

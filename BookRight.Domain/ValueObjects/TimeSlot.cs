@@ -16,6 +16,12 @@
 
             StartTime = start;
             EndTime = end;
+            Duration = duration;
+        }
+
+        public int DurationMinutes()
+        {
+            return (int)Duration.TotalMinutes;
         }
 
         // Overload metode tager TimeSlot og returnerer false hvis intet overlap er fundet

@@ -1,7 +1,12 @@
 <Solution>
-  <Project Path="BookRight.BlazorUI/BookRight.BlazorUI.csproj" />
-  <Project Path="BookRight.Domain/BookRight.Domain.csproj" />
-  <Project Path="BookRight.Facade/BookRight.Facade.csproj" />
-  <Project Path="BookRight.Infrastructure/BookRight.Infrastructure.csproj" />
-  <Project Path="BookRight.UseCases/BookRight.UseCases.csproj" />
+  <Folder Name="/src/">
+    <Project Path="BookRight.BlazorUI/BookRight.BlazorUI.csproj" />
+    <Project Path="BookRight.Domain/BookRight.Domain.csproj" />
+    <Project Path="BookRight.Facade/BookRight.Facade.csproj" />
+    <Project Path="BookRight.Infrastructure/BookRight.Infrastructure.csproj" />
+    <Project Path="BookRight.UseCases/BookRight.UseCases.csproj" />
+  </Folder>
+  <Folder Name="/Test/">
+    <Project Path="BookRight.Domain.Test/BookRight.Domain.Test.csproj" Id="0b1a2b2e-4fa7-46b2-a795-af21c9cacba7" />
+  </Folder>
 </Solution>
