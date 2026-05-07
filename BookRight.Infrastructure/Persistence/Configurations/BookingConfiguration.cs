@@ -11,12 +11,9 @@ namespace BookRight.Infrastructure.Persistence.Configurations
             builder.ToTable("Booking");
 
             // PK konfiguration
-            builder.HasKey(b => b.Id); // Sig til EF Core; "Dette er PK"
-            builder.Property(x => x.Id) // Fortæl EF Core hvad vi skal gøre med den PK property
-                .HasConversion( // Oversætter BookingID (fra domain) til Guid (i db) og omvendt.
-                    id => id.Value,
-                    value => new BookingId(value))
-                .ValueGeneratedNever(); // Db må ikke generere Id. I DDD styrer Domain dette.
+            builder.HasKey(b => b.Id);
+            builder.Property(x => x.Id)
+                .ValueGeneratedNever();
 
             // FK CustomerId konfiguration
             builder.Property(b => b.CustomerId)
