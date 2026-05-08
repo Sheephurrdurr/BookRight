@@ -7,6 +7,8 @@ namespace BookRight.Infrastructure.Persistence
     {
         public DbSet<Therapist> Therapists { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Clinic> Clinics { get; set; }
 
         public BookRightDbContext(DbContextOptions<BookRightDbContext> options)
             : base(options)
