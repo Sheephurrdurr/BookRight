@@ -26,7 +26,7 @@ namespace BookRight.Infrastructure.Persistence.Configurations
                 .HasConversion<string>();
 
             builder.HasOne(b => b.Customer)
-                .WithMany(c => c.Bookings)
+                .WithMany(c => c.Bookings) 
                 .HasForeignKey(b => b.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
