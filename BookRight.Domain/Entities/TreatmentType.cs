@@ -9,7 +9,7 @@ namespace BookRight.Domain.Entities
         public Guid Id { get; private set; }
         public string Name { get; private set; }
         public int DurationMinutes { get; private set; }
-        public int MacParticipants { get; private set; }
+        public int MaxParticipants { get; private set; }
 
         public TreatmentType(string name, int durationMinutes, int maxParticipants)
         {
@@ -22,7 +22,7 @@ namespace BookRight.Domain.Entities
             Id = Guid.NewGuid();
             Name = name;
             DurationMinutes = durationMinutes;
-            MacParticipants = maxParticipants;
+            MaxParticipants = maxParticipants;
         }
     }
 }
