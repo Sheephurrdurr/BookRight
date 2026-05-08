@@ -12,7 +12,7 @@ namespace BookRight.Infrastructure.Persistence
         public BookRightDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<BookRightDbContext>();
-            optionsBuilder.UseSqlServer("Server=np:\\\\.\\pipe\\LOCALDB#B3A1E4EF\\tsql\\query;Database=BookRight;Trusted_Connection=True;TrustServerCertificate=True;"); // !!VIGTIG!! GEM HARDCODED CONNECTIONSTRING
+            optionsBuilder.UseSqlServer("DefaultConnection"); // !!VIGTIG!! GEM HARDCODED CONNECTIONSTRING
 
             return new BookRightDbContext(optionsBuilder.Options);
         }
