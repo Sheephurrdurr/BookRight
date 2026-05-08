@@ -10,8 +10,9 @@ namespace BookRight.Domain.Entities
         public PhoneNumber Phone { get; private set; }
 
         private Customer() { } // Kræves af EF Core
-
-        public Customer(FullName name, Email email, PhoneNumber phone)
+        // yaki : tilføjet en bookinglist
+        public List<Booking> Bookings { get; private set; } = new List<Booking>();
+		public Customer(FullName name, Email email, PhoneNumber phone)
         {
             Id = Guid.NewGuid();
             Name = name ?? throw new ArgumentNullException(nameof(name));
