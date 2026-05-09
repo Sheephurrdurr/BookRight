@@ -4,9 +4,9 @@
     {
         public DateTime StartTime { get; private set; }
         public DateTime EndTime { get; private set; }
-        public TimeSpan Duration { get; private set; }
+        public TimeSpan Duration => EndTime - StartTime;
 
-        public TimeSlot(DateTime start, DateTime end, TimeSpan duration)
+        public TimeSlot(DateTime start, DateTime end)
         {
             if (start < DateTime.Today)
                 throw new ArgumentException("Start time cannot be in the past.");
@@ -16,7 +16,6 @@
 
             StartTime = start;
             EndTime = end;
-            Duration = duration;
         }
 
         public int DurationMinutes()
