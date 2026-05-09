@@ -12,6 +12,7 @@ namespace BookRight.UseCases.CreateBooking
     {
         private readonly IBookingRepository _bookingRepository;
         private readonly ICustomerRepository _customerRepository;
+
         //private readonly IClinicRepository _clinicRepository;  ---LINJE TILFØJES IGEN NÅR ClinicRepository og interface er lavet
 
         public CreateBookingUseCase(
@@ -19,6 +20,7 @@ namespace BookRight.UseCases.CreateBooking
             ICustomerRepository customerRepository)
         {
             _bookingRepository = bookingRepository;
+
             // Tilføj: _clinicRepository = clinicRepository;
             _customerRepository = customerRepository;
 
@@ -26,15 +28,15 @@ namespace BookRight.UseCases.CreateBooking
 
         public async Task<CreateBookingResponse> ExecuteAsync (CreateBookingRequest request)
         {
-            // 1. valider at kunde findes
+            // Valider at kunde findes
             var customer = await _customerRepository.GetByIdAsync(request.CustomerId);
 
             if (customer == null)
                 throw new KeyNotFoundException($"Customer with Id: {request.CustomerId} findes ikke.");
 
-            var timeSlot = new TimeSlot(request.TimeSlotDto.StartTime, request.TimeSlotDto.EndTime); 
+            var timeSlot = new TimeSlot(request.TimeSlot.StartTime, request.TimeSlot.EndTime); 
 
-            // 2. opret booking via domain factory
+            // Opret booking via domain factory
             var booking = new Booking(
                 Guid.NewGuid(),
                 request.CustomerId,
@@ -42,10 +44,10 @@ namespace BookRight.UseCases.CreateBooking
                 timeSlot
             );
 
-            // 4. Gem i databasen
+            // Gem i databasen
             await _bookingRepository.CreateAsync(booking);
 
-            // 5. Returener response DTO
+            // Returener response DTO
             return new CreateBookingResponse
             {
                 BookingId = booking.Id,
