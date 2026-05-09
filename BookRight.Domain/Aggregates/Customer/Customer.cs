@@ -1,6 +1,7 @@
-﻿using BookRight.Domain.ValueObjects;
+﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.ValueObjects;
 
-namespace BookRight.Domain.Entities
+namespace BookRight.Domain.Aggregates.Customer
 {
     public record Customer
     {
@@ -9,7 +10,7 @@ namespace BookRight.Domain.Entities
         public Email Email { get; private set; }
         public PhoneNumber Phone { get; private set; }
 
-        public ICollection<Booking> Bookings { get; private set; } = new List<Booking>();
+        public ICollection<Booking.Booking> Bookings { get; private set; } = new List<Booking.Booking>();
 
         private Customer() { } // Kræves af EF Core
 

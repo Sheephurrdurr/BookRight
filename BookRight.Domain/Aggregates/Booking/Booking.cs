@@ -1,7 +1,7 @@
 ﻿using BookRight.Domain.Enums;
 using BookRight.Domain.ValueObjects;
 
-namespace BookRight.Domain.Entities
+namespace BookRight.Domain.Aggregates.Booking
 {
     public class Booking
     {

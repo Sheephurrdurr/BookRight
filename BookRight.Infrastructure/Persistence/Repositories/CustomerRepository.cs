@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BookRight.Domain.Entities;
 using BookRight.UseCases.Interfaces;
+using BookRight.Domain.Aggregates.Customer;
 
 namespace BookRight.Infrastructure.Persistence.Repositories
 {

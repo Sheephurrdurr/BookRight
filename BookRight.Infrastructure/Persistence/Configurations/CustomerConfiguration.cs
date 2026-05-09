@@ -1,4 +1,4 @@
-﻿using BookRight.Domain.Entities;
+﻿using BookRight.Domain.Aggregates.Customer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -1,5 +1,5 @@
-﻿using BookRight.Domain.Entities;
-using BookRight.Domain.ValueObjects;
+﻿using BookRight.Domain.ValueObjects;
+using BookRight.Domain.Aggregates.Booking;
 using BookRight.Facade.DTOs.ValueObjectDTOs;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.Facade.Interfaces;

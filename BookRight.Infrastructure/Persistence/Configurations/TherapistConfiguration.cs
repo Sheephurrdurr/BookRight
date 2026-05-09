@@ -1,4 +1,4 @@
-﻿using BookRight.Domain.Entities;
+﻿using BookRight.Domain.Aggregates.Therapist;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

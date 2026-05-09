@@ -1,8 +1,10 @@
-﻿    using BookRight.Domain.Entities;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.CampaignDiscount;
+using BookRight.Domain.Aggregates.Customer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-    namespace BookRight.Infrastructure.Persistence.Configurations
+namespace BookRight.Infrastructure.Persistence.Configurations
     {
         public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         {

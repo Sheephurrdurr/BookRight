@@ -1,6 +1,6 @@
 ﻿using BookRight.Domain.ValueObjects;
 
-namespace BookRight.Domain.Entities
+namespace BookRight.Domain.Aggregates.Therapist
 {
     public record Therapist
     {

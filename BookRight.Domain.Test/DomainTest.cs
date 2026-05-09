@@ -1,9 +1,5 @@
-﻿using BookRight.Domain.Entities;
+﻿using BookRight.Domain.Aggregates;
 using BookRight.Domain.ValueObjects;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Linq;
 
 namespace BookRight.Domain.Test
 {

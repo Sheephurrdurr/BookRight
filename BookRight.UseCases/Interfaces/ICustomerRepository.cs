@@ -1,4 +1,4 @@
-﻿using BookRight.Domain.Entities;
+﻿using BookRight.Domain.Aggregates.Customer;
 
 namespace BookRight.UseCases.Interfaces
 {
