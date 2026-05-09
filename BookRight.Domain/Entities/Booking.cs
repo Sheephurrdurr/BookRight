@@ -1,60 +1,68 @@
 ﻿using BookRight.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Numerics;
-using System.Text;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Entities
 {
     public class Booking
     {
-        public Guid BookingId { get; private set; } = Guid.NewGuid();
-        public DateTime Date { get; private set; }
-        public DateTime TimeSlot { get; private set; }
-        public int Duration { get; private set; }
-        public decimal PriceBefore_discount { get; private set; }
-        public decimal price_after_discount { get; private set; }
+        public Guid Id { get; private set; }
+        public TimeSlot TimeSlot { get; private set; }
         public BookingStatus Status { get; private set; }
 
-        // Foreign key og Navigation property
-        public Guid CustomerId { get; private set; }
-        public Customer Customer { get; private set; }
+        private readonly List<BookingLine> _lines = new(); // private field for storing BookingLines in a Booking. 
+        public IReadOnlyCollection<BookingLine> Lines => _lines.AsReadOnly(); // property is used to access BookingLines in a Booking
 
-       // public List<TreatmentType> CombinedTreatments { get; private set; } = new(); // kan undgå null fejl på liste
+        // Foreign key og INGEN Navigation property
+        public Guid CustomerId { get; private set; }
+        public Guid ClinicId { get; private set; }
+        public Guid? CampaignDiscountId { get; private set; } 
 
         private Booking() { }
-        public Booking(Guid Id, Guid customerId, DateTime date, DateTime timeSlot, int duration, BookingStatus status)
+        public Booking(Guid id, Guid customerId, Guid clinicId, TimeSlot timeSlot)
         {
-            BookingId = Id;
-            CustomerId=customerId;
-            CustomerId = CustomerId;
-            Date = date;
+            if (id == Guid.Empty)
+                throw new ArgumentException(nameof(id));
+
+            if (customerId == Guid.Empty)
+                throw new ArgumentException(nameof(customerId));
+
+            if(clinicId == Guid.Empty)
+                throw new ArgumentException(nameof(ClinicId));
+
+            if (timeSlot is null)
+                throw new ArgumentNullException(nameof(timeSlot));
+
+            Id = id;
+            CustomerId = customerId;
+            ClinicId = clinicId;
             TimeSlot = timeSlot;
-            Duration = duration;
-            Status = status;
+            Status = BookingStatus.Confirmed;
         }
 
-        // Creating Booking
-        public static Booking CreateBooking(Guid BookingId, Guid CustomerId, DateTime date, DateTime timeSlot, int duration, BookingStatus status)
+        public void AddLine(BookingLine line)
         {
-            return new Booking(BookingId, CustomerId, date, timeSlot, duration, status);
-               
+            if (line == null)
+                throw new ArgumentNullException(nameof(line));
 
-               
+            _lines.Add(line);
         }
+        public decimal GetTotalPrice() => _lines.Sum(l => l.FinalPrice); // sum price of line(s)
 
-        //Edit Booking
-        public void EditBooking(DateTime newDate, DateTime newTimeSlot, int newDuration)
+        //Edit Booking TimeSlot
+        public void EditTimeSlot(TimeSlot newTimeSlot)
         {
-            Date = newDate;
             TimeSlot = newTimeSlot;
-            Duration = newDuration;
         }
+
         // Cancelling Booking
-        public void CancelBooking()
+        public void Cancel()
         {
             Status = BookingStatus.Cancelled;
+        }
+
+        public void Complete() 
+        { 
+            Status = BookingStatus.Completed; 
         }
 
         // MarkAsNoshow
@@ -63,13 +71,13 @@ namespace BookRight.Domain.Entities
             Status = BookingStatus.NoShow;
         }
 
-        // ConfirmBooking
-        public void ConfirmBooking()
+        public void ApplyCampaignDiscount(Guid campaignDiscountId)
         {
-            Status = BookingStatus.Completed;
+            if (campaignDiscountId == Guid.Empty)
+                throw new ArgumentException(nameof(campaignDiscountId));
+
+            CampaignDiscountId = campaignDiscountId;
         }
-
-
     }
 }
 

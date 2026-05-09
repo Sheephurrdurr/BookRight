@@ -1,13 +1,10 @@
 ﻿using BookRight.Domain.Entities;
-using BookRight.Domain.Enums;
-using BookRight.Facade.DTOs;
+using BookRight.Domain.ValueObjects;
+using BookRight.Facade.DTOs.ValueObjectDTOs;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.Facade.Interfaces;
 using BookRight.UseCases.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
+
 
 namespace BookRight.UseCases.CreateBooking
 {
@@ -16,45 +13,46 @@ namespace BookRight.UseCases.CreateBooking
         private readonly IBookingRepository _bookingRepository;
         private readonly ICustomerRepository _customerRepository;
 
+        //private readonly IClinicRepository _clinicRepository;  ---LINJE TILFØJES IGEN NÅR ClinicRepository og interface er lavet
+
         public CreateBookingUseCase(
             IBookingRepository bookingRepository,
             ICustomerRepository customerRepository)
         {
             _bookingRepository = bookingRepository;
+
+            // Tilføj: _clinicRepository = clinicRepository;
             _customerRepository = customerRepository;
+
         }
 
         public async Task<CreateBookingResponse> ExecuteAsync (CreateBookingRequest request)
         {
-            // 1. valider at kunde findes
+            // Valider at kunde findes
             var customer = await _customerRepository.GetByIdAsync(request.CustomerId);
-            if (customer == null)
-                throw new Exception("Customer not found");
 
-            // 2. opret booking via domain factory
-            var booking = Booking.CreateBooking(
+            if (customer == null)
+                throw new KeyNotFoundException($"Customer with Id: {request.CustomerId} findes ikke.");
+
+            var timeSlot = new TimeSlot(request.TimeSlot.StartTime, request.TimeSlot.EndTime); 
+
+            // Opret booking via domain factory
+            var booking = new Booking(
                 Guid.NewGuid(),
                 request.CustomerId,
-                request.Date,
-                request.TimeSlot,
-                request.Duration,
-                BookingStatus.Completed
-                );
+                request.ClinicId,
+                timeSlot
+            );
 
-            // 3. sæt Fremmed nøgle
-           /* Booking.CustomerId = request.CustomerId;*/
-
-            // 4. Gem i databasen
+            // Gem i databasen
             await _bookingRepository.CreateAsync(booking);
 
-            // 5. Returener response DTO
+            // Returener response DTO
             return new CreateBookingResponse
             {
-                BookingId = booking.BookingId,
+                BookingId = booking.Id,
                 CustomerId = booking.CustomerId,
-                Date = booking.Date,
-                TimeSlot = booking.TimeSlot,
-                Duration = booking.Duration,
+                TimeSlot = new TimeSlotDto(booking.TimeSlot.StartTime, booking.TimeSlot.EndTime),
                 Status = booking.Status.ToString()
             };
         }
