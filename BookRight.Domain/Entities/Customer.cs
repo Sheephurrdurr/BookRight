@@ -9,6 +9,8 @@ namespace BookRight.Domain.Entities
         public Email Email { get; private set; }
         public PhoneNumber Phone { get; private set; }
 
+        public ICollection<Booking> Bookings { get; private set; } = new List<Booking>();
+
         private Customer() { } // Kræves af EF Core
 
         public Customer(FullName name, Email email, PhoneNumber phone)
