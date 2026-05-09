@@ -6,21 +6,21 @@
         public DateTime EndTime { get; private set; }
         public TimeSpan Duration => EndTime - StartTime;
 
-        public TimeSlot(DateTime start, DateTime end)
+        public TimeSlot(DateTime startTime, DateTime endTime)
         {
-            if (start < DateTime.Today)
+            if (startTime < DateTime.Today)
                 throw new ArgumentException("Start time cannot be in the past.");
 
-            if (end <= start)
+            if (endTime <= startTime)
                 throw new ArgumentException("End time must be later than start time");
 
-            StartTime = start;
-            EndTime = end;
+            StartTime = startTime;
+            EndTime = endTime;
         }
 
         public int DurationMinutes()
         {
-            return (int)Duration.TotalMinutes;
+            return (int)Duration.TotalMinutes; // Cast to int
         }
 
         // Overload metode tager TimeSlot og returnerer false hvis intet overlap er fundet
@@ -29,9 +29,9 @@
             return OverlapsWith(other.StartTime, other.EndTime);
         } 
         // Metode tager tidspunkter og returnerer false, hvis intet overlap er fundet.
-        public bool OverlapsWith(DateTime start, DateTime end)
+        public bool OverlapsWith(DateTime startTime, DateTime endTime)
         {
-            return StartTime < end && EndTime > start;
+            return StartTime < endTime && EndTime > startTime;
         }
 
         public override string ToString()

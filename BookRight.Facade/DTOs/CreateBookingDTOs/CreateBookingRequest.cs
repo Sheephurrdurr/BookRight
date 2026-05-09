@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using BookRight.Facade.DTOs.ValueObjectDTOs;
 
 namespace BookRight.Facade.DTOs.CreateBookingDTOs
 {
     public class CreateBookingRequest
     {
         public Guid CustomerId { get; set; }
-        public DateTime Date { get; set; }
-        public DateTime TimeSlot { get; set; }
-        public int Duration { get; set; }
+        public Guid ClinicId { get; set; }
+        public TimeSlotDto TimeSlot { get; set; }
     }
 }

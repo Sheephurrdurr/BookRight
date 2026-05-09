@@ -6,47 +6,63 @@ namespace BookRight.Domain.Entities
     public class Booking
     {
         public Guid Id { get; private set; }
-        public DateTime Date { get; private set; }
         public TimeSlot TimeSlot { get; private set; }
-        public int Duration { get; private set; }
         public BookingStatus Status { get; private set; }
 
-        private readonly List<BookingLine> _lines = new();
-        public IReadOnlyCollection<BookingLine> Lines => _lines.AsReadOnly();
+        private readonly List<BookingLine> _lines = new(); // private field for storing BookingLines in a Booking. 
+        public IReadOnlyCollection<BookingLine> Lines => _lines.AsReadOnly(); // property is used to access BookingLines in a Booking
 
         // Foreign key og INGEN Navigation property
         public Guid CustomerId { get; private set; }
-
-        public Guid CampaignDiscountId { get; private set; }
-
-       // public List<TreatmentType> CombinedTreatments { get; private set; } = new(); // kan undgå null fejl på liste
+        public Guid ClinicId { get; private set; }
+        public Guid? CampaignDiscountId { get; private set; } 
 
         private Booking() { }
-        public Booking(Guid id, Guid customerId, TimeSlot timeSlot, BookingStatus status)
+        public Booking(Guid id, Guid customerId, Guid clinicId, TimeSlot timeSlot)
         {
+            if (id == Guid.Empty)
+                throw new ArgumentException(nameof(id));
+
+            if (customerId == Guid.Empty)
+                throw new ArgumentException(nameof(customerId));
+
+            if(clinicId == Guid.Empty)
+                throw new ArgumentException(nameof(ClinicId));
+
+            if (timeSlot is null)
+                throw new ArgumentNullException(nameof(timeSlot));
+
             Id = id;
-            CustomerId=customerId;
-            CustomerId = CustomerId;
+            CustomerId = customerId;
+            ClinicId = clinicId;
             TimeSlot = timeSlot;
-            Status = status;
+            Status = BookingStatus.Confirmed;
         }
 
-        // Creating Booking
-        public static Booking CreateBooking(Guid id, Guid CustomerId, TimeSlot timeSlot, BookingStatus status)
+        public void AddLine(BookingLine line)
         {
-            return new Booking(id, CustomerId, timeSlot, status);    
-        }
+            if (line == null)
+                throw new ArgumentNullException(nameof(line));
 
-        //Edit Booking
-        public void EditBookingTimeSlot(TimeSlot newTimeSlot)
+            _lines.Add(line);
+        }
+        public decimal GetTotalPrice() => _lines.Sum(l => l.FinalPrice); // sum price of line(s)
+
+        //Edit Booking TimeSlot
+        public void EditTimeSlot(TimeSlot newTimeSlot)
         {
             TimeSlot = newTimeSlot;
         }
 
         // Cancelling Booking
-        public void CancelBooking()
+        public void Cancel()
         {
             Status = BookingStatus.Cancelled;
+        }
+
+        public void Complete() 
+        { 
+            Status = BookingStatus.Completed; 
         }
 
         // MarkAsNoshow
@@ -55,13 +71,13 @@ namespace BookRight.Domain.Entities
             Status = BookingStatus.NoShow;
         }
 
-        // ConfirmBooking
-        public void ConfirmBooking()
+        public void ApplyCampaignDiscount(Guid campaignDiscountId)
         {
-            Status = BookingStatus.Completed;
+            if (campaignDiscountId == Guid.Empty)
+                throw new ArgumentException(nameof(campaignDiscountId));
+
+            CampaignDiscountId = campaignDiscountId;
         }
-
-
     }
 }
 
