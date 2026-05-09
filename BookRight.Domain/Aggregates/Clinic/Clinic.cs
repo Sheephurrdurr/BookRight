@@ -1,6 +1,4 @@
 ﻿using BookRight.Domain.ValueObjects;
-using System;
-using System.Collections.Generic;
 
 namespace BookRight.Domain.Aggregates.Clinic
 {
