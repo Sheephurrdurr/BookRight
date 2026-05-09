@@ -28,6 +28,7 @@ namespace BookRight.UseCases.CreateBooking
         {
             // 1. valider at kunde findes
             var customer = await _customerRepository.GetByIdAsync(request.CustomerId);
+
             if (customer == null)
                 throw new Exception("Customer not found");
 
@@ -50,7 +51,7 @@ namespace BookRight.UseCases.CreateBooking
             // 5. Returener response DTO
             return new CreateBookingResponse
             {
-                BookingId = booking.BookingId,
+                BookingId = booking.Id,
                 CustomerId = booking.CustomerId,
                 Date = booking.Date,
                 TimeSlot = booking.TimeSlot,
