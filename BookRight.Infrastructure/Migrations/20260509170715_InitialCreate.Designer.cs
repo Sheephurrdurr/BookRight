@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookRight.Infrastructure.Migrations
 {
     [DbContext(typeof(BookRightDbContext))]
-    [Migration("20260505072156_InitialCreate")]
+    [Migration("20260509170715_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,21 +25,71 @@ namespace BookRight.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BookRight.Domain.Entities.Customer", b =>
+            modelBuilder.Entity("BookRight.Domain.Entities.Booking", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CampaignDiscountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CampaignDiscountId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Booking", (string)null);
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Entities.CampaignDiscount", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<decimal>("DiscountPercent")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Customers");
+                    b.ToTable("CampaignDiscount");
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Entities.Customer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("BookRight.Domain.Entities.Therapist", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Specialization")
@@ -49,7 +99,84 @@ namespace BookRight.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Therapists");
+                    b.ToTable("Therapists", (string)null);
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Entities.Booking", b =>
+                {
+                    b.HasOne("BookRight.Domain.Entities.CampaignDiscount", null)
+                        .WithMany()
+                        .HasForeignKey("CampaignDiscountId");
+
+                    b.HasOne("BookRight.Domain.Entities.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("BookRight.Domain.Entities.BookingLine", "Lines", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<decimal>("BasePrice")
+                                .HasPrecision(18, 2)
+                                .HasColumnType("decimal(18,2)");
+
+                            b1.Property<Guid>("BookingId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<decimal>("DiscountPercent")
+                                .HasColumnType("decimal(18,2)");
+
+                            b1.Property<int>("DiscountType")
+                                .HasColumnType("int");
+
+                            b1.Property<decimal>("FinalPrice")
+                                .HasColumnType("decimal(18,2)");
+
+                            b1.Property<decimal>("SurchargePercent")
+                                .HasColumnType("decimal(18,2)");
+
+                            b1.Property<Guid>("TherapistTreatmentTypeId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("BookingId");
+
+                            b1.ToTable("BookingLines", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("BookingId");
+                        });
+
+                    b.OwnsOne("BookRight.Domain.ValueObjects.TimeSlot", "TimeSlot", b1 =>
+                        {
+                            b1.Property<Guid>("BookingId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime>("EndTime")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("EndTime");
+
+                            b1.Property<DateTime>("StartTime")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("StartTime");
+
+                            b1.HasKey("BookingId");
+
+                            b1.ToTable("Booking");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BookingId");
+                        });
+
+                    b.Navigation("Lines");
+
+                    b.Navigation("TimeSlot")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BookRight.Domain.Entities.Customer", b =>
@@ -62,8 +189,7 @@ namespace BookRight.Infrastructure.Migrations
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(255)
-                                .HasColumnType("nvarchar(255)")
-                                .HasColumnName("Email");
+                                .HasColumnType("nvarchar(255)");
 
                             b1.HasKey("CustomerId");
 
@@ -81,14 +207,12 @@ namespace BookRight.Infrastructure.Migrations
                             b1.Property<string>("FirstName")
                                 .IsRequired()
                                 .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)")
-                                .HasColumnName("FirstName");
+                                .HasColumnType("nvarchar(100)");
 
                             b1.Property<string>("LastName")
                                 .IsRequired()
                                 .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)")
-                                .HasColumnName("LastName");
+                                .HasColumnType("nvarchar(100)");
 
                             b1.HasKey("CustomerId");
 
@@ -106,8 +230,7 @@ namespace BookRight.Infrastructure.Migrations
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(50)
-                                .HasColumnType("nvarchar(50)")
-                                .HasColumnName("Phone");
+                                .HasColumnType("nvarchar(50)");
 
                             b1.HasKey("CustomerId");
 

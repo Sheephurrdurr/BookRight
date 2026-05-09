@@ -8,10 +8,13 @@ namespace BookRight.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Therapist> builder)
         {
-            builder.HasKey(t => t.Id); 
+            builder.ToTable("Therapists");
+            // PK konfiguration
+            builder.HasKey(t => t.Id); // Sig til EF Core; "Dette er PK"
+            builder.Property(x => x.Id) 
+                .ValueGeneratedNever(); // Db må ikke generere Id. I DDD styrer Domain dette.
 
-            builder.OwnsOne(t => t.Name, name => 
-                                                 
+            builder.OwnsOne(t => t.Name, name =>                            
             {
                 name.Property(n => n.FirstName) 
                     .HasColumnName("FirstName")
@@ -24,8 +27,7 @@ namespace BookRight.Infrastructure.Persistence.Configurations
                     .IsRequired();
             });
 
-            builder.OwnsOne(t => t.Email, email => 
-                                                  
+            builder.OwnsOne(t => t.Email, email =>          
             {
                 email.Property(e => e.Value)
                     .HasColumnName("Email")
