@@ -1,4 +1,4 @@
-﻿using BookRight.Domain.Entities;
+﻿using BookRight.Domain.Aggregates.Clinic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -1,4 +1,4 @@
-﻿using BookRight.Domain.Entities;
+﻿using BookRight.Domain.Aggregates.Therapist;
 
 namespace BookRight.UseCases.Interfaces
 {

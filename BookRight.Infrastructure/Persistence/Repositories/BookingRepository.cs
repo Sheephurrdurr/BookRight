@@ -1,10 +1,6 @@
-﻿using BookRight.Domain.Interface;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using BookRight.Domain.Entities;
-using BookRight.Infrastructure.Persistence;
+﻿using Microsoft.EntityFrameworkCore;
+using BookRight.Domain.Aggregates.Booking;
+using BookRight.UseCases.Interfaces;
 
 namespace BookRight.Infrastructure.Persistence.Repositories
 {
@@ -39,7 +35,7 @@ namespace BookRight.Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public async Task CreateBookingAsync(Booking booking)
+        public async Task CreateAsync(Booking booking)
         {
             await _context.Bookings.AddAsync(booking);
             await _context.SaveChangesAsync();

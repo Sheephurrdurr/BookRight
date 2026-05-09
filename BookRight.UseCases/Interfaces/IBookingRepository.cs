@@ -1,4 +1,4 @@
-﻿using BookRight.Domain.Entities;
+﻿using BookRight.Domain.Aggregates.Booking;
 using System;
 using System.Collections.Generic;
 using System.Text;

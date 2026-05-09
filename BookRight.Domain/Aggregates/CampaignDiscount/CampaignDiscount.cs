@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BookRight.Domain.Entities
+namespace BookRight.Domain.Aggregates.CampaignDiscount
 {
     public record CampaignDiscount
     {

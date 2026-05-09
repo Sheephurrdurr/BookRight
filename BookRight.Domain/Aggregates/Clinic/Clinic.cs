@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BookRight.Domain.Entities
+namespace BookRight.Domain.Aggregates.Clinic
 {
     public record Clinic
     {

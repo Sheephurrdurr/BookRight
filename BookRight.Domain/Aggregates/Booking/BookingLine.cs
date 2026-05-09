@@ -1,6 +1,6 @@
 ﻿using BookRight.Domain.Enums;
 
-namespace BookRight.Domain.Entities
+namespace BookRight.Domain.Aggregates.Booking
 {
     public class BookingLine
     {
