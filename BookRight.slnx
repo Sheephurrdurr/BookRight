@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Test/">
     <Project Path="BookRight.Domain.Test/BookRight.Domain.Test.csproj" Id="0b1a2b2e-4fa7-46b2-a795-af21c9cacba7" />
+    <Project Path="BookRight.UseCase.Test/BookRight.UseCase.Test.csproj" Id="1d594c44-f314-4d0c-9023-9bea3a262820" />
   </Folder>
   <Project Path="BookRight.BlazorUI/BookRight.BlazorUI.csproj" />
   <Project Path="BookRight.Domain/BookRight.Domain.csproj" />
