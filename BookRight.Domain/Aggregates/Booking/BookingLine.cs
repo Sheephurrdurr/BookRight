@@ -14,7 +14,7 @@ namespace BookRight.Domain.Aggregates.Booking
 
         public BookingLine() { }
 
-        public BookingLine(Guid therapistTreatmentTypeId, decimal basePrice, decimal discountPercent, decimal surcharge)
+        public BookingLine(Guid therapistTreatmentTypeId, decimal basePrice, decimal discountPercent, decimal surcharge, DiscountType discountType)
         {
             if (therapistTreatmentTypeId == Guid.Empty)
                 throw new ArgumentException(nameof(therapistTreatmentTypeId));
@@ -22,7 +22,7 @@ namespace BookRight.Domain.Aggregates.Booking
             if (basePrice <= 0)
                 throw new ArgumentException("BasePrice must be above 0", nameof(basePrice));
 
-            if (discountPercent <= 0 || discountPercent > 100)
+            if (discountPercent < 0 || discountPercent > 100)
                 throw new ArgumentException(nameof(discountPercent));
 
             Id = Guid.NewGuid();
@@ -30,7 +30,7 @@ namespace BookRight.Domain.Aggregates.Booking
             BasePrice = basePrice;
             DiscountPercent = discountPercent;
             SurchargePercent = surcharge;
-            DiscountType = DiscountType;
+            DiscountType = discountType;
             FinalPrice = Math.Round(basePrice * (1 - discountPercent / 100) * (1 + surcharge / 100), 2);
         }
     }
