@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookRight.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class IntialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,6 +24,21 @@ namespace BookRight.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CampaignDiscount", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Clinics",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    NumTreatmentRooms = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Clinics", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,7 +81,8 @@ namespace BookRight.Infrastructure.Migrations
                     Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ClinicId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CampaignDiscountId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    CampaignDiscountId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CustomerId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -82,6 +98,11 @@ namespace BookRight.Infrastructure.Migrations
                         principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Booking_Customers_CustomerId1",
+                        column: x => x.CustomerId1,
+                        principalTable: "Customers",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -119,6 +140,11 @@ namespace BookRight.Infrastructure.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Booking_CustomerId1",
+                table: "Booking",
+                column: "CustomerId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BookingLines_BookingId",
                 table: "BookingLines",
                 column: "BookingId");
@@ -129,6 +155,9 @@ namespace BookRight.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "BookingLines");
+
+            migrationBuilder.DropTable(
+                name: "Clinics");
 
             migrationBuilder.DropTable(
                 name: "Therapists");
