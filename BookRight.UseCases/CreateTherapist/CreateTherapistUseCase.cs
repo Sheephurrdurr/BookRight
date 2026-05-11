@@ -2,7 +2,7 @@
 using BookRight.Domain.Aggregates.Therapist;
 using BookRight.Facade.DTOs.CreateTherapistDTOs;
 using BookRight.Facade.Interfaces;
-using BookRight.UseCases.Interfaces;
+using BookRight.UseCases.Interfaces.Repository;
 
 namespace BookRight.UseCases.CreateTherapist
 {

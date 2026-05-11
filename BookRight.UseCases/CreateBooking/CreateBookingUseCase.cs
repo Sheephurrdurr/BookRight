@@ -3,7 +3,7 @@ using BookRight.Domain.Aggregates.Booking;
 using BookRight.Facade.DTOs.ValueObjectDTOs;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.Facade.Interfaces;
-using BookRight.UseCases.Interfaces;
+using BookRight.UseCases.Interfaces.Repository;
 
 
 namespace BookRight.UseCases.CreateBooking

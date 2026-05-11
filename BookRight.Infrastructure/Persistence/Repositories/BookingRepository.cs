@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BookRight.Domain.Aggregates.Booking;
-using BookRight.UseCases.Interfaces;
+using BookRight.UseCases.Interfaces.Repository;
 
 namespace BookRight.Infrastructure.Persistence.Repositories
 {
