@@ -1,8 +1,9 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.Enums;
+using BookRight.Domain.Services;
 
 
-namespace BookRight.Domain.Services
+namespace BookRight.UseCases.Interfaces.Service
 {
     public interface ILoyaltyService
     {

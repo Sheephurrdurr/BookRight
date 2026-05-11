@@ -1,6 +1,6 @@
 ﻿using BookRight.Domain.Aggregates.Customer;
 
-namespace BookRight.UseCases.Interfaces
+namespace BookRight.UseCases.Interfaces.Repository
 {
     public interface ICustomerRepository
     {

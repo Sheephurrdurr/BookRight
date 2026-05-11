@@ -23,4 +23,8 @@
     <ProjectReference Include="..\BookRight.Facade\BookRight.Facade.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\Service\" />
+  </ItemGroup>
+
 </Project>

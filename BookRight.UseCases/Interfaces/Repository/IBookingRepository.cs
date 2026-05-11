@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BookRight.UseCases.Interfaces
+namespace BookRight.UseCases.Interfaces.Repository
 {
     public interface IBookingRepository
     {
