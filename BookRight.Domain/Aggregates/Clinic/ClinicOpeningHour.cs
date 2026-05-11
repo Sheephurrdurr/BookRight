@@ -18,8 +18,8 @@
             if (clinicId == Guid.Empty)
                 throw new ArgumentException(nameof(clinicId));
 
-            if ()
-                throw new ArgumentNullException(nameof(opensAt));
+            //if ()
+              //  throw new ArgumentNullException(nameof(opensAt));
         }
     }
 }
