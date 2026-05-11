@@ -20,5 +20,11 @@ namespace BookRight.UseCase.Test
                                                                                             //masse kode om det kommer flere afhengigheder                                                                                           
                                                                                             //senere, kun denne
 
+        [Fact]
+        public void PlaceHolder()
+        {
+            Assert.True(true);
+        }
+
     }
 }
