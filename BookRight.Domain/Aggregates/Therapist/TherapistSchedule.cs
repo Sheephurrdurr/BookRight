@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BookRight.Domain.Aggregates
+namespace BookRight.Domain.Aggregates.Therapist
 {
 	public class TherapistSchedule
 	{
