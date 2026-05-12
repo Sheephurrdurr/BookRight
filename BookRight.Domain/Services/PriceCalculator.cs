@@ -1,4 +1,4 @@
-﻿using BookRight.Domain.Aggregates;
+﻿using BookRight.Domain.Aggregates.AddOn;
 using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Services.Interfaces;
 using BookRight.Domain.ValueObjects;
