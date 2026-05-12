@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Text; 
 using Xunit;
 using BookRight.Domain.ValueObjects;
-using System.Data;
-using Microsoft.Identity.Client;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 
 
 namespace BookRight.Domain.Test

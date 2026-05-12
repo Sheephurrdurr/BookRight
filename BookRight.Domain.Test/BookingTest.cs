@@ -36,15 +36,15 @@ namespace BookRight.Domain.Test
 		{
 			//Arrange
 			var id = Guid.NewGuid();
-			var customerId = Guid.NewGuid();
-			var clinicId = Guid.NewGuid();
+			var customerId = Guid.Empty;
+			var clinicId = Guid.Empty;
 			var timeSlot = new TimeSlot(
 			DateTime.Today.AddDays(1).AddHours(10),
 			DateTime.Today.AddDays(1).AddHours(11));
 
 			//Act & Assert
-			Assert.Throws<ArgumentException>(() =>
-			  new Booking(id, customerId, clinicId, timeSlot));
+			Assert.Throws<ArgumentNullException>(() =>
+			  new Booking(id, customerId, clinicId, null));
 
 		}
 
@@ -54,15 +54,15 @@ namespace BookRight.Domain.Test
 		{
 			//Arrange
 			var id = Guid.NewGuid();
-			var customerId = Guid.NewGuid();
+			var customerId = Guid.Empty;
 			var clinicId = Guid.NewGuid();
 			var timeSlot = new TimeSlot(
 				DateTime.Today.AddDays(1).AddHours(10),
 				DateTime.Today.AddDays(1).AddHours(11));
 
 			// Act & Assert
-			Assert.Throws<ArgumentException>(() =>
-				  new Booking(id, customerId, clinicId, timeSlot));
+			Assert.Throws<ArgumentNullException>(() =>
+				  new Booking(id, customerId, clinicId, null));
 
 		}
 
