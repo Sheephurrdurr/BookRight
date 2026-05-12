@@ -96,14 +96,18 @@ namespace BookRight.Domain.Test
         {
             // Arrange
             var basePrice = new Money(400);
+
             var calculator = new PriceCalculator();
 
             // Act
             var result = calculator.ApplyDiscount(basePrice, 0);
 
             // Assert
+            // Price should remain unchanged when discount is 0%
             Assert.Equal(new Money(400), result.DiscountedPrice);
-            Assert.Equal("10% rabat", result.DiscountName);
+
+            // Discount name should reflect the applied percentage
+            Assert.Equal("0% rabat", result.DiscountName);
         }
 
     }
