@@ -10,7 +10,6 @@ namespace BookRight.Infrastructure.Persistence.Configurations
         {
             builder.ToTable("Customers");
             // PK konfiguration
-            builder.HasKey(c => c.Id); // Sig til EF Core; "Dette er PK"
             builder.Property(x => x.Id)
                 .ValueGeneratedNever(); // Db må ikke generere Id. I DDD styrer Domain dette.
 
