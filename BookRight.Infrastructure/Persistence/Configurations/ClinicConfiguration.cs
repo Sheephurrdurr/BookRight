@@ -1,4 +1,5 @@
 ﻿using BookRight.Domain.Aggregates.Clinic;
+using BookRight.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,21 +9,37 @@ public class ClinicConfiguration : IEntityTypeConfiguration<Clinic>
 {
     public void Configure(EntityTypeBuilder<Clinic> builder)
     {
-        builder.HasKey(c => c.Id);
+        builder.OwnsOne(t => t.Name, name =>
+        {
+            name.Property(n => n.FirstName)
+                .HasMaxLength(100)
+                .IsRequired();
 
-        builder.Property(c => c.Name)
-            .IsRequired()
-            .HasMaxLength(100);
+            name.Property(n => n.LastName)
+                .HasMaxLength(100)
+                .IsRequired();
+        });
 
-        builder.Property(c => c.Address)
-            .IsRequired()
-            .HasMaxLength(200);
+        builder.OwnsOne(c => c.Address, address =>
+        {
+            address.Property(a => a.Street)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            address.Property(a => a.City)
+                .HasMaxLength(100)
+                .IsRequired();
+        });
 
         builder.Property(c => c.Phone)
             .IsRequired()
             .HasMaxLength(20);
 
-        builder.Property(c => c.NumTreatmentRooms)
-            .IsRequired();
+        builder.OwnsOne(c => c.Phone, phone =>
+        {
+            phone.Property(p => p.Value)
+                .HasMaxLength(20)
+                .IsRequired();
+        });
     }
 }

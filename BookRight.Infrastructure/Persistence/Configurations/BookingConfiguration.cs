@@ -10,15 +10,11 @@ namespace BookRight.Infrastructure.Persistence.Configurations
         {
             public void Configure(EntityTypeBuilder<Booking> builder)
             {
-                builder.ToTable("Booking");
+            builder.ToTable("Bookings");
 
                 // PK konfiguration
-                builder.HasKey(b => b.Id);
                 builder.Property(x => x.Id)
                     .ValueGeneratedNever();
-
-                // FK CustomerId konfiguration
-                builder.Property(b => b.CustomerId);
     
                 builder.HasOne<Customer>() // Definér 1 til mange relation
                     .WithMany()
@@ -29,11 +25,9 @@ namespace BookRight.Infrastructure.Persistence.Configurations
                 builder.OwnsOne(b => b.TimeSlot, timeSlot =>
                 {
                     timeSlot.Property(t => t.StartTime)
-                        .HasColumnName("StartTime")
                         .IsRequired();
            
                     timeSlot.Property(t => t.EndTime)
-                        .HasColumnName("EndTime")
                         .IsRequired();
                 });
 
