@@ -16,24 +16,19 @@ namespace BookRight.Domain.Aggregates.Clinic
         // Andre klasser kan kun læse åbningstiderne, ikke ændre dem direkte
         public IReadOnlyDictionary<DayOfWeek, OpeningHours> OpeningHours => _openingHours;
 
+        private Clinic() { }
+
         // Constructor: bruges til at oprette en ny Clinic og give den startværdier
-        public Clinic(string name, string street, string city, string zipCode, string phone, int numTreatmentRooms)
+        public Clinic(string name, Address address, PhoneNumber phone, int numTreatmentRooms)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Klinikkens navn må ikke være tomt.");
 
 
-            if (string.IsNullOrWhiteSpace(street))
-                throw new ArgumentException("Klinikkens vejnavn må ikke være tom.");
-
-            if (string.IsNullOrEmpty(city))
-                throw new ArgumentException("Klinikkens bynavn må ikke være tomt.");
-
-            if (string.IsNullOrEmpty(zipCode))
-                throw new ArgumentException("Klinikkens postnummer må ikke være tomt.");
-
+            if (address == null)
+                throw new ArgumentException("Klinikkens adresse må ikke være tom.");
         
-            if (string.IsNullOrWhiteSpace(phone))
+            if (phone == null)
                 throw new ArgumentException("Klinikkens telefonnummer må ikke være tomt.");
 
             if (numTreatmentRooms <= 0)
@@ -41,8 +36,8 @@ namespace BookRight.Domain.Aggregates.Clinic
 
             Id = Guid.NewGuid();
             Name = name;
-            Address = new Address(street, city, zipCode);
-            Phone = new PhoneNumber(phone);
+            Address = address;
+            Phone = phone;
             NumTreatmentRooms = numTreatmentRooms;
         }
         /*

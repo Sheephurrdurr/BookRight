@@ -9,16 +9,9 @@ public class ClinicConfiguration : IEntityTypeConfiguration<Clinic>
 {
     public void Configure(EntityTypeBuilder<Clinic> builder)
     {
-        builder.OwnsOne(t => t.Name, name =>
-        {
-            name.Property(n => n.FirstName)
-                .HasMaxLength(100)
-                .IsRequired();
-
-            name.Property(n => n.LastName)
-                .HasMaxLength(100)
-                .IsRequired();
-        });
+        builder.Property(c => c.Name)
+            .IsRequired()
+            .HasMaxLength(100);
 
         builder.OwnsOne(c => c.Address, address =>
         {
@@ -30,10 +23,6 @@ public class ClinicConfiguration : IEntityTypeConfiguration<Clinic>
                 .HasMaxLength(100)
                 .IsRequired();
         });
-
-        builder.Property(c => c.Phone)
-            .IsRequired()
-            .HasMaxLength(20);
 
         builder.OwnsOne(c => c.Phone, phone =>
         {
