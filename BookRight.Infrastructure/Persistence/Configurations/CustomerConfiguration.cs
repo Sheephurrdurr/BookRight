@@ -8,7 +8,7 @@ namespace BookRight.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Customer> builder)
         {
-            builder.ToTable("Customers");
+            builder.ToTable("Customers"); //SKal denne slettes? Fordi EF laver automatisk tabeller.
             // PK konfiguration
             builder.HasKey(c => c.Id); // Sig til EF Core; "Dette er PK"
             builder.Property(x => x.Id)
