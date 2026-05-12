@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BookRight.Domain.ValueObjects;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,6 +11,8 @@ namespace BookRight.Domain.Aggregates.TreatmentType
         public string Name { get; private set; }
         public int DurationMinutes { get; private set; }
         public int MaxParticipants { get; private set; }
+        public Money Price { get; private set; }
+
 
         public TreatmentType(string name, int durationMinutes, int maxParticipants)
         {
