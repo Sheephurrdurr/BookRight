@@ -20,14 +20,14 @@ namespace BookRight.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync(b => b.Id == bookingId);
         }
 
-        public async Task<IEnumerable<Booking>> GetAllAsync()
+        public async Task<IReadOnlyList<Booking>> GetAllAsync()
         {
             return await _context.Bookings
                 .Include(b => b.CustomerId)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Booking>> GetByCustomerIdAsync(Guid customerId)
+        public async Task<IReadOnlyList<Booking>> GetByCustomerIdAsync(Guid customerId)
         {
             return await _context.Bookings
                 .Include(b => b.CustomerId)
