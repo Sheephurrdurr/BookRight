@@ -33,7 +33,22 @@
         {
             return StartTime < endTime && EndTime > startTime;
         }
+        // yaki : Returnerer true hvis booking er om aftenen (efter 18:00) eller i  weekenden
+        public bool IsEveningOrWeekend()
+        {
+          var isEvening = StartTime.Hour >= 18;
+            var isWeedend = StartTime.DayOfWeek == DayOfWeek.Saturday ||
+                   StartTime.DayOfWeek == DayOfWeek.Sunday;
+            return isEvening || isWeedend;
+        }
 
+        // Bergner 15% tillæg  hvis aften eller weekend
+        public decimal ApplySurCharge(decimal basePrice)
+        {
+            if (IsEveningOrWeekend())
+                return basePrice * 1.15m; // 15 % tillæg
+          return basePrice;
+        }
         public override string ToString()
         {
             return $"{StartTime} - {EndTime}";
