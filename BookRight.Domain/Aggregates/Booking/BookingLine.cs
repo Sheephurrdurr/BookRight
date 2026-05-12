@@ -12,7 +12,7 @@ namespace BookRight.Domain.Aggregates.Booking
         public DiscountType DiscountType { get; private set; }
         public decimal FinalPrice { get; private set; }
 
-        public BookingLine() { }
+        private BookingLine() { } //Private EF core constructor
 
         public BookingLine(Guid therapistTreatmentTypeId, decimal basePrice, decimal discountPercent, decimal surcharge, DiscountType discountType)
         {
