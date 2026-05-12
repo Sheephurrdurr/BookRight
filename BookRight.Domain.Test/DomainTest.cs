@@ -80,7 +80,10 @@ namespace BookRight.Domain.Test
         {
             // Arrange
             var basePrice = new Money(400);
-            decimal percentage = 0.10m; // 10%
+
+            // 10% discount
+            decimal percentage = 10;
+
             var calculator = new PriceCalculator();
 
             // Act
@@ -88,7 +91,11 @@ namespace BookRight.Domain.Test
 
             // Assert
             Assert.Equal(new Money(400), result.OriginalPrice);
+
+            // 400 - 10% = 360
             Assert.Equal(new Money(360), result.DiscountedPrice);
+
+            Assert.Equal("10% rabat", result.DiscountName);
         }
 
         [Fact]

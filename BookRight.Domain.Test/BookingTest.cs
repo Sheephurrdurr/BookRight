@@ -73,22 +73,23 @@ namespace BookRight.Domain.Test
 
         // Test 4: Booking må ikke oprettes uden TimeSlot
         [Fact]
-		public void Create_NullTimeSlot_ShouldThrowException()
-		{
-			var id = Guid.NewGuid();
-			var customerId = Guid.NewGuid();
-			var clinicId = Guid.NewGuid();
+        public void Create_NullTimeSlot_ShouldThrowException()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var customerId = Guid.NewGuid();
+            var clinicId = Guid.NewGuid();
 
-			// Act & Assert
-			Assert.Throws<ArgumentException>(() =>
-			  new Booking(id, customerId, clinicId, null));
-			
-			
-		}
+            TimeSlot? timeSlot = null;
+
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() =>
+                new Booking(id, customerId, clinicId, timeSlot!));
+        }
 
 
 
-	}
+    }
 
 }
 	
