@@ -14,12 +14,12 @@ namespace BookRight.Infrastructure.Persistence
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<ClinicOpeningHour> ClinicOpeningHours { get; set; }
-
+        // Constructor, som tager DbContextOptions og sender dem videre til base-klassen.
         public BookRightDbContext(DbContextOptions<BookRightDbContext> options)
             : base(options)
         {
         }
-
+        // OnModelCreating-metoden, som bruges til at konfigurere modelens struktur og relationer ved hjælp af Fluent API.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(BookRightDbContext).Assembly); // Registrer alle modeller der implementer interfacet IEntityTypeConfiguration<T> i DbContext på én gang.
