@@ -4,11 +4,11 @@
     {
         public Guid Id { get; private set; }
         public Guid ClinicId { get; private set; }
-        public string? Weekday { get; private set; }
+        public string Weekday { get; private set; }
         public TimeOnly OpensAt { get; private set; }
         public TimeOnly ClosesAt { get; private set; }
 
-        public ClinicOpeningHour() { }
+        private ClinicOpeningHour() { }
 
         public ClinicOpeningHour(Guid id, Guid clinicId, string weekDay, TimeOnly opensAt, TimeOnly closesAt) 
         {
@@ -18,8 +18,17 @@
             if (clinicId == Guid.Empty)
                 throw new ArgumentException(nameof(clinicId));
 
-            //if ()
-              //  throw new ArgumentNullException(nameof(opensAt));
-        }
+            if (weekDay == null)
+                throw new ArgumentException(nameof(weekDay));
+
+            if (opensAt >= closesAt)
+                throw new ArgumentException("Sluttidspunkt skal være senere starttidspunkt.");
+
+            Id = id;
+            ClinicId = clinicId;
+            Weekday = weekDay;
+            OpensAt = opensAt;
+            ClosesAt = closesAt;
+        }   
     }
 }
