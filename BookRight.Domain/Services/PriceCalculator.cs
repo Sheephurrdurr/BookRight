@@ -1,4 +1,5 @@
-﻿using BookRight.Domain.Aggregates.TreatmentType;
+﻿using BookRight.Domain.Aggregates;
+using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,11 @@ namespace BookRight.Domain.Services
             return treatmenttype.Price;
         }
         
-        public Money ApplyAddOns(Money price, IEnumerable<addon> addOns)
+        public Money ApplyAddOns(Money price, IEnumerable<AddOn> addOns)
         {
             foreach (var addOn in addOns)
             {
-                price += addOn.price;
+                price += addOn.Price;
             }
             return price;
         }
@@ -26,7 +27,7 @@ namespace BookRight.Domain.Services
             var discountAmount = basePrice * percentage;
             var discountedPrice = basePrice - discountAmount;
 
-            return new DiscountResult(basePrice, discountedPrice, discountAmount, percentage);
+            return new DiscountResult(basePrice, discountedPrice, "Rabat");
 
         }
     }
