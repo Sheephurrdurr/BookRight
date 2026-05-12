@@ -1,11 +1,12 @@
 ﻿using BookRight.Domain.Aggregates.AddOn;
+using BookRight.Domain.Aggregates;
 using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BookRight.Domain.Services.Interfaces
+namespace BookRight.Domain.Services
 {
     public interface IPriceCalculator
     {

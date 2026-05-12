@@ -32,7 +32,7 @@ namespace BookRight.Domain.Services
             return new DiscountResult(
                 basePrice,
                 discountedPrice,
-                "Discount");
+                $"{percentage}% rabat");
         }
     }
 }

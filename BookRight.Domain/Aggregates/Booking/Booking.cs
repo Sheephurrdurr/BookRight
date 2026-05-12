@@ -21,13 +21,13 @@ namespace BookRight.Domain.Aggregates.Booking
         public Booking(Guid id, Guid customerId, Guid clinicId, TimeSlot timeSlot)
         {
             if (id == Guid.Empty)
-                throw new ArgumentException(nameof(id));
+                throw new ArgumentException("Id cannot be empty.", nameof(id));
 
             if (customerId == Guid.Empty)
-                throw new ArgumentException(nameof(customerId));
+                throw new ArgumentException("CustomerId cannot be empty.", nameof(customerId));
 
-            if(clinicId == Guid.Empty)
-                throw new ArgumentException(nameof(ClinicId));
+            if (clinicId == Guid.Empty)
+                throw new ArgumentException("ClinicId cannot be empty.", nameof(clinicId));
 
             if (timeSlot is null)
                 throw new ArgumentNullException(nameof(timeSlot));
