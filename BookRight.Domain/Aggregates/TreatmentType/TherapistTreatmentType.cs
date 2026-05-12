@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BookRight.Domain.Aggregates.TreatmentType
 {
-    public class TherapistTreatmentType
+    public class TherapistTreatmentType //Ingen configurations endnu
     {
         public Guid id { get; private set; }
         public Guid therapistId { get; private set; }
