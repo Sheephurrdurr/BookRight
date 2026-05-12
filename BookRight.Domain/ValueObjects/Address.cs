@@ -10,7 +10,7 @@ namespace BookRight.Domain.ValueObjects
 	  public string City { get; private set; }
 	  public string PostalCode { get; private set; }
 
-	  public Address(string street, string city, string postalCode, string country)
+	  public Address(string street, string city, string postalCode)
 	  {
 			if (string.IsNullOrWhiteSpace(street))
 			    throw new ArgumentException("Street cannot be empty,", nameof(street));

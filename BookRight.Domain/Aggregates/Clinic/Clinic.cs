@@ -22,6 +22,7 @@ namespace BookRight.Domain.Aggregates.Clinic
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Klinikkens navn må ikke være tomt.");
 
+
             if (string.IsNullOrWhiteSpace(street))
                 throw new ArgumentException("Klinikkens vejnavn må ikke være tom.");
 
