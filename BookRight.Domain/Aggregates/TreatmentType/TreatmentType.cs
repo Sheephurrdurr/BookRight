@@ -14,6 +14,7 @@ namespace BookRight.Domain.Aggregates.TreatmentType
         public Money Price { get; private set; }
 
 
+
         public TreatmentType(string name, int durationMinutes, int maxParticipants, Money price)
         {
             if (string.IsNullOrWhiteSpace(name))
