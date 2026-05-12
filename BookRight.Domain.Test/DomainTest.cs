@@ -1,4 +1,4 @@
-﻿using BookRight.Domain.Aggregates;
+﻿using BookRight.Domain.Aggregates.AddOn;
 using BookRight.Domain.ValueObjects;
 using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Services;
@@ -36,22 +36,28 @@ namespace BookRight.Domain.Test
         }
 
         [Fact]
-        public void ApplyAddOns_AddsAllAddOnPrices()
+        public void ApplyAddOns_AddsAllAddOnPercentages()
         {
             // Arrange
-            var basePrise = new Money(300);
+            var basePrice = new Money(300);
+
             var addOns = new List<AddOn>
             {
-                new AddOn("Fysioterapi", new Money(50)),
-                new AddOn("Akupunktur", new Money(70))
+             // 10% of 300 = 30
+                new AddOn("Evening surcharge", 10),
+
+                // 15% of 300 = 45
+                new AddOn("Weekend surcharge", 15)
             };
+
             var calculator = new PriceCalculator();
 
             // Act
-            var result = calculator.ApplyAddOns(basePrise, addOns);
+            var result = calculator.ApplyAddOns(basePrice, addOns);
 
             // Assert
-            Assert.Equal(new Money(425), result);
+            // 300 + 30 + 45 = 375
+            Assert.Equal(new Money(375), result);
         }
 
         [Fact]

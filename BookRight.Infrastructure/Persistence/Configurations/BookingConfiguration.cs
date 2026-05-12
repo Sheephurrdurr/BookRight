@@ -1,6 +1,7 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.Aggregates.CampaignDiscount;
 using BookRight.Domain.Aggregates.Customer;
+using BookRight.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -41,9 +42,20 @@ namespace BookRight.Infrastructure.Persistence.Configurations
                     bl.HasKey("Id");
 
                     bl.Property(x => x.TherapistTreatmentTypeId);
-                    bl.Property(x => x.BasePrice)
-                        .HasPrecision(18, 2); // Er præcis op til 18 cifre, med 2 efter kommaet. Så 16 før kommaet.
-                                             // SqlServers bruger som regel den samme præcision som udgangspunkt, men en eksplicit definition minimerer dumme fejl.
+                    bl.Property(x => x.BasePrice)// Converts BasePrice from Money to decimal in the database
+                        .HasConversion(
+                            money => money!.Value,
+                            value => new Money(value))
+                        .HasPrecision(18, 2)
+                        .IsRequired();
+
+                    bl.Property(x => x.FinalPrice)// Converts FinalPrice from Money to decimal in the database
+                        .HasConversion(
+                            money => money!.Value,
+                            value => new Money(value))
+                        .HasPrecision(18, 2)
+                        .IsRequired();// Er præcis op til 18 cifre, med 2 efter kommaet. Så 16 før kommaet.
+                                      // SqlServers bruger som regel den samme præcision som udgangspunkt, men en eksplicit definition minimerer dumme fejl.
                 });
 
                 // Status konfiguration
