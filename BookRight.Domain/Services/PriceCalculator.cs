@@ -27,7 +27,7 @@ namespace BookRight.Domain.Services
             var discountAmount = basePrice * percentage;
             var discountedPrice = basePrice - discountAmount;
 
-            return new DiscountResult(basePrice, discountedPrice, "Rabat");
+            return new DiscountResult(basePrice, discountedPrice, "Rabat i kr. "+ (basePrice - discountedPrice));
 
         }
     }
