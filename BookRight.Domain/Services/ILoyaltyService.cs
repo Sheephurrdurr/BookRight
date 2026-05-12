@@ -3,7 +3,7 @@ using BookRight.Domain.Enums;
 using BookRight.Domain.Services;
 
 
-namespace BookRight.UseCases.Interfaces.Service
+namespace BookRight.Domain.Services
 {
     public interface ILoyaltyService
     {
