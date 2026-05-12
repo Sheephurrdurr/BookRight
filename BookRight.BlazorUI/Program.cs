@@ -6,8 +6,8 @@ using BookRight.UseCases.CreateCustomer;
 using BookRight.UseCases.CreateTherapist;
 using BookRight.UseCases.GetAllCustomers;
 using BookRight.UseCases.GetallTherapists;
-using BookRight.UseCases.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using BookRight.UseCases.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
