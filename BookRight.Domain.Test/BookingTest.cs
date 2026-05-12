@@ -30,23 +30,26 @@ namespace BookRight.Domain.Test
 
 		}
 
-		// Test 2: Booking må ikke oprettes uden CusotmerId
-		[Fact]
-		public void Create_EmptyCustomerId_ShouldThrowException()
-		{
-			//Arrange
-			var id = Guid.NewGuid();
-			var customerId = Guid.NewGuid();
-			var clinicId = Guid.NewGuid();
-			var timeSlot = new TimeSlot(
-			DateTime.Today.AddDays(1).AddHours(10),
-			DateTime.Today.AddDays(1).AddHours(11));
+        // Test 2: Booking må ikke oprettes uden CusotmerId
+        [Fact]
+        public void Create_EmptyCustomerId_ShouldThrowException()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
 
-			//Act & Assert
-			Assert.Throws<ArgumentException>(() =>
-			  new Booking(id, customerId, clinicId, timeSlot));
+            // Empty Guid to test validation
+            var customerId = Guid.Empty;
 
-		}
+            var clinicId = Guid.NewGuid();
+
+            var timeSlot = new TimeSlot(
+                DateTime.Today.AddDays(1).AddHours(10),
+                DateTime.Today.AddDays(1).AddHours(11));
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() =>
+                new Booking(id, customerId, clinicId, timeSlot));
+        }
 
         // Test 3: Booking må ikke oprettes uden ClinicId
         [Fact]
