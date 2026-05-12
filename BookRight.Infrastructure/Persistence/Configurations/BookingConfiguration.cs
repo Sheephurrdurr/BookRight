@@ -63,9 +63,6 @@ namespace BookRight.Infrastructure.Persistence.Configurations
                     .HasConversion<string>()
                     .HasMaxLength(50);
 
-                // FK CampaignDiscount konfiguration
-                builder.Property(b => b.CampaignDiscountId);
-
                 builder.HasOne<CampaignDiscount>()
                     .WithMany()
                     .HasForeignKey(x => x.CampaignDiscountId);
