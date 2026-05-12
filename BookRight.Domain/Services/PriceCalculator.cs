@@ -1,4 +1,5 @@
 ﻿using BookRight.Domain.Aggregates.TreatmentType;
+using BookRight.Domain.Services.Interfaces;
 using BookRight.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;

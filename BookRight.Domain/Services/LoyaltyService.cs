@@ -1,5 +1,6 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.Enums;
+using BookRight.Domain.Services.Interfaces;
 
 namespace BookRight.Domain.Services
 {
