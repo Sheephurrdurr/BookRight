@@ -14,7 +14,7 @@ namespace BookRight.Domain.Aggregates.AddOn
 
         public AddOn(string name, decimal percentage)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name)) //Guard clauses. Valid State.
                 throw new ArgumentException(
                     "Name cannot be empty.",
                     nameof(name));
@@ -31,8 +31,12 @@ namespace BookRight.Domain.Aggregates.AddOn
             Percentage = percentage;
         }
 
-        
-        public Money CalculateAmount(Money basePrice) //Beregner tillæg baseret på pris
+
+        /*Calculates Surchrage in DKK.
+        Ex. BasePrice = 400 kr
+        Percentage = 15
+        Result = 60 kr*/
+        public Money CalculateAmount(Money basePrice) 
         {
             decimal multiplier = Percentage / 100;
 
