@@ -46,6 +46,7 @@ namespace BookRight.Domain.Aggregates.Booking
 
             _lines.Add(line);
         }
+
         public decimal GetTotalPrice() => _lines.Sum(l => l.FinalPrice); // sum price of line(s)
 
         //Edit Booking TimeSlot
