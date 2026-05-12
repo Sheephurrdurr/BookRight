@@ -53,3 +53,4 @@ namespace BookRight.Domain.Aggregates.Clinic
             => _openingHours; // Cool shorthand for at returnere
 
     }
+}

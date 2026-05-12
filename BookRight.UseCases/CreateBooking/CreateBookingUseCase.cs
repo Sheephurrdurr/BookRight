@@ -50,10 +50,7 @@ namespace BookRight.UseCases.CreateBooking
             // Returener response DTO
             return new CreateBookingResponse
             {
-                BookingId = booking.Id,
-                CustomerId = booking.CustomerId,
-                TimeSlot = new TimeSlotDto(booking.TimeSlot.StartTime, booking.TimeSlot.EndTime),
-                Status = booking.Status.ToString()
+                Id = booking.Id
             };
         }
     }
