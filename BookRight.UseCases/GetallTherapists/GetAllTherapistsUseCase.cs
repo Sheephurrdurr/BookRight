@@ -1,6 +1,6 @@
 ﻿using BookRight.Facade.DTOs.GetAllTherapistsDTOs;
 using BookRight.Facade.Interfaces;
-using BookRight.UseCases.Interfaces.Repository;
+using BookRight.UseCases.Interfaces;
 
 namespace BookRight.UseCases.GetallTherapists
 {

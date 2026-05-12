@@ -2,7 +2,7 @@
 using BookRight.Domain.Aggregates.Customer;
 using BookRight.Facade.DTOs.CreateCustomerDTOs;
 using BookRight.Facade.Interfaces;
-using BookRight.UseCases.Interfaces.Repository;
+using BookRight.UseCases.Interfaces;
 
 namespace BookRight.UseCases.CreateCustomer
 {

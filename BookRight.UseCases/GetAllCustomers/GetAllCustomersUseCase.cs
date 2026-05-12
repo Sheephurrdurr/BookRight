@@ -1,6 +1,6 @@
 ﻿using BookRight.Facade.DTOs.GetAllCustomersDTOs;
 using BookRight.Facade.Interfaces;
-using BookRight.UseCases.Interfaces.Repository;
+using BookRight.UseCases.Interfaces;
 
 namespace BookRight.UseCases.GetAllCustomers
 {

@@ -1,6 +1,6 @@
 ﻿using BookRight.Domain.Aggregates.Therapist;
 
-namespace BookRight.UseCases.Interfaces.Repository
+namespace BookRight.UseCases.Interfaces
 {
     public interface ITherapistRepository
     {

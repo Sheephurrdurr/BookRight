@@ -1,5 +1,5 @@
 ﻿using BookRight.UseCases.CreateTherapist;
-using BookRight.UseCases.Interfaces.Repository;
+using BookRight.UseCases.Interfaces;
 using Moq;
 using System;
 using System.Collections.Generic;
