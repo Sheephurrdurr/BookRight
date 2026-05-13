@@ -21,13 +21,13 @@ namespace BookRight.Domain.Aggregates.Booking
         public Booking(Guid id, Guid customerId, Guid clinicId, TimeSlot timeSlot)
         {
             if (id == Guid.Empty)
-                throw new ArgumentException("Id cannot be empty.", nameof(id));
+                throw new ArgumentException(nameof(id));
 
             if (customerId == Guid.Empty)
-                throw new ArgumentException("CustomerId cannot be empty.", nameof(customerId));
+                throw new ArgumentException(nameof(customerId));
 
-            if (clinicId == Guid.Empty)
-                throw new ArgumentException("ClinicId cannot be empty.", nameof(clinicId));
+            if(clinicId == Guid.Empty)
+                throw new ArgumentException(nameof(ClinicId));
 
             if (timeSlot is null)
                 throw new ArgumentNullException(nameof(timeSlot));
@@ -46,12 +46,7 @@ namespace BookRight.Domain.Aggregates.Booking
 
             _lines.Add(line);
         }
-        public Money GetTotalPrice() //sum price of line(s)
-        {
-            return _lines
-                .Select(line => line.FinalPrice)
-                .Aggregate(new Money(0), (total, price) => total + price);
-        }
+        public decimal GetTotalPrice() => _lines.Sum(l => l.FinalPrice); // sum price of line(s)
 
         //Edit Booking TimeSlot
         public void EditTimeSlot(TimeSlot newTimeSlot)

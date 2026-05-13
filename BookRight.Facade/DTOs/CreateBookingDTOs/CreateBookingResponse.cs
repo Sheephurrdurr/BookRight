@@ -1,9 +1,13 @@
-﻿
+﻿using BookRight.Facade.DTOs.ValueObjectDTOs;
+
 namespace BookRight.Facade.DTOs.CreateBookingDTOs
 {
-    public record CreateBookingResponse
+    public class CreateBookingResponse
     {
-        public Guid Id { get; set; }
-
+        public Guid BookingId { get; set; }
+        public Guid CustomerId { get; set; }
+        public Guid ClinicId { get; set; }
+        public TimeSlotDto TimeSlot { get; set; }
+        public string Status { get; set; }
     }
 }

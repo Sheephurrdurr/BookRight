@@ -20,12 +20,9 @@ builder.Services.AddDbContext<BookRightDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register DI for repositories
+// Register DI
 builder.Services.AddScoped<ITherapistRepository, TherapistRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-
-// Register DI for use cases
 builder.Services.AddScoped<ICreateTherapistUseCase, CreateTherapistUseCase>();
 builder.Services.AddScoped<ICreateCustomerUseCase, CreateCustomerUseCase>();
 builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();

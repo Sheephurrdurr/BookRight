@@ -2,38 +2,66 @@
 
 namespace BookRight.Domain.Aggregates.Clinic
 {
-    public class Clinic
+    public record Clinic
     {
         public Guid Id { get; private set; }
         public string Name { get; private set; }
-        public Address Address { get; private set; }
-        public PhoneNumber Phone { get; private set; }
+        public string Address { get; private set; }
+        public string Phone { get; private set; }
         public int NumTreatmentRooms { get; private set; }
+
 
         // Privat dictionary, som kun Clinic-klassen selv kan ændre direkte
         private Dictionary<DayOfWeek, OpeningHours> _openingHours = new();
 
+
         // Andre klasser kan kun læse åbningstiderne, ikke ændre dem direkte
         public IReadOnlyDictionary<DayOfWeek, OpeningHours> OpeningHours => _openingHours;
 
-        private Clinic() { }
 
         // Constructor: bruges til at oprette en ny Clinic og give den startværdier
-        public Clinic(string name, Address address, PhoneNumber phone, int numTreatmentRooms)
+        public Clinic(string name, string address, string phone, int numTreatmentRooms)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Klinikkens navn må ikke være tomt.");
 
-            if (address == null)
+            if (string.IsNullOrWhiteSpace(address))
                 throw new ArgumentException("Klinikkens adresse må ikke være tom.");
 
-            if (phone == null)
+            if (string.IsNullOrWhiteSpace(phone))
                 throw new ArgumentException("Klinikkens telefonnummer må ikke være tomt.");
 
             if (numTreatmentRooms <= 0)
                 throw new ArgumentException("Antal behandlingsrum skal være større end 0.");
 
             Id = Guid.NewGuid();
+            Name = name;
+            Address = address;
+            Phone = phone;
+            NumTreatmentRooms = numTreatmentRooms;
+        }
+
+        // Metoden til at oprette en Clinic
+        public static Clinic CreateClinic(string name, string address, string phone, int numTreatmentRooms)
+        {
+            return new Clinic(name, address, phone, numTreatmentRooms);
+        }
+
+        // Metoden til at ændre klinikkens oplysninger
+        public void EditClinic(string name, string address, string phone, int numTreatmentRooms)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Klinikkens navn må ikke være tomt.");
+
+            if (string.IsNullOrWhiteSpace(address))
+                throw new ArgumentException("Klinikkens adresse må ikke være tom.");
+
+            if (string.IsNullOrWhiteSpace(phone))
+                throw new ArgumentException("Klinikkens telefonnummer må ikke være tomt.");
+
+            if (numTreatmentRooms <= 0)
+                throw new ArgumentException("Antal behandlingsrum skal være større end 0.");
+
             Name = name;
             Address = address;
             Phone = phone;
@@ -48,9 +76,5 @@ namespace BookRight.Domain.Aggregates.Clinic
 
             _openingHours[day] = openingHours;
         }
-
-        public IReadOnlyDictionary<DayOfWeek, OpeningHours> GetOpeningHours()
-            => _openingHours; // Cool shorthand for at returnere
-
     }
 }
