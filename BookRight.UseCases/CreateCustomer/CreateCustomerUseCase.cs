@@ -20,12 +20,15 @@ namespace BookRight.UseCases.CreateCustomer
             var alreadyExists = await _repository.ExistsByEmailAsync(request.Email);
 
             if (alreadyExists)
-                throw new InvalidOperationException($"A therapist with email '{request.Email}' already exists."); 
+                throw new InvalidOperationException($"A customer with email '{request.Email}' already exists.");
 
             var customer = new Customer(
-                new FullName(request.FirstName, request.LastName),
-                new Email(request.Email),
-                new PhoneNumber(request.Phone)
+            new FullName(request.FirstName, request.LastName),
+            new Email(request.Email),
+            new PhoneNumber(request.Phone),
+            request.DateOfBirth,
+            request.HealthNotes,
+            request.PreferredTherapistId
             );
 
             await _repository.AddAsync(customer); 

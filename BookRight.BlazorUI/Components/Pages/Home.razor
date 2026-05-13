@@ -186,6 +186,9 @@
     private string customerPhone = "";
     private string customerMessage = "";
     private string customerAlertClass = "";
+    private DateOnly customerDateOfBirth = DateOnly.FromDateTime(DateTime.Today);
+    private string? customerHealthNotes;
+    private Guid? customerPreferredTherapistId;
 
     // Lister der holder data fra GetAll, til at vise nyligt oprettede entities
     private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
@@ -237,10 +240,13 @@
         try
         {
             var request = new CreateCustomerRequest(
-                customerFirstName,
-                customerLastName,
-                customerEmail,
-                customerPhone
+            customerFirstName,
+            customerLastName,
+            customerEmail,
+            customerPhone,
+            customerDateOfBirth,
+            customerHealthNotes,
+            customerPreferredTherapistId
             );
 
             var response = await CreateCustomerUseCase.ExecuteAsync(request);
