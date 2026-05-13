@@ -24,6 +24,7 @@ builder.Services.AddDbContext<BookRightDbContext>(options =>
 builder.Services.AddScoped<ITherapistRepository, TherapistRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IClinicRepository, ClinicRepository>();
 
 // Register DI for use cases
 builder.Services.AddScoped<ICreateTherapistUseCase, CreateTherapistUseCase>();
