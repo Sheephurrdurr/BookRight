@@ -1,35 +1,38 @@
-﻿using BookRight.Domain.Aggregates;
+﻿using BookRight.Domain.Aggregates.AddOn;
 using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Services.Interfaces;
 using BookRight.Domain.ValueObjects;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BookRight.Domain.Services
 {
     public class PriceCalculator : IPriceCalculator
     {
-        public Money CalculateBasePrice(TreatmentType treatmenttype)
+        public Money CalculateBasePrice(TreatmentType treatmentType) //Returns the base price of TreatmentType
         {
-            return treatmenttype.Price;
+            return treatmentType.Price;
+        }
+
+        public Money ApplyAddOns(Money price, IEnumerable<AddOn> addOns) //Applies all add-ons/surcharges to the current price
+        {
+            Money totalAddOnAmount = addOns //Calculates total amount of all add-ons
+                .Select(addOn => addOn.CalculateAmount(price))
+                .Aggregate(new Money(0), (total, amount) => total + amount);
+
+            return price + totalAddOnAmount;
         }
         
-        public Money ApplyAddOns(Money price, IEnumerable<AddOn> addOns)
+        public DiscountResult ApplyDiscount(Money basePrice, decimal percentage) //Applies discount percentage to base price
         {
-            foreach (var addOn in addOns)
-            {
-                price += addOn.Price;
-            }
-            return price;
-        }
-        public DiscountResult ApplyDiscount(Money basePrice, decimal percentage)
-        {
-            var discountAmount = basePrice * percentage;
-            var discountedPrice = basePrice - discountAmount;
+            decimal discountMultiplier = percentage / 100; //Converts pertentage to multiplier, ex. 10% -> 0.10
 
-            return new DiscountResult(basePrice, discountedPrice, "Rabat i kr. "+ (basePrice - discountedPrice));
+            Money discountAmount = basePrice * discountMultiplier; //Calculates discount amount
 
+            Money discountedPrice = basePrice - discountAmount; //Calculates final price incl. discount
+
+            return new DiscountResult(
+                basePrice,
+                discountedPrice,
+                $"{percentage}% rabat");
         }
     }
 }

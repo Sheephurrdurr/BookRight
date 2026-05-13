@@ -1,4 +1,6 @@
-﻿using BookRight.Domain.Enums;
+﻿using BookRight.Domain.Aggregates.AddOn;
+using BookRight.Domain.Enums;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.Booking
 {
@@ -6,32 +8,63 @@ namespace BookRight.Domain.Aggregates.Booking
     {
         public Guid Id { get; private set; }
         public Guid TherapistTreatmentTypeId { get; private set; }
-        public decimal BasePrice { get; private set; }
+
+        public Money BasePrice { get; private set; }
         public decimal DiscountPercent { get; private set; }
-        public decimal SurchargePercent { get; private set; }
+
         public DiscountType DiscountType { get; private set; }
-        public decimal FinalPrice { get; private set; }
 
-        public BookingLine() { }
+        public AddOn.AddOn? AddOn { get; private set; } //Aften/weekendtillæg. Nullable.
 
-        public BookingLine(Guid therapistTreatmentTypeId, decimal basePrice, decimal discountPercent, decimal surcharge, DiscountType discountType)
+        public Guid? AddOnId { get; private set; } //Saving Id on AddOn for EF Core.
+
+        public Money FinalPrice { get; private set; }
+
+        private BookingLine() { } //Empty EF Core constructor
+
+        public BookingLine(
+            Guid therapistTreatmentTypeId,
+            Money basePrice,
+            decimal discountPercent,
+            DiscountType discountType,
+            AddOn.AddOn? addOn = null)
         {
             if (therapistTreatmentTypeId == Guid.Empty)
-                throw new ArgumentException(nameof(therapistTreatmentTypeId));
+                throw new ArgumentException("TherapistTreatmentTypeId cannot be empty.", nameof(therapistTreatmentTypeId));
 
-            if (basePrice <= 0)
-                throw new ArgumentException("BasePrice must be above 0", nameof(basePrice));
+            if (basePrice is null)
+                throw new ArgumentNullException(nameof(basePrice));
 
             if (discountPercent < 0 || discountPercent > 100)
-                throw new ArgumentException(nameof(discountPercent));
+                throw new ArgumentException("DiscountPercent must be between 0 and 100.", nameof(discountPercent));
 
             Id = Guid.NewGuid();
             TherapistTreatmentTypeId = therapistTreatmentTypeId;
             BasePrice = basePrice;
             DiscountPercent = discountPercent;
-            SurchargePercent = surcharge;
             DiscountType = discountType;
-            FinalPrice = Math.Round(basePrice * (1 - discountPercent / 100) * (1 + surcharge / 100), 2);
+
+            AddOn = addOn; //Saving AddOn if there's a Surcharge
+            AddOnId = addOn?.Id;
+
+            FinalPrice = CalculateFinalPrice(basePrice, discountPercent, addOn); //Calculates final price discount and Surcharge included.
+        }
+
+        private static Money CalculateFinalPrice(
+            Money basePrice,
+            decimal discountPercent,
+            AddOn.AddOn? addOn)
+        {
+            decimal discountMultiplier = 1 - (discountPercent / 100); //Discount subtraction
+
+            Money priceAfterDiscount = basePrice * discountMultiplier;
+
+            if (addOn is null) //If no Addon, return only price after Discount
+                return priceAfterDiscount;
+
+            Money addOnAmount = addOn.CalculateAmount(priceAfterDiscount); //AddOn calculates Surcharge. Ex. 15 % on the weekends
+
+            return priceAfterDiscount + addOnAmount;
         }
     }
 }

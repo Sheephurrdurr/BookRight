@@ -30,60 +30,66 @@ namespace BookRight.Domain.Test
 
 		}
 
-		// Test 2: Booking må ikke oprettes uden CusotmerId
-		[Fact]
-		public void Create_EmptyCustomerId_ShouldThrowException()
-		{
-			//Arrange
-			var id = Guid.NewGuid();
-			var customerId = Guid.NewGuid();
-			var clinicId = Guid.NewGuid();
-			var timeSlot = new TimeSlot(
-			DateTime.Today.AddDays(1).AddHours(10),
-			DateTime.Today.AddDays(1).AddHours(11));
+        // Test 2: Booking må ikke oprettes uden CusotmerId
+        [Fact]
+        public void Create_EmptyCustomerId_ShouldThrowException()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
 
-			//Act & Assert
-			Assert.Throws<ArgumentException>(() =>
-			  new Booking(id, customerId, clinicId, timeSlot));
+            // Empty Guid to test validation
+            var customerId = Guid.Empty;
 
-		}
+            var clinicId = Guid.NewGuid();
 
-		// Test 3: Booking må ikke oprettes uden ClinicId
-		[Fact]
-		public void Create_EmptyClinicId_ShouldThrowException()
-		{
-			//Arrange
-			var id = Guid.NewGuid();
-			var customerId = Guid.NewGuid();
-			var clinicId = Guid.NewGuid();
-			var timeSlot = new TimeSlot(
-				DateTime.Today.AddDays(1).AddHours(10),
-				DateTime.Today.AddDays(1).AddHours(11));
+            var timeSlot = new TimeSlot(
+                DateTime.Today.AddDays(1).AddHours(10),
+                DateTime.Today.AddDays(1).AddHours(11));
 
-			// Act & Assert
-			Assert.Throws<ArgumentException>(() =>
-				  new Booking(id, customerId, clinicId, timeSlot));
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() =>
+                new Booking(id, customerId, clinicId, timeSlot));
+        }
 
-		}
+        // Test 3: Booking må ikke oprettes uden ClinicId
+        [Fact]
+        public void Create_EmptyClinicId_ShouldThrowException()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var customerId = Guid.NewGuid();
 
-		// Test 4: Booking må ikke oprettes uden TimeSlot
-		[Fact]
-		public void Create_NullTimeSlot_ShouldThrowException()
-		{
-			var id = Guid.NewGuid();
-			var customerId = Guid.NewGuid();
-			var clinicId = Guid.NewGuid();
+            // Empty Guid to test validation
+            var clinicId = Guid.Empty;
 
-			// Act & Assert
-			Assert.Throws<ArgumentException>(() =>
-			  new Booking(id, customerId, clinicId, null));
-			
-			
-		}
+            var timeSlot = new TimeSlot(
+                DateTime.Today.AddDays(1).AddHours(10),
+                DateTime.Today.AddDays(1).AddHours(11));
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() =>
+                new Booking(id, customerId, clinicId, timeSlot));
+        }
+
+        // Test 4: Booking må ikke oprettes uden TimeSlot
+        [Fact]
+        public void Create_NullTimeSlot_ShouldThrowException()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var customerId = Guid.NewGuid();
+            var clinicId = Guid.NewGuid();
+
+            TimeSlot? timeSlot = null;
+
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() =>
+                new Booking(id, customerId, clinicId, timeSlot!));
+        }
 
 
 
-	}
+    }
 
 }
 	
