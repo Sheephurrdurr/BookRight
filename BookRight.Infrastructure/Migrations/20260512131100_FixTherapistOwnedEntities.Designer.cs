@@ -4,6 +4,7 @@ using BookRight.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookRight.Infrastructure.Migrations
 {
     [DbContext(typeof(BookRightDbContext))]
-    partial class BookRightDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260512131100_FixTherapistOwnedEntities")]
+    partial class FixTherapistOwnedEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,24 +24,6 @@ namespace BookRight.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("BookRight.Domain.Aggregates.AddOn.AddOn", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Percentage")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AddOn");
-                });
 
             modelBuilder.Entity("BookRight.Domain.Aggregates.Booking.Booking", b =>
                 {
@@ -141,30 +126,6 @@ namespace BookRight.Infrastructure.Migrations
                     b.ToTable("Therapists", (string)null);
                 });
 
-            modelBuilder.Entity("BookRight.Domain.Aggregates.TreatmentType.TreatmentType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("DurationMinutes")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MaxParticipants")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TreatmentType");
-                });
-
             modelBuilder.Entity("BookRight.Domain.Aggregates.Booking.Booking", b =>
                 {
                     b.HasOne("BookRight.Domain.Aggregates.CampaignDiscount.CampaignDiscount", null)
@@ -187,9 +148,6 @@ namespace BookRight.Infrastructure.Migrations
                                 .ValueGeneratedOnAdd()
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.Property<Guid?>("AddOnId")
-                                .HasColumnType("uniqueidentifier");
-
                             b1.Property<decimal>("BasePrice")
                                 .HasPrecision(18, 2)
                                 .HasColumnType("decimal(18,2)");
@@ -204,7 +162,9 @@ namespace BookRight.Infrastructure.Migrations
                                 .HasColumnType("int");
 
                             b1.Property<decimal>("FinalPrice")
-                                .HasPrecision(18, 2)
+                                .HasColumnType("decimal(18,2)");
+
+                            b1.Property<decimal>("SurchargePercent")
                                 .HasColumnType("decimal(18,2)");
 
                             b1.Property<Guid>("TherapistTreatmentTypeId")
@@ -212,20 +172,12 @@ namespace BookRight.Infrastructure.Migrations
 
                             b1.HasKey("Id");
 
-                            b1.HasIndex("AddOnId");
-
                             b1.HasIndex("BookingId");
 
                             b1.ToTable("BookingLines", (string)null);
 
-                            b1.HasOne("BookRight.Domain.Aggregates.AddOn.AddOn", "AddOn")
-                                .WithMany()
-                                .HasForeignKey("AddOnId");
-
                             b1.WithOwner()
                                 .HasForeignKey("BookingId");
-
-                            b1.Navigation("AddOn");
                         });
 
                     b.OwnsOne("BookRight.Domain.ValueObjects.TimeSlot", "TimeSlot", b1 =>
