@@ -12,16 +12,16 @@ namespace BookRight.UseCases.CreateBooking
     {
         private readonly IBookingRepository _bookingRepository;
         private readonly ICustomerRepository _customerRepository;
-
-        //private readonly IClinicRepository _clinicRepository;  ---LINJE TILFØJES IGEN NÅR ClinicRepository og interface er lavet
+        private readonly IClinicRepository _clinicRepository;
 
         public CreateBookingUseCase(
             IBookingRepository bookingRepository,
-            ICustomerRepository customerRepository)
+            ICustomerRepository customerRepository,
+            IClinicRepository clinicRepository)
         {
             _bookingRepository = bookingRepository;
 
-            // Tilføj: _clinicRepository = clinicRepository;
+            _clinicRepository = clinicRepository;
             _customerRepository = customerRepository;
 
         }
