@@ -9,8 +9,9 @@ namespace BookRight.Domain.Aggregates.Customer
         public FullName Name { get; private set; }
         public Email Email { get; private set; }
         public PhoneNumber Phone { get; private set; }
-
-        public ICollection<Booking.Booking> Bookings { get; private set; } = new List<Booking.Booking>();
+        public DateOnly DateOfBirth { get; private set; }
+        public string HealthNotes { get; private set; }
+        public Guid? PreferredTherapistId { get; private set; }
 
         private Customer() { } // Kræves af EF Core
 
