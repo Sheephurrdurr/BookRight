@@ -1,7 +1,7 @@
 ﻿using BookRight.Domain.ValueObjects;
 using BookRight.Domain.Aggregates.Booking;
 
-namespace BookRight.Domain.Aggregates.Customer
+namespace BookRight.Domain.Aggregates.Customer;
 
 public class Customer
 {
@@ -29,4 +29,4 @@ public class Customer
         HealthNotes = healthNotes;
         PreferredTherapistId = preferredTherapistId;
     }
-} }
+} 
