@@ -15,7 +15,7 @@ namespace BookRight.Domain.Aggregates.Therapist
         public bool IsWorking { get; private set; } 
 
 		private readonly List<TimeSlot> _blockedSlots = new(); //private field for at gemme timeslots til en therapist
-		public IReadOnlyCollection<TimeSlot> BlockedSlots => _blockedSlots.AsReadOnly(); //property for tilgang til timeslots
+		public IReadOnlyCollection<TimeSlot> BlockedSlots => _blockedSlots.AsReadOnly(); //property for tilgang til timeslots.
         private TherapistSchedule() { } // for EF core
 
 	  public static TherapistSchedule Create(
