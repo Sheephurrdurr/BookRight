@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BookRight.Domain.ValueObjects
 {
@@ -11,28 +9,87 @@ namespace BookRight.Domain.ValueObjects
         public Money(decimal value)
         {
             if (value < 0)
-                throw new ArgumentException("Money value cannot be negative.");
+                throw new ArgumentException("Money cannot be negative.");
 
             Value = value;
         }
 
-        public Money Add(Money other) => new Money(Value + other.Value);
+        public static Money operator +(Money left, Money right) //Adds two Money objects together
+            => new Money(left.Value + right.Value);
 
-        public Money Subtract(Money other)
+        public static Money operator -(Money left, Money right) //Subtracts one Money object from another
         {
-            if (other.Value > Value)
-                throw new InvalidOperationException("Cannot subtract more than the current value.");
+            if (right.Value > left.Value)
+                throw new InvalidOperationException(
+                    "Cannot subtract more than the current value.");
 
-            return new Money(Value - other.Value);
+            return new Money(left.Value - right.Value);
         }
 
-        public int CompareTo(Money? other)
+        public static Money operator *(Money money, decimal multiplier) //Multiplies Money by a decimal multiplier
+
         {
-            if (other is null) return 1;
+            if (multiplier < 0)
+                throw new ArgumentException(
+                    "Multiplier cannot be negative.");
+
+            return new Money(money.Value * multiplier);
+        }
+
+        public int CompareTo(Money? other)//Compares Money objects
+        {
+            if (other is null)
+                return 1;
+
             return Value.CompareTo(other.Value);
         }
 
-        public override string ToString() => $"{Value:0.00} kr";
-    }
+        public override bool Equals(object? obj) //Equality comparison
+        {
+            if (obj is Money other)
+                return Value == other.Value;
 
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{Value:0.00} kr";
+        }
+
+        public static bool operator ==(Money left, Money right) //Equality operators
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Money left, Money right)
+        {
+            return !left.Equals(right);
+        }
+
+        public static bool operator >(Money left, Money right) //Comparison operators
+        {
+            return left.Value > right.Value;
+        }
+
+        public static bool operator <(Money left, Money right)
+        {
+            return left.Value < right.Value;
+        }
+
+        public static bool operator >=(Money left, Money right)
+        {
+            return left.Value >= right.Value;
+        }
+
+        public static bool operator <=(Money left, Money right)
+        {
+            return left.Value <= right.Value;
+        }
+    }
 }

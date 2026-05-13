@@ -1,7 +1,8 @@
-﻿using BookRight.Domain.ValueObjects;
-using BookRight.Domain.Aggregates.Booking;
-using BookRight.Facade.DTOs.ValueObjectDTOs;
+﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Enums;
+using BookRight.Domain.ValueObjects;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
+using BookRight.Facade.DTOs.ValueObjectDTOs;
 using BookRight.Facade.Interfaces;
 using BookRight.UseCases.Interfaces;
 
@@ -12,16 +13,16 @@ namespace BookRight.UseCases.CreateBooking
     {
         private readonly IBookingRepository _bookingRepository;
         private readonly ICustomerRepository _customerRepository;
-
-        //private readonly IClinicRepository _clinicRepository;  ---LINJE TILFØJES IGEN NÅR ClinicRepository og interface er lavet
+        private readonly IClinicRepository _clinicRepository;
 
         public CreateBookingUseCase(
             IBookingRepository bookingRepository,
-            ICustomerRepository customerRepository)
+            ICustomerRepository customerRepository,
+            IClinicRepository clinicRepository)
         {
             _bookingRepository = bookingRepository;
 
-            // Tilføj: _clinicRepository = clinicRepository;
+            _clinicRepository = clinicRepository;
             _customerRepository = customerRepository;
 
         }
@@ -33,6 +34,11 @@ namespace BookRight.UseCases.CreateBooking
 
             if (customer == null)
                 throw new KeyNotFoundException($"Customer with Id: {request.CustomerId} findes ikke.");
+            
+            var clinic = await _clinicRepository.GetByIdAsync(request.ClinicId);
+
+            if (clinic == null)
+                throw new KeyNotFoundException($"Clinic with Id: {request.ClinicId} does not exist.");
 
             var timeSlot = new TimeSlot(request.TimeSlot.StartTime, request.TimeSlot.EndTime); 
 
@@ -43,6 +49,15 @@ namespace BookRight.UseCases.CreateBooking
                 request.ClinicId,
                 timeSlot
             );
+                request.Lines
+                .Select(lineRequest => new BookingLine(
+                lineRequest.TherapistTreatmentTypeId,
+                new Money(lineRequest.BasePrice),
+                0,
+                DiscountType.None
+                ))
+                .ToList()
+                .ForEach(booking.AddLine);
 
             // Gem i databasen
             await _bookingRepository.CreateAsync(booking);
@@ -50,10 +65,7 @@ namespace BookRight.UseCases.CreateBooking
             // Returener response DTO
             return new CreateBookingResponse
             {
-                BookingId = booking.Id,
-                CustomerId = booking.CustomerId,
-                TimeSlot = new TimeSlotDto(booking.TimeSlot.StartTime, booking.TimeSlot.EndTime),
-                Status = booking.Status.ToString()
+                Id = booking.Id
             };
         }
     }

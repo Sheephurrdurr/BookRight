@@ -6,8 +6,8 @@ using BookRight.UseCases.CreateCustomer;
 using BookRight.UseCases.CreateTherapist;
 using BookRight.UseCases.GetAllCustomers;
 using BookRight.UseCases.GetallTherapists;
-using BookRight.UseCases.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using BookRight.UseCases.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,9 +20,13 @@ builder.Services.AddDbContext<BookRightDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register DI
+// Register DI for repositories
 builder.Services.AddScoped<ITherapistRepository, TherapistRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IClinicRepository, ClinicRepository>();
+
+// Register DI for use cases
 builder.Services.AddScoped<ICreateTherapistUseCase, CreateTherapistUseCase>();
 builder.Services.AddScoped<ICreateCustomerUseCase, CreateCustomerUseCase>();
 builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();

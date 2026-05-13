@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BookRight.Domain.ValueObjects;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,8 +11,11 @@ namespace BookRight.Domain.Aggregates.TreatmentType
         public string Name { get; private set; }
         public int DurationMinutes { get; private set; }
         public int MaxParticipants { get; private set; }
+        public Money Price { get; private set; }
 
-        public TreatmentType(string name, int durationMinutes, int maxParticipants)
+
+
+        public TreatmentType(string name, int durationMinutes, int maxParticipants, Money price)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Treatment type name cannot be empty.", nameof(name));
@@ -19,10 +23,13 @@ namespace BookRight.Domain.Aggregates.TreatmentType
                 throw new ArgumentException("Duration must be greater than zero.", nameof(durationMinutes));
             if (maxParticipants <= 0)
                 throw new ArgumentException("Max participants must be greater than zero.", nameof(maxParticipants));
+
             Id = Guid.NewGuid();
             Name = name;
             DurationMinutes = durationMinutes;
             MaxParticipants = maxParticipants;
+            Price = price ?? throw new ArgumentNullException(nameof(price));
         }
+
     }
 }
