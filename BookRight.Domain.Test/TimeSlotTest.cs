@@ -59,10 +59,17 @@ namespace BookRight.Domain.Test
 		[Fact]
 		public void OverlapsWith_OverlappingTimeSlot_ReturnsTrue()
 		{
-			var timeSlot = new TimeSlot(_validStart, _validEnd);
-			var overlapping = new TimeSlot(_validStart.AddHours(1), _validEnd.AddHours(1));
+			//Arrange
+			var start = DateTime.Now;
+			var end = start.AddHours(2);
+			var timeSlot = new TimeSlot(start, end);
 
+			// Lav et overlap der starter midt i det første (1 to,e efter start)
+			var overlapping = new TimeSlot(start.AddHours(1), end.AddHours(1));
+
+			// Act Assert
 			Assert.True(timeSlot.OverlapsWith(overlapping));
+
 		}
 
 		[Fact]
