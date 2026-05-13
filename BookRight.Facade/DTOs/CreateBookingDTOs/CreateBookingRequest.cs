@@ -1,5 +1,4 @@
-﻿using BookRight.Facade.DTOs.CreateCustomerDTOs;
-using BookRight.Facade.DTOs.ValueObjectDTOs;
+﻿using BookRight.Facade.DTOs.ValueObjectDTOs;
 
 namespace BookRight.Facade.DTOs.CreateBookingDTOs
 {

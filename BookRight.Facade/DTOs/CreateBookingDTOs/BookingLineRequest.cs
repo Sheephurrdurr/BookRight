@@ -1,6 +1,6 @@
 ﻿using BookRight.Domain.ValueObjects;
 
-namespace BookRight.Facade.DTOs.CreateCustomerDTOs
+namespace BookRight.Facade.DTOs.CreateBookingDTOs
 {
     public record BookingLineRequest
     {
