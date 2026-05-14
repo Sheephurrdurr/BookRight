@@ -6,7 +6,7 @@ namespace BookRight.Domain.Aggregates.AddOn
     {
         public Guid Id { get; private set; }
 
-        public string Name { get; private set; } // Ex. "Weekendtillæg"
+        public string Name { get; private set; } = null!; //Name IS NOT nullable. It's a promise to the EF constructor, that name is set later. If not it results in a warning. // Ex. "Weekendtillæg"
 
         public decimal Percentage { get; private set; } //Ex. 15 %
 
@@ -14,7 +14,7 @@ namespace BookRight.Domain.Aggregates.AddOn
 
         public AddOn(string name, decimal percentage)
         {
-            if (string.IsNullOrWhiteSpace(name)) //Guard clauses. Valid State.
+            if (string.IsNullOrWhiteSpace(name)) //Guard clauses. Valid state.
                 throw new ArgumentException(
                     "Name cannot be empty.",
                     nameof(name));
