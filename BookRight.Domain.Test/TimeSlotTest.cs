@@ -97,7 +97,7 @@ namespace BookRight.Domain.Test
 		{
 			var timeSlot = new TimeSlot(_validStart, _validEnd);
 
-			Assert.True(timeSlot.OverlapsWith(_validEnd.AddHours(1), _validEnd.AddHours(3)));
+			Assert.True(timeSlot.OverlapsWith(_validEnd.AddHours(-1), _validEnd.AddHours(3)));
 
 		}
 
