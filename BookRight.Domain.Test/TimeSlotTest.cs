@@ -110,5 +110,23 @@ namespace BookRight.Domain.Test
 			Assert.Equal($"{_validStart} - {_validEnd}", timeSlot.ToString());
 
 		}
-	}
+
+        [Fact]
+        public void OverlapsWith_OtherStartsBeforeAndEndsInside_ReturnsTrue()
+        {
+            var timeSlot = new TimeSlot(_validStart, _validEnd);
+            var other = new TimeSlot(_validStart.AddHours(-1), _validStart.AddHours(1));
+
+            Assert.True(timeSlot.OverlapsWith(other));
+        }
+
+        [Fact]
+        public void OverlapsWith_OtherCoversEntireTimeSlot_ReturnsTrue()
+        {
+            var timeSlot = new TimeSlot(_validStart, _validEnd);
+            var other = new TimeSlot(_validStart.AddHours(-1), _validEnd.AddHours(1));
+
+            Assert.True(timeSlot.OverlapsWith(other));
+        }
+    }
 }
