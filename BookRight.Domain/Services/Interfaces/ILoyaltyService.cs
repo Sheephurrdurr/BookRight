@@ -10,7 +10,7 @@ namespace BookRight.Domain.Services.Interfaces
             IEnumerable<Booking> bookings,
             DateTime currentDate);
 
-        LoyaltyLevel GetLoyaltyLevel(//Determines the customer's loyalty level
+        LoyaltyLevelType GetLoyaltyLevel(//Determines the customer's loyalty level
             IEnumerable<Booking> bookings,
             DateTime currentDate);
     }
