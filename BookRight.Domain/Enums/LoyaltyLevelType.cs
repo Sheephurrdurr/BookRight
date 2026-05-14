@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BookRight.Domain.Enums
 {
-	public enum LoyalityLevelType
+	public enum LoyaltyLevelType
 	{
 	 None, // under 3,000 kr. ingen rabat.
 	 Bronze, // mellem 3,000 kr. og 10,000 kr. 5% rabat.

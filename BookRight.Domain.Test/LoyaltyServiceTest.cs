@@ -48,7 +48,7 @@ namespace BookRight.Domain.Test
             var result = _service.GetLoyaltyLevel(bookings, currentDate);
 
             // Assert
-            Assert.Equal(LoyaltyLevel.None, result);
+            Assert.Equal(LoyaltyLevelType.None, result);
         }
 
         // Test 4: Customer with 3000 kr. should get Bronze
@@ -66,7 +66,7 @@ namespace BookRight.Domain.Test
             var result = _service.GetLoyaltyLevel(bookings, currentDate);
 
             // Assert
-            Assert.Equal(LoyaltyLevel.Bronze, result);
+            Assert.Equal(LoyaltyLevelType.Bronze, result);
         }
 
         // Test 5: Customer with 10000 kr. should still get Bronze
@@ -84,7 +84,7 @@ namespace BookRight.Domain.Test
             var result = _service.GetLoyaltyLevel(bookings, currentDate);
 
             // Assert
-            Assert.Equal(LoyaltyLevel.Bronze, result);
+            Assert.Equal(LoyaltyLevelType.Bronze, result);
         }
 
         // Test 6: Customer above 10000 kr. should get Silver
@@ -102,7 +102,7 @@ namespace BookRight.Domain.Test
             var result = _service.GetLoyaltyLevel(bookings, currentDate);
 
             // Assert
-            Assert.Equal(LoyaltyLevel.Silver, result);
+            Assert.Equal(LoyaltyLevelType.Silver, result);
         }
 
         // Test 7: Customer with 25000 kr. should still get Silver
@@ -120,7 +120,7 @@ namespace BookRight.Domain.Test
             var result = _service.GetLoyaltyLevel(bookings, currentDate);
 
             // Assert
-            Assert.Equal(LoyaltyLevel.Silver, result);
+            Assert.Equal(LoyaltyLevelType.Silver, result);
         }
 
         // Test 8: Customer above 25000 kr. should get Gold
@@ -138,7 +138,7 @@ namespace BookRight.Domain.Test
             var result = _service.GetLoyaltyLevel(bookings, currentDate);
 
             // Assert
-            Assert.Equal(LoyaltyLevel.Gold, result);
+            Assert.Equal(LoyaltyLevelType.Gold, result);
         }
 
         // Test 9: Only completed bookings should count
