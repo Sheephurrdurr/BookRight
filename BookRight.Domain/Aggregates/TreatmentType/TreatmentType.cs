@@ -12,7 +12,8 @@ namespace BookRight.Domain.Aggregates.TreatmentType
         public int DurationMinutes { get; private set; }
         public int MaxParticipants { get; private set; }
         public Money Price { get; private set; } = null!; //Not nullable
-        private TreatmentType() { }
+
+        private TreatmentType() { } //EF core constructor
 
 
         public TreatmentType(string name, int durationMinutes, int maxParticipants, Money price)
