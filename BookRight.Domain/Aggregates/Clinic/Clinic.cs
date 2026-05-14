@@ -5,9 +5,9 @@ namespace BookRight.Domain.Aggregates.Clinic
     public class Clinic
     {
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public Address Address { get; private set; }
-        public PhoneNumber Phone { get; private set; }
+        public string Name { get; private set; } = null!; //Not nullable, but a promise to the constructor, that the name is set later. Fixes warning.
+        public Address Address { get; private set; } = null!; //Not nullable
+        public PhoneNumber Phone { get; private set; } = null!; //Not nullable
         public int NumTreatmentRooms { get; private set; }
 
         // Privat dictionary, som kun Clinic-klassen selv kan ændre direkte

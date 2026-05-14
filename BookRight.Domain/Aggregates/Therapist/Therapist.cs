@@ -2,12 +2,12 @@
 
 namespace BookRight.Domain.Aggregates.Therapist
 {
-    public record Therapist
+    public class Therapist
     {
         public Guid Id { get; private set; }
-        public FullName Name { get; private set; }
-        public Email Email { get; private set; } 
-        public string Specialization { get; private set; } 
+        public FullName Name { get; private set; } = null!;//Not nullable. It's a promise to the constructor, that property is set later. Fixes warning. 
+        public Email Email { get; private set; } = null!;
+        public string Specialization { get; private set; } = null!;
 
         private Therapist() { } // Kræves af EF Core
 

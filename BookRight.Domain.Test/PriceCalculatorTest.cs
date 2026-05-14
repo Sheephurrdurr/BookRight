@@ -15,7 +15,7 @@ namespace BookRight.Domain.Test
         {
             // Arrange
             var treatmentType = new TreatmentType("Massage", 60, 1, new Money(300));
-            var calculator = new PriceCalculator();
+            var calculator = new PriceCalculatorService();
 
             // Act
             var result = calculator.CalculateBasePrice(treatmentType);
@@ -41,7 +41,7 @@ namespace BookRight.Domain.Test
                 new AddOn("Weekend surcharge", 15)
             };
 
-            var calculator = new PriceCalculator();
+            var calculator = new PriceCalculatorService();
 
             // Act
             var result = calculator.ApplyAddOns(basePrice, addOns);
@@ -57,7 +57,7 @@ namespace BookRight.Domain.Test
             // Arrange
             var basePrise = new Money(300);
             var addOns = new List<AddOn>();
-            var calculator = new PriceCalculator();
+            var calculator = new PriceCalculatorService();
 
             // Act
             var result = calculator.ApplyAddOns(basePrise, addOns);
@@ -75,7 +75,7 @@ namespace BookRight.Domain.Test
             // 10% discount
             decimal percentage = 10;
 
-            var calculator = new PriceCalculator();
+            var calculator = new PriceCalculatorService();
 
             // Act
             var result = calculator.ApplyDiscount(basePrice, percentage);
@@ -95,7 +95,7 @@ namespace BookRight.Domain.Test
             // Arrange
             var basePrice = new Money(400);
 
-            var calculator = new PriceCalculator();
+            var calculator = new PriceCalculatorService();
 
             // Act
             var result = calculator.ApplyDiscount(basePrice, 0);

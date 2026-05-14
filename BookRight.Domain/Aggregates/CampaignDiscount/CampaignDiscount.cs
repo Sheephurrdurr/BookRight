@@ -4,10 +4,10 @@ using System.Text;
 
 namespace BookRight.Domain.Aggregates.CampaignDiscount
 {
-    public record CampaignDiscount
+    public class CampaignDiscount
     {
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
+        public string Name { get; private set; } = null!; //A promise to the EF constructor, that the property is set later. If not it results in a warning.
         public decimal DiscountPercent { get; private set; }
         public DateOnly StartDate { get; private set; }
         public DateOnly EndDate { get; private set; }
@@ -15,7 +15,6 @@ namespace BookRight.Domain.Aggregates.CampaignDiscount
 
         private CampaignDiscount() //EF Core constructor
         {
-            Name = string.Empty; //Name må ikke være null. 
         } 
 
 
