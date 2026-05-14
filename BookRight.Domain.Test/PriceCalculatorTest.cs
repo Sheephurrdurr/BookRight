@@ -55,12 +55,12 @@ namespace BookRight.Domain.Test
         public void ApplyAddOns_NoAddOns_ReturnsBasePrice()
         {
             // Arrange
-            var basePrise = new Money(300);
+            var basePrice = new Money(300);
             var addOns = new List<AddOn>();
             var calculator = new PriceCalculatorService();
 
             // Act
-            var result = calculator.ApplyAddOns(basePrise, addOns);
+            var result = calculator.ApplyAddOns(basePrice, addOns);
 
             // Assert
             Assert.Equal(new Money(300), result);
