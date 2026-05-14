@@ -46,7 +46,7 @@ namespace BookRight.Domain.Test
 
 		}
 
-		//Duration test
+		//Duration Test
 		[Fact]
 		public void Duration_ReturnsCorrectTimeSpan()
 		{
