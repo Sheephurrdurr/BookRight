@@ -11,13 +11,13 @@ namespace BookRight.UseCases.CreateBooking
 {
     public class CreateBookingUseCase : ICreateBookingUseCase
     {
-        private readonly IBookingRepository _bookingRepository;
-        private readonly ICustomerRepository _customerRepository;
+        private readonly Interfaces.IBookingRepository _bookingRepository;
+        private readonly Interfaces.ICustomerRepository _customerRepository;
         private readonly IClinicRepository _clinicRepository;
 
         public CreateBookingUseCase(
-            IBookingRepository bookingRepository,
-            ICustomerRepository customerRepository,
+            Interfaces.IBookingRepository bookingRepository,
+            Interfaces.ICustomerRepository customerRepository,
             IClinicRepository clinicRepository)
         {
             _bookingRepository = bookingRepository;

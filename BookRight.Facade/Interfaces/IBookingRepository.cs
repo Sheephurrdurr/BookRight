@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BookRight.Facade.Interfaces
 {
-	public interface IBookingRepsitory
+	public interface IBookingRepository
 	{
 		Task<Booking?> GetByIdAsync(Guid bookingId);
 		Task<IReadOnlyList<Booking>> GetAllAsync(Guid customerId);
