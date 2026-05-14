@@ -108,5 +108,31 @@ namespace BookRight.Domain.Test
             Assert.Equal("0% rabat", result.DiscountName);
         }
 
+        [Fact]
+        public void ApplyAddOns_WithSingle15PercentSurcharge_Adds15Percent()
+        {
+            var calculator = new PriceCalculatorService();
+            var basePrice = new Money(300);
+            var addOns = new List<AddOn>
+    {
+        new AddOn("Weekend surcharge", 15)
+    };
+
+            var result = calculator.ApplyAddOns(basePrice, addOns);
+
+            Assert.Equal(new Money(345), result);
+        }
+
+        [Fact]
+        public void ApplyDiscount_With100Percent_ReturnsZero()
+        {
+            var calculator = new PriceCalculatorService();
+            var basePrice = new Money(400);
+
+            var result = calculator.ApplyDiscount(basePrice, 100);
+
+            Assert.Equal(new Money(0), result.DiscountedPrice);
+        }
+
     }
 }
