@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BookRight.Domain.ValueObjects
 {
-	public record Address
+	public sealed record Address
 	{
 	  public string Street { get; private set; }
 	  public string City { get; private set; }
@@ -25,3 +25,6 @@ namespace BookRight.Domain.ValueObjects
 		}
 	}
 }
+// public  -> Kan bruges fra andre layers/projekter.
+// sealed  -> Kan ikke nedarves.
+// record  -> Sammenlignes på værdier i stedet for reference.
