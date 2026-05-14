@@ -11,7 +11,7 @@ namespace BookRight.UseCase.Test
     // istedenfor, at måtte kontakte en database, for at kunne teste dette, laver man en mock
     // med en "dummy therapist", i dette tilfeldet, for at teste med.. måske :,) 
 
-    public class CreateTherapistUseCaseTests
+    public class CreateTherapistUseCaseTest
     {
         private readonly Mock<ITherapistRepository> _mockTherapistRepository = new(); //Falsk copy af vores therapist repo
 
