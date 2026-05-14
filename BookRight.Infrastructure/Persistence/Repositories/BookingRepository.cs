@@ -13,10 +13,10 @@ namespace BookRight.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<Booking?> GetByIdAsync(Guid bookingId)
+        public async Task<Booking?> GetByIdAsync(Guid bookingId) // async/await is used because database operations are I/O-bound and should not block the executing thread.
         {
             return await _context.Bookings
-                .Include(b => b.Lines)
+                .Include(b => b.Lines)//Include() performs eager loading of related booking lines.
                 .FirstOrDefaultAsync(b => b.Id == bookingId);
         }
 
