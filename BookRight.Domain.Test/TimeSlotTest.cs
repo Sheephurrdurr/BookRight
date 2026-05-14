@@ -101,8 +101,9 @@ namespace BookRight.Domain.Test
 
 		}
 
-		// ToString test
-		public void ToString_ReturnsCorrectFormat()
+        // ToString test
+        [Fact]
+        public void ToString_ReturnsCorrectFormat()
 		{
 			var timeSlot = new TimeSlot(_validStart, _validEnd);
 
