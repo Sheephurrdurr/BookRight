@@ -1,17 +1,22 @@
 using BookRight.BlazorUI.Components;
-using BookRight.Facade.Interfaces;
 using BookRight.Infrastructure.Persistence;
 using BookRight.Infrastructure.Persistence.Repositories;
 using BookRight.Infrastructure.Repositories;
+using BookRight.Infrastructure;
+
 using BookRight.UseCases.CreateCustomer;
 using BookRight.UseCases.CreateTherapist;
 using BookRight.UseCases.GetAllCustomers;
 using BookRight.UseCases.GetallTherapists;
-using BookRight.UseCases.GetAllClinics; 
+using BookRight.UseCases.GetAllClinics;
+using BookRight.UseCases.CreateBooking;
+
 using BookRight.UseCases.Interfaces;
+
 using Microsoft.EntityFrameworkCore;
+using BookRight.Facade.Interfaces;
 using BookRight.Facade.Interfaces.ClinicsUseCases;
-using BookRight.Infrastructure; 
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +45,7 @@ builder.Services.AddScoped<ICreateCustomerUseCase, CreateCustomerUseCase>();
 builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
 builder.Services.AddScoped<IGetAllCustomersUseCase, GetAllCustomersUseCase>();
 builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
+builder.Services.AddScoped<ICreateBookingUseCase, CreateBookingUseCase>();
 
 var app = builder.Build();
 
