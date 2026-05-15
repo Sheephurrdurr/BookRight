@@ -1,4 +1,6 @@
-﻿
+﻿using BookRight.Domain.Aggregates.Clinic;
+using BookRight.Domain.ValueObjects;
+using BookRight.Infrastructure.Persistence;
 
 namespace BookRight.Infrastructure
 {
@@ -13,18 +15,24 @@ namespace BookRight.Infrastructure
 
         public async Task SeedAsync()
         {
-            await _context.SeedAsync();
+            await SeedClinicsAsync();
         }
 
         private async Task SeedClinicsAsync()
         {
-            if (_context.Clinics != null) 
-            {
-                var clinic1 = new Clinic(
-                    "Klinik 1",
-                    new Address("Gade 1", "By", "1234"),
-                    new Domain.ValueObjects     
-            }
+            if (_context.Clinics.Any()) return; 
+            
+            var clinic1 = new Clinic(
+                "Klinik 1",
+                new Address("Gade 1", "By", "1234"),
+                new PhoneNumber("12345678"),
+                5
+            );
+
+            await _context.Clinics.AddAsync(clinic1);
+            await _context.SaveChangesAsync();
+
+            
         }
     }
 }
