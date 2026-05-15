@@ -4,7 +4,7 @@ using System.Text;
 using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.ValueObjects;
 using Xunit;
-
+using BookRight.Domain.Enums;
 namespace BookRight.Domain.Test
 {
 	public class BookingTest
@@ -30,7 +30,7 @@ namespace BookRight.Domain.Test
 
 		}
 
-        // Test 2: Booking må ikke oprettes uden CusotmerId
+        // Test 2: Booking må ikke oprettes uden CustomerId
         [Fact]
         public void Create_EmptyCustomerId_ShouldThrowException()
         {
@@ -87,7 +87,56 @@ namespace BookRight.Domain.Test
                 new Booking(id, customerId, clinicId, timeSlot!));
         }
 
+        // Test 5: Ny booking får status Confirmed
+        [Fact]
+        public void Create_ValidBooking_ShouldHaveConfirmedStatus()
+        {
+            // Arrange
+            var booking = CreateValidBooking();
 
+            // Act & Assert
+            Assert.Equal(BookingStatus.Confirmed, booking.Status);
+        }
+
+        // Test 6: Booking kan annulleres
+        [Fact]
+        public void Cancel_Booking_ShouldSetStatusToCancelled()
+        {
+            // Arrange
+            var booking = CreateValidBooking();
+
+            // Act
+            booking.Cancel();
+
+            // Assert
+            Assert.Equal(BookingStatus.Confirmed, booking.Status);
+        }
+
+        // Test 7: Booking må ikke få tom CampaignDiscountId
+        [Fact]
+        public void ApplyCampaignDiscount_EmptyId_ShouldThrowException()
+        {
+            // Arrange
+            var booking = CreateValidBooking();
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() =>
+                booking.ApplyCampaignDiscount(Guid.Empty));
+        }
+
+        // Hjælpemetode som opretter en valid Booking med gyldige testdata
+        private static Booking CreateValidBooking()
+        {
+            var timeSlot = new TimeSlot(
+                DateTime.Today.AddDays(1).AddHours(10),
+                DateTime.Today.AddDays(1).AddHours(11));
+
+            return new Booking(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                timeSlot);
+        }
 
     }
 
