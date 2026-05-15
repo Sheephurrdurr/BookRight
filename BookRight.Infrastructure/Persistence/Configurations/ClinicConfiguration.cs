@@ -30,24 +30,5 @@ public class ClinicConfiguration : IEntityTypeConfiguration<Clinic>
                 .HasMaxLength(20)
                 .IsRequired();
         });
-
-        builder.OwnsMany<OpeningHours>("_openingHours", openingHours =>
-        {
-            openingHours.ToTable("ClinicOpeningHours");
-
-            openingHours.WithOwner()
-                .HasForeignKey("ClinicId");
-
-            openingHours.Property<DayOfWeek>("DayOfWeek")
-                .IsRequired();
-
-            openingHours.Property(o => o.OpenTime)
-                .IsRequired();
-
-            openingHours.Property(o => o.CloseTime)
-                .IsRequired();
-
-            openingHours.HasKey("ClinicId", "DayOfWeek");
-        });
     }
 }
