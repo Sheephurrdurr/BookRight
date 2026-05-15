@@ -1,4 +1,5 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.CampaignDiscount;
 using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.Aggregates.Therapist;
@@ -14,6 +15,7 @@ namespace BookRight.Infrastructure.Persistence
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<TreatmentType> TreatmentTypes { get; set; }
+        public DbSet<CampaignDiscount> CampaignDiscounts { get; set; }
 
         public BookRightDbContext(DbContextOptions<BookRightDbContext> options)
             : base(options)
