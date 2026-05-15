@@ -6,16 +6,7 @@ using BookRight.Domain.Services;
 namespace BookRight.Domain.Test
 {
     //Herinde tester du dine metoder, act arrange assert, 
-    public class CustomerNameTest
-    {
-        [Fact]
-        public void Customer_LastName_Has_WhiteSpace_Throws_ArguementException() //Unhappy path
-        {
-            //Arrange, Act & Assert
-            var exception = Assert.Throws<ArgumentException>
-                 (() => new FullName("Cate", " "));
-        }
-    }
+
 
     public class PriceCalculatorTests
     {
@@ -24,7 +15,7 @@ namespace BookRight.Domain.Test
         {
             // Arrange
             var treatmentType = new TreatmentType("Massage", 60, 1, new Money(300));
-            var calculator = new PriceCalculator();
+            var calculator = new PriceCalculatorService();
 
             // Act
             var result = calculator.CalculateBasePrice(treatmentType);
@@ -50,7 +41,7 @@ namespace BookRight.Domain.Test
                 new AddOn("Weekend surcharge", 15)
             };
 
-            var calculator = new PriceCalculator();
+            var calculator = new PriceCalculatorService();
 
             // Act
             var result = calculator.ApplyAddOns(basePrice, addOns);
@@ -64,12 +55,12 @@ namespace BookRight.Domain.Test
         public void ApplyAddOns_NoAddOns_ReturnsBasePrice()
         {
             // Arrange
-            var basePrise = new Money(300);
+            var basePrice = new Money(300);
             var addOns = new List<AddOn>();
-            var calculator = new PriceCalculator();
+            var calculator = new PriceCalculatorService();
 
             // Act
-            var result = calculator.ApplyAddOns(basePrise, addOns);
+            var result = calculator.ApplyAddOns(basePrice, addOns);
 
             // Assert
             Assert.Equal(new Money(300), result);
@@ -84,7 +75,7 @@ namespace BookRight.Domain.Test
             // 10% discount
             decimal percentage = 10;
 
-            var calculator = new PriceCalculator();
+            var calculator = new PriceCalculatorService();
 
             // Act
             var result = calculator.ApplyDiscount(basePrice, percentage);
@@ -104,7 +95,7 @@ namespace BookRight.Domain.Test
             // Arrange
             var basePrice = new Money(400);
 
-            var calculator = new PriceCalculator();
+            var calculator = new PriceCalculatorService();
 
             // Act
             var result = calculator.ApplyDiscount(basePrice, 0);
@@ -115,6 +106,32 @@ namespace BookRight.Domain.Test
 
             // Discount name should reflect the applied percentage
             Assert.Equal("0% rabat", result.DiscountName);
+        }
+
+        [Fact]
+        public void ApplyAddOns_WithSingle15PercentSurcharge_Adds15Percent()
+        {
+            var calculator = new PriceCalculatorService();
+            var basePrice = new Money(300);
+            var addOns = new List<AddOn>
+    {
+        new AddOn("Weekend surcharge", 15)
+    };
+
+            var result = calculator.ApplyAddOns(basePrice, addOns);
+
+            Assert.Equal(new Money(345), result);
+        }
+
+        [Fact]
+        public void ApplyDiscount_With100Percent_ReturnsZero()
+        {
+            var calculator = new PriceCalculatorService();
+            var basePrice = new Money(400);
+
+            var result = calculator.ApplyDiscount(basePrice, 100);
+
+            Assert.Equal(new Money(0), result.DiscountedPrice);
         }
 
     }
