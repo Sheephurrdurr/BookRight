@@ -23,7 +23,7 @@ builder.Services.AddDbContext<BookRightDbContext>(options =>
 // Register DI for repositories
 builder.Services.AddScoped<ITherapistRepository, TherapistRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<BookRight.UseCases.Interfaces.IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IClinicRepository, ClinicRepository>();
 
 // Register DI for use cases

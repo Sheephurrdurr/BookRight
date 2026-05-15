@@ -7,9 +7,9 @@ namespace BookRight.UseCases.GetAllCustomers
     public class GetAllCustomersUseCase : IGetAllCustomersUseCase
 
     {
-        private readonly ICustomerRepository _repository;
+        private readonly Interfaces.ICustomerRepository _repository;
 
-        public GetAllCustomersUseCase(ICustomerRepository repository)
+        public GetAllCustomersUseCase(Interfaces.ICustomerRepository repository)
         {
             _repository = repository;
         }

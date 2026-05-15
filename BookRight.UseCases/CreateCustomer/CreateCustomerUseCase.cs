@@ -8,9 +8,9 @@ namespace BookRight.UseCases.CreateCustomer
 {
     public class CreateCustomerUseCase : ICreateCustomerUseCase
     {
-        private readonly ICustomerRepository _repository;
+        private readonly Interfaces.ICustomerRepository _repository;
 
-        public CreateCustomerUseCase(ICustomerRepository repository)
+        public CreateCustomerUseCase(Interfaces.ICustomerRepository repository)
         {
             _repository = repository;
         }
