@@ -7,8 +7,10 @@ using BookRight.UseCases.CreateCustomer;
 using BookRight.UseCases.CreateTherapist;
 using BookRight.UseCases.GetAllCustomers;
 using BookRight.UseCases.GetallTherapists;
+using BookRight.UseCases.GetAllClinics; 
 using BookRight.UseCases.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using BookRight.Facade.Interfaces.ClinicsUseCases;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,7 @@ builder.Services.AddScoped<ICreateTherapistUseCase, CreateTherapistUseCase>();
 builder.Services.AddScoped<ICreateCustomerUseCase, CreateCustomerUseCase>();
 builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
 builder.Services.AddScoped<IGetAllCustomersUseCase, GetAllCustomersUseCase>();
+builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
 
 var app = builder.Build();
 
