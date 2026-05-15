@@ -109,7 +109,7 @@ namespace BookRight.Domain.Test
             booking.Cancel();
 
             // Assert
-            Assert.Equal(BookingStatus.Confirmed, booking.Status);
+            Assert.Equal(BookingStatus.Cancelled, booking.Status);
         }
 
         // Test 7: Booking må ikke få tom CampaignDiscountId
