@@ -23,4 +23,8 @@
     <ProjectReference Include="..\BookRight.Domain\BookRight.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
+
 </Project>
