@@ -11,6 +11,7 @@ using BookRight.UseCases.GetAllClinics;
 using BookRight.UseCases.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using BookRight.Facade.Interfaces.ClinicsUseCases;
+using BookRight.Infrastructure; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,9 @@ builder.Services.AddRazorComponents()
 builder.Services.AddDbContext<BookRightDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register DI for DbSeeder
+builder.Services.AddScoped<DbSeeder>();
 
 // Register DI for repositories
 builder.Services.AddScoped<ITherapistRepository, TherapistRepository>();
@@ -38,6 +42,13 @@ builder.Services.AddScoped<IGetAllCustomersUseCase, GetAllCustomersUseCase>();
 builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dbSeeder = services.GetRequiredService<DbSeeder>();
+    await dbSeeder.SeedAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
