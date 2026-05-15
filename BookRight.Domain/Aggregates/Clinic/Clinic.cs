@@ -10,11 +10,11 @@ namespace BookRight.Domain.Aggregates.Clinic
         public PhoneNumber Phone { get; private set; } = null!; //Not nullable
         public int NumTreatmentRooms { get; private set; }
 
-        // Privat dictionary, som kun Clinic-klassen selv kan ændre direkte
-        private Dictionary<DayOfWeek, OpeningHours> _openingHours = new();
+        // Privat liste, som kun Clinic-klassen selv kan ændre direkte
+        private readonly List<ClinicOpeningHour> _openingHours = new();
 
         // Andre klasser kan kun læse åbningstiderne, ikke ændre dem direkte
-        public IReadOnlyDictionary<DayOfWeek, OpeningHours> OpeningHours => _openingHours;
+        public IReadOnlyCollection<ClinicOpeningHour> OpeningHours => _openingHours.AsReadOnly();
 
         private Clinic() { }
 
@@ -39,18 +39,5 @@ namespace BookRight.Domain.Aggregates.Clinic
             Phone = phone;
             NumTreatmentRooms = numTreatmentRooms;
         }
-
-        // Metoden til at tilføje eller ændre åbningstider for en bestemt ugedag
-        public void SetOpeningHours(DayOfWeek day, OpeningHours openingHours)
-        {
-            if (openingHours == null)
-                throw new ArgumentNullException(nameof(openingHours));
-
-            _openingHours[day] = openingHours;
-        }
-
-        public IReadOnlyDictionary<DayOfWeek, OpeningHours> GetOpeningHours()
-            => _openingHours; // Cool shorthand for at returnere
-
     }
 }
