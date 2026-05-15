@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookRight.Infrastructure.Migrations
 {
     [DbContext(typeof(BookRightDbContext))]
-    [Migration("20260515184210_IntialCreate_783oadfgylling")]
-    partial class IntialCreate_783oadfgylling
+    [Migration("20260515200656_InitialCreatada_331265f344")]
+    partial class InitialCreatada_331265f344
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -172,6 +172,28 @@ namespace BookRight.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Therapists", (string)null);
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.TherapistTreatmentType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("TherapistId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TreatmentTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TherapistId");
+
+                    b.ToTable("TherapistTreatmentType");
                 });
 
             modelBuilder.Entity("BookRight.Domain.Aggregates.TreatmentType.TreatmentType", b =>
@@ -467,9 +489,23 @@ namespace BookRight.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.TherapistTreatmentType", b =>
+                {
+                    b.HasOne("BookRight.Domain.Aggregates.Therapist.Therapist", null)
+                        .WithMany("Qualifications")
+                        .HasForeignKey("TherapistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BookRight.Domain.Aggregates.Clinic.Clinic", b =>
                 {
                     b.Navigation("OpeningHours");
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.Therapist", b =>
+                {
+                    b.Navigation("Qualifications");
                 });
 #pragma warning restore 612, 618
         }

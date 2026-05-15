@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookRight.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class IntialCreate_783oadfgylling : Migration
+    public partial class InitialCreatada_331265f344 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -154,6 +154,26 @@ namespace BookRight.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TherapistTreatmentType",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TherapistId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TreatmentTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TherapistTreatmentType", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TherapistTreatmentType_Therapists_TherapistId",
+                        column: x => x.TherapistId,
+                        principalTable: "Therapists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BookingLines",
                 columns: table => new
                 {
@@ -206,6 +226,11 @@ namespace BookRight.Infrastructure.Migrations
                 name: "IX_ClinicOpeningHour_ClinicId",
                 table: "ClinicOpeningHour",
                 column: "ClinicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TherapistTreatmentType_TherapistId",
+                table: "TherapistTreatmentType",
+                column: "TherapistId");
         }
 
         /// <inheritdoc />
@@ -218,7 +243,7 @@ namespace BookRight.Infrastructure.Migrations
                 name: "ClinicOpeningHour");
 
             migrationBuilder.DropTable(
-                name: "Therapists");
+                name: "TherapistTreatmentType");
 
             migrationBuilder.DropTable(
                 name: "TreatmentTypes");
@@ -231,6 +256,9 @@ namespace BookRight.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Clinics");
+
+            migrationBuilder.DropTable(
+                name: "Therapists");
 
             migrationBuilder.DropTable(
                 name: "CampaignDiscounts");

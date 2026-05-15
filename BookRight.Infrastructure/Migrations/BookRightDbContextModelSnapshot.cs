@@ -171,6 +171,28 @@ namespace BookRight.Infrastructure.Migrations
                     b.ToTable("Therapists", (string)null);
                 });
 
+            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.TherapistTreatmentType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("TherapistId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TreatmentTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TherapistId");
+
+                    b.ToTable("TherapistTreatmentType");
+                });
+
             modelBuilder.Entity("BookRight.Domain.Aggregates.TreatmentType.TreatmentType", b =>
                 {
                     b.Property<Guid>("Id")
@@ -464,9 +486,23 @@ namespace BookRight.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.TherapistTreatmentType", b =>
+                {
+                    b.HasOne("BookRight.Domain.Aggregates.Therapist.Therapist", null)
+                        .WithMany("Qualifications")
+                        .HasForeignKey("TherapistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BookRight.Domain.Aggregates.Clinic.Clinic", b =>
                 {
                     b.Navigation("OpeningHours");
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.Therapist", b =>
+                {
+                    b.Navigation("Qualifications");
                 });
 #pragma warning restore 612, 618
         }
