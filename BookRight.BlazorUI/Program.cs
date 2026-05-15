@@ -1,13 +1,14 @@
 using BookRight.BlazorUI.Components;
 using BookRight.Facade.Interfaces;
-using BookRight.Infrastructure.Persistence.Repositories;
 using BookRight.Infrastructure.Persistence;
+using BookRight.Infrastructure.Persistence.Repositories;
+using BookRight.Infrastructure.Repositories;
 using BookRight.UseCases.CreateCustomer;
 using BookRight.UseCases.CreateTherapist;
 using BookRight.UseCases.GetAllCustomers;
 using BookRight.UseCases.GetallTherapists;
-using Microsoft.EntityFrameworkCore;
 using BookRight.UseCases.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,8 +24,9 @@ builder.Services.AddDbContext<BookRightDbContext>(options =>
 // Register DI for repositories
 builder.Services.AddScoped<ITherapistRepository, TherapistRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<BookRight.UseCases.Interfaces.IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IClinicRepository, ClinicRepository>();
+builder.Services.AddScoped<ITreatmentTypeRepository, TreatmentTypeRepository>();
 
 // Register DI for use cases
 builder.Services.AddScoped<ICreateTherapistUseCase, CreateTherapistUseCase>();

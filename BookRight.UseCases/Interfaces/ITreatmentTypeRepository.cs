@@ -7,7 +7,7 @@ namespace BookRight.UseCases.Interfaces
 {
 	public interface ITreatmentTypeRepository
 	{
-		Task<TreatmentType?> GetByIdAsync(int id);
+		Task<TreatmentType?> GetByIdAsync(Guid id);
 		Task<IEnumerable<TreatmentType>> GetAllAsync();
 		Task AddAsync(TreatmentType treatmentType);
 		void Update(TreatmentType treatmentType);
