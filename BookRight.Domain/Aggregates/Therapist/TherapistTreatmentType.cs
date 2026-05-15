@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BookRight.Domain.Aggregates.TreatmentType
+﻿
+namespace BookRight.Domain.Aggregates.Therapist
 {
     public class TherapistTreatmentType //Ingen configurations endnu...
     {
-        public Guid id { get; private set; }
-        public Guid therapistId { get; private set; }
-        public Guid treatmentTypeId { get; private set; }
-        public decimal basePrice { get; private set; }
+        public Guid Id { get; private set; }
+        public Guid TherapistId { get; private set; }
+        public Guid TreatmentTypeId { get; private set; }
+        public decimal BasePrice { get; private set; }
        
-        public TherapistTreatmentType () { }
+        private TherapistTreatmentType () { }
 
         public TherapistTreatmentType(Guid therapistId, Guid treatmentTypeId, decimal basePrice)
         {
@@ -24,10 +21,10 @@ namespace BookRight.Domain.Aggregates.TreatmentType
             if (basePrice <= 0)
                 throw new ArgumentException("Prisen skal være højere end nul.", nameof(basePrice));
 
-            id = Guid.NewGuid();
-            this.therapistId = therapistId;
-            this.treatmentTypeId = treatmentTypeId;
-            this.basePrice = basePrice;
+            Id = Guid.NewGuid();
+            TherapistId = therapistId;
+            TreatmentTypeId = treatmentTypeId;
+            BasePrice = basePrice;
         }
     }
 }
