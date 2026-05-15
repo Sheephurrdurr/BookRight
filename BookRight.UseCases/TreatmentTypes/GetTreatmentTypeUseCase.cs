@@ -17,7 +17,7 @@ namespace BookRight.UseCases.TreatmentTypes
 			_repository = repository;
 		}
 
-		public async Task<TreatmentTypeDto?> Excute(int id)
+		public async Task<TreatmentTypeDto?> Excute(Guid id)
 		{
 			var treatmentType = await _repository.GetByIdAsync(id);
 

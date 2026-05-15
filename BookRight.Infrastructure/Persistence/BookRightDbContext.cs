@@ -2,6 +2,7 @@
 using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.Aggregates.Therapist;
+using BookRight.Domain.Aggregates.TreatmentType;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookRight.Infrastructure.Persistence
@@ -12,6 +13,7 @@ namespace BookRight.Infrastructure.Persistence
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Clinic> Clinics { get; set; }
+        public DbSet<TreatmentType> TreatmentTypes { get; set; }
 
         public BookRightDbContext(DbContextOptions<BookRightDbContext> options)
             : base(options)
