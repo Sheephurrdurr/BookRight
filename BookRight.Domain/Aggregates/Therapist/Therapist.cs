@@ -13,7 +13,10 @@ namespace BookRight.Domain.Aggregates.Therapist
         public IReadOnlyCollection<TherapistTreatmentType> Qualifications 
             => _qualifications.AsReadOnly();
 
-        private Therapist() { } // Kræves af EF Core
+        private Therapist() 
+        {
+            _qualifications = new List<TherapistTreatmentType>();
+        }
 
         public Therapist(FullName name, Email email, string specialization)
         {
