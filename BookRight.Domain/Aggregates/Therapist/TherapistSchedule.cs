@@ -41,9 +41,9 @@ namespace BookRight.Domain.Aggregates.Therapist
 
         public bool IsAvailable(TimeSlot slot)
         {
-            if (IsWorking == false)
+           if (IsWorking == false)
                 return false;
-            foreach (TimeSlot t in _blockedSlots)
+           foreach (TimeSlot t in _blockedSlots)
                 if (t.OverlapsWith(slot))
                     return false;
             return true;
