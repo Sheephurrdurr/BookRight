@@ -13,7 +13,7 @@ namespace BookRight.Infrastructure.Repositories
         {
             _context = context;
         }
-
+        // hente en TreatmentType ved id
         public async Task<TreatmentType?> GetByIdAsync(Guid id)
         {
             return await _context.TreatmentTypes
