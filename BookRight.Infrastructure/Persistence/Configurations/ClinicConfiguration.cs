@@ -1,5 +1,4 @@
 ﻿using BookRight.Domain.Aggregates.Clinic;
-using BookRight.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -20,6 +19,10 @@ public class ClinicConfiguration : IEntityTypeConfiguration<Clinic>
                 .IsRequired();
 
             address.Property(a => a.City)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            address.Property(a => a.PostalCode)
                 .HasMaxLength(100)
                 .IsRequired();
         });
