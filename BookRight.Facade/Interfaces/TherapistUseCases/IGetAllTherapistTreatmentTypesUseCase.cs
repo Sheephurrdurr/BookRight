@@ -4,6 +4,6 @@ namespace BookRight.Facade.Interfaces.TherapistUseCases
 {
     public interface IGetAllTherapistTreatmentTypesUseCase
     {
-        Task<IReadOnlyList<GetAllTherapistTreatmentTypesResponse>> GetAllTherapistTreatmentTypesAsync();
+        Task<IReadOnlyList<GetAllTherapistTreatmentTypesResponse>> ExecuteAsync();
     }
 }
