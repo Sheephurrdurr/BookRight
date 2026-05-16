@@ -2,13 +2,19 @@
 @rendermode InteractiveServer
 @using BookRight.Facade.Interfaces
 @using BookRight.Facade.Interfaces.ClinicsUseCases
+@using BookRight.Facade.Interfaces.TherapistUseCases
 @using BookRight.Facade.DTOs.GetAllCustomersDTOs
 @using BookRight.Facade.DTOs.GetAllClinicsDTOs
+@using BookRight.Facade.DTOs.GetAllTherapistsDTOs
+@using BookRight.Facade.DTOs.GetAllTherapistTreatmentTypesDTOs
 @using BookRight.Facade.DTOs.CreateBookingDTOs
 @using BookRight.Facade.DTOs.ValueObjectDTOs
 @inject IGetAllCustomersUseCase GetAllCustomersUseCase
 @inject IGetAllClinicsUseCase GetAllClinicsUseCase
 @inject ICreateBookingUseCase CreateBookingUseCase
+@inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
+@inject IGetAllTherapistTreatmentTypesUseCase GetAllTherapistTreatmentTypesUseCase
+
 
 <PageTitle>Opret Booking</PageTitle>
 
@@ -25,7 +31,7 @@
                 <div class="card-body">
                     <div class="">
                         <label>Kunde</label>
-                        <select @bind="selectedCustomerId">
+                        <select class="form-select" @bind="selectedCustomerId">
                             <option value="">-- Vælg Kunde --</option>
                             @foreach (var customer in customers)
                             {
@@ -35,7 +41,7 @@
                         </select>
                     </div>
 
-                    <div>
+                    <div class="mt-4">
                         <label>Klinik</label>
                         <select class="form-select" @bind="selectedClinicId">
                             <option value="">-- Vælg Klinik --</option>
@@ -46,12 +52,31 @@
                         </select>
                     </div>
 
-                    <div>
+                    <div class="mt-4">
+                        <label>Behandler</label>
+                        <select class="form-select" @bind="selectedTherapistId" @bind:after="OnTherapistChanged">
+                            <option value="">-- Vælg Behandler --</option>
+                            @foreach (var therapist in therapists)
+                            {
+                                <option value="@therapist.Id">@therapist.FirstName @therapist.LastName</option>
+                            }
+                        </select>
+
+                        <select class="form-select mt-4" @bind="selectedTherapistTreatmentTypeId">
+                            <option value="">-- Vælg Behandling --</option>
+                            @foreach (var ttt in filteredTreatmentTypes)
+                            {
+                                <option value="@ttt.Id">@ttt.TreatmentTypeName - @ttt.BasePrice kr.</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mt-4">
                         <label>Dato og starttid</label>
                         <input type="datetime-local" class="form-control" @bind="startTime" />
                     </div>
 
-                    <button class="btn btn-primary" @onclick="HandleCreateBooking">Opret Booking</button>
+                    <button class="btn btn-primary mt-4" @onclick="HandleCreateBooking">Opret Booking</button>
 
 					@if (!string.IsNullOrEmpty(bookingMessage))
 					{
@@ -68,6 +93,8 @@
 @code {
     private string selectedCustomerId = "";
     private string selectedClinicId = "";
+    private string selectedTherapistId = "";
+    private string selectedTherapistTreatmentTypeId = "";
     private DateTime startTime = DateTime.Now;
     private DateTime endTime = DateTime.Now.AddHours(1);
     private string bookingMessage = "";
@@ -75,8 +102,9 @@
 
     private IReadOnlyList<GetAllCustomersResponse> customers = new List<GetAllCustomersResponse>();
     private IReadOnlyList<GetAllClinicsResponse> clinics = new List<GetAllClinicsResponse>();
-
-    private static readonly Guid HardcodedTherapistTreatmentTypeId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+    private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
+    private IReadOnlyList<GetAllTherapistTreatmentTypesResponse> allTherapistTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
+    private IReadOnlyList<GetAllTherapistTreatmentTypesResponse> filteredTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -87,6 +115,16 @@
     {
         customers = await GetAllCustomersUseCase.ExecuteAsync();
         clinics = await GetAllClinicsUseCase.ExecuteAsync();
+        therapists = await GetAllTherapistsUseCase.ExecuteAsync();
+        allTherapistTreatmentTypes = await GetAllTherapistTreatmentTypesUseCase.ExecuteAsync();
+        filteredTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
+    }
+
+    public void OnTherapistChanged()
+    {
+        filteredTreatmentTypes = allTherapistTreatmentTypes
+            .Where(ttt => ttt.TherapistId.ToString() == selectedTherapistId)
+            .ToList();
     }
 
     private async Task HandleCreateBooking()
@@ -102,7 +140,7 @@
                 {
 				    new BookingLineRequest
                     {
-                        TherapistTreatmentTypeId = HardcodedTherapistTreatmentTypeId,
+                        TherapistTreatmentTypeId = Guid.Parse(selectedTherapistTreatmentTypeId),
                         BasePrice = 500
                     }
                 }

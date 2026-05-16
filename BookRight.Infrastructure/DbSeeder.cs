@@ -61,11 +61,8 @@ namespace BookRight.Infrastructure
             var therapist1 = new Therapist(
                 new FullName("Therapist", "Donald"),
                 new Email("therapist1@dont.com"),
-                "Over 50.000"
+                "Massage"
             );
-
-            await _context.Therapists.AddAsync(therapist1);
-            await _context.SaveChangesAsync();
 
             var treatmentType = _context.TreatmentTypes.First();
 
