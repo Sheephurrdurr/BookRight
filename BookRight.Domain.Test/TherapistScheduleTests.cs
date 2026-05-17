@@ -17,7 +17,7 @@ namespace BookRight.Domain.Test
             //Arrange
             var therapistId = Guid.NewGuid();
             var clinicId = Guid.NewGuid();
-            var date = new DateOnly(2026, 05, 16);
+            var date = new DateOnly(2028, 05, 16);
             var timeslot = new TimeSlot(
                             DateTime.Today.AddDays(1).AddHours(1),
                             DateTime.Today.AddDays(1).AddHours(2));
@@ -35,7 +35,7 @@ namespace BookRight.Domain.Test
             //Arrange
             var therapistId = Guid.NewGuid();
             var clinicId = Guid.NewGuid();
-            var date = new DateOnly(2026, 05, 16);
+            var date = new DateOnly(2028, 05, 16);
             var timeslot = new TimeSlot(
                             DateTime.Today.AddDays(1).AddHours(1),
                             DateTime.Today.AddDays(1).AddHours(2));
@@ -53,7 +53,7 @@ namespace BookRight.Domain.Test
             //Arrange
             var therapistId = Guid.NewGuid();
             var clinicId = Guid.NewGuid();
-            var date = new DateOnly(2026, 05, 16);
+            var date = new DateOnly(2028, 05, 16);
             var timeslot = new TimeSlot(
                             DateTime.Today.AddDays(1).AddHours(1),
                             DateTime.Today.AddDays(1).AddHours(2));
@@ -72,7 +72,7 @@ namespace BookRight.Domain.Test
             //Arrange
             var therapistId = Guid.NewGuid();
             var clinicId = Guid.NewGuid();
-            var date = new DateOnly(2026, 05, 16);
+            var date = new DateOnly(2028, 05, 16);
             var timeslot = new TimeSlot(
                             DateTime.Today.AddDays(1).AddHours(1),
                             DateTime.Today.AddDays(1).AddHours(2));
