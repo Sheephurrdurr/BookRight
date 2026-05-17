@@ -124,7 +124,7 @@ namespace BookRight.Domain.Test
                 booking.ApplyCampaignDiscount(Guid.Empty));
         }
 
-        // Hjælpemetode som opretter en valid Booking med gyldige testdata
+        // Hjælpemetoden som opretter en valid Booking med gyldige testdata
         private static Booking CreateValidBooking()
         {
             var timeSlot = new TimeSlot(
