@@ -59,8 +59,8 @@ namespace BookRight.Infrastructure
             if (_context.Therapists.Any()) return;
 
             var therapist1 = new Therapist(
-                new FullName("Therapist", "Donald"),
-                new Email("therapist1@dont.com"),
+                new FullName("Hans", "Hansen"),
+                new Email("hansen@hans.com"),
                 "Massage"
             );
 
@@ -80,7 +80,7 @@ namespace BookRight.Infrastructure
 
             var customer1 = new Customer(
                 new FullName("Customer", "Bill"),
-                new Email("customer1@dont.com"),
+                new Email("customer@bill.com"),
                 new PhoneNumber("87654321"),
                 new DateOnly(1990, 1, 1),
                 null,

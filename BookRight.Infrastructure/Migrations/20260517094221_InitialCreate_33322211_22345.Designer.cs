@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookRight.Infrastructure.Migrations
 {
     [DbContext(typeof(BookRightDbContext))]
-    [Migration("20260516232642_InitialCreate_551235_dg341_63")]
-    partial class InitialCreate_551235_dg341_63
+    [Migration("20260517094221_InitialCreate_33322211_22345")]
+    partial class InitialCreate_33322211_22345
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
