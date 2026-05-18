@@ -33,7 +33,7 @@ namespace BookRight.Domain.Aggregates.Booking
                 throw new ArgumentNullException(nameof(timeSlot));
 
             Id = id;
-            CustomerId = customerId;
+            CustomerId = customerId; 
             ClinicId = clinicId;
             TimeSlot = timeSlot;
             Status = BookingStatus.Confirmed;
@@ -71,7 +71,9 @@ namespace BookRight.Domain.Aggregates.Booking
         }
 
         // MarkAsNoshow
-        public void MarkAsNOShow()
+        // Changes the booking status to NoShow.
+
+        public void MarkAsNoShow()
         {
             Status = BookingStatus.NoShow;
         }
