@@ -3,7 +3,7 @@
 public static class DomainErrorMessages //Static because we don't want to create an object
 {
     public const string NameCannotBeEmpty = //Const = Known value at run-time and never changes. 
-        "Navn er påkræ";
+        "Navn er påkrævet";
 
     public const string AddressCannotBeNull =
         "Adresse er påkrævet";
@@ -67,6 +67,9 @@ public static class DomainErrorMessages //Static because we don't want to create
 
     public const string InsufficientAmount =
         "Beløbet er ikke tilstrækkeligt";
+
+    public const string EndTimeMustBeLaterThanStartTime =
+        "Sluttidspunkt skal være senere end starttidspunkt";
 
 
 
