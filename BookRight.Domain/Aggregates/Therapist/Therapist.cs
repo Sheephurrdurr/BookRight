@@ -15,7 +15,6 @@ namespace BookRight.Domain.Aggregates.Therapist
 
         private Therapist() 
         {
-            _qualifications = new List<TherapistTreatmentType>();
         }
 
         public Therapist(FullName name, Email email, string specialization)
