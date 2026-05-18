@@ -4,18 +4,20 @@ using BookRight.UseCases.Interfaces;
 
 namespace BookRight.UseCases.MarkBookingAsNoShow
 {
-    // Use case for registering a NoShow booking.
-    public class MarkBookingAsNoShowUseCase : IMarkBookingAsNoShowUseCase
+    // Implementerer interfacet for at markere en booking som NoShow, hvilket sikrer at
+    // denne use case kan bruges i hele applikationen via det definerede interface.
+    public class MarkBookingAsNoShowUseCase : IMarkBookingAsNoShowUseCase 
     {
         private readonly IBookingRepository _bookingRepository;
 
-        public MarkBookingAsNoShowUseCase(IBookingRepository bookingRepository)
+        // Constructor injection for the booking repository
+        public MarkBookingAsNoShowUseCase(IBookingRepository bookingRepository) 
         {
             _bookingRepository = bookingRepository;
         }
 
         // Executes the use case to mark a booking as a NoShow.
-        public async Task ExecuteAsync(MarkBookingAsNoShowRequest request)
+        public async Task ExecuteAsync(MarkBookingAsNoShowRequest request) // Asynchronous method to execute the use case, hvilket tillader ikke-blokerende operationer og forbedrer applikationens ydeevne.
         {
             var booking = await _bookingRepository.GetByIdAsync(request.BookingId);
 
