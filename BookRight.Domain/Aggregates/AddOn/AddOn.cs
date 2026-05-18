@@ -1,4 +1,6 @@
-﻿using BookRight.Domain.ValueObjects;
+﻿using BookRight.Domain.Errors;
+using BookRight.Domain.Exceptions;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.AddOn
 {
@@ -14,20 +16,16 @@ namespace BookRight.Domain.Aggregates.AddOn
 
         public AddOn(string name, decimal percentage)
         {
-            if (string.IsNullOrWhiteSpace(name)) //Guard clauses. Valid state.
+            if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException(
-                    "Name cannot be empty.",
+                    DomainErrorMessages.NameCannotBeEmpty,
                     nameof(name));
 
             if (percentage < 0 || percentage > 100)
-                throw new ArgumentException(
-                    "Percentage must be between 0 and 100.",
-                    nameof(percentage));
+                throw new InvalidAddOnPercentageException();
 
             Id = Guid.NewGuid();
-
             Name = name;
-
             Percentage = percentage;
         }
 
