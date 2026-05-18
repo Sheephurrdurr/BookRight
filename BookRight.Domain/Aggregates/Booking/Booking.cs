@@ -1,4 +1,5 @@
 ﻿using BookRight.Domain.Enums;
+using BookRight.Domain.Errors;
 using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.Booking
@@ -21,16 +22,24 @@ namespace BookRight.Domain.Aggregates.Booking
         public Booking(Guid id, Guid customerId, Guid clinicId, TimeSlot timeSlot)
         {
             if (id == Guid.Empty)
-                throw new ArgumentException("Id cannot be empty.", nameof(id));
+                throw new ArgumentException(
+                    DomainErrorMessages.InvalidId,
+                    nameof(id));
 
             if (customerId == Guid.Empty)
-                throw new ArgumentException("CustomerId cannot be empty.", nameof(customerId));
+                throw new ArgumentException(
+                    DomainErrorMessages.InvalidId,
+                    nameof(customerId));
 
             if (clinicId == Guid.Empty)
-                throw new ArgumentException("ClinicId cannot be empty.", nameof(clinicId));
+                throw new ArgumentException(
+                    DomainErrorMessages.InvalidId,
+                    nameof(clinicId));
 
             if (timeSlot is null)
-                throw new ArgumentNullException(nameof(timeSlot));
+                throw new ArgumentNullException(
+                    nameof(timeSlot),
+                    DomainErrorMessages.ValueCannotBeNull);
 
             Id = id;
             CustomerId = customerId;
@@ -41,8 +50,10 @@ namespace BookRight.Domain.Aggregates.Booking
 
         public void AddLine(BookingLine line)
         {
-            if (line == null)
-                throw new ArgumentNullException(nameof(line));
+            if (line is null)
+                throw new ArgumentNullException(
+                    nameof(line),
+                    DomainErrorMessages.ValueCannotBeNull);
 
             _lines.Add(line);
         }
@@ -79,7 +90,9 @@ namespace BookRight.Domain.Aggregates.Booking
         public void ApplyCampaignDiscount(Guid campaignDiscountId)
         {
             if (campaignDiscountId == Guid.Empty)
-                throw new ArgumentException(nameof(campaignDiscountId));
+                throw new ArgumentException(
+                    DomainErrorMessages.InvalidId,
+                    nameof(campaignDiscountId));
 
             CampaignDiscountId = campaignDiscountId;
         }
