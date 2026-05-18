@@ -2,9 +2,9 @@
 
 namespace BookRight.Domain.Exceptions;
 
-public class InvalidAddOnPercentageException : DomainException
+public class InvalidPercentageException : DomainException
 {
-    public InvalidAddOnPercentageException() //An exception is thrown when AddOn-percentage is outside the valid range from 0-100.
+    public InvalidPercentageException() //An exception is thrown when AddOn-percentage is outside the valid range from 0-100.
         : base(DomainErrorMessages.AddOnPercentageOutOfRange) //Sends the predefined error-message to the base DomianException class.
     {
     }

@@ -1,5 +1,4 @@
 ﻿using BookRight.Domain.Enums;
-using BookRight.Domain.Errors;
 using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.Booking
@@ -22,24 +21,16 @@ namespace BookRight.Domain.Aggregates.Booking
         public Booking(Guid id, Guid customerId, Guid clinicId, TimeSlot timeSlot)
         {
             if (id == Guid.Empty)
-                throw new ArgumentException(
-                    DomainErrorMessages.InvalidId,
-                    nameof(id));
+                throw new ArgumentException(nameof(id)); //No need for errormessages, because thy'll never be displayed in the UI.
 
             if (customerId == Guid.Empty)
-                throw new ArgumentException(
-                    DomainErrorMessages.InvalidId,
-                    nameof(customerId));
+                throw new ArgumentException(nameof(customerId));
 
             if (clinicId == Guid.Empty)
-                throw new ArgumentException(
-                    DomainErrorMessages.InvalidId,
-                    nameof(clinicId));
+                throw new ArgumentException(nameof(clinicId));
 
             if (timeSlot is null)
-                throw new ArgumentNullException(
-                    nameof(timeSlot),
-                    DomainErrorMessages.ValueCannotBeNull);
+                throw new ArgumentNullException(nameof(timeSlot));
 
             Id = id;
             CustomerId = customerId; 
@@ -51,9 +42,7 @@ namespace BookRight.Domain.Aggregates.Booking
         public void AddLine(BookingLine line)
         {
             if (line is null)
-                throw new ArgumentNullException(
-                    nameof(line),
-                    DomainErrorMessages.ValueCannotBeNull);
+                throw new ArgumentNullException(nameof(line));
 
             _lines.Add(line);
         }
@@ -92,9 +81,7 @@ namespace BookRight.Domain.Aggregates.Booking
         public void ApplyCampaignDiscount(Guid campaignDiscountId)
         {
             if (campaignDiscountId == Guid.Empty)
-                throw new ArgumentException(
-                    DomainErrorMessages.InvalidId,
-                    nameof(campaignDiscountId));
+                throw new ArgumentException(nameof(campaignDiscountId));
 
             CampaignDiscountId = campaignDiscountId;
         }

@@ -22,7 +22,7 @@ namespace BookRight.Domain.Aggregates.AddOn
                     nameof(name));
 
             if (percentage < 0 || percentage > 100)
-                throw new InvalidAddOnPercentageException();
+                throw new InvalidPercentageException();
 
             Id = Guid.NewGuid();
             Name = name;
