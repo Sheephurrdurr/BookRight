@@ -41,6 +41,12 @@ public static class DomainErrorMessages //Static because we don't want to create
     public const string PriceMustBeGreaterThanZero =
         "Prisen skal være højere end 0 kr.";
 
+    public const string DurationMustBeGreaterThanZero =
+        "Varighed skal være mere end 0 min.";
+
+    public const string MaxParticipantsMustBeGreaterThanZero =
+        "Maks. antal deltagere skal være større end 0";
+
 }
     
 
