@@ -2,14 +2,21 @@
 
 namespace BookRight.Domain.Aggregates.Therapist
 {
-    public record Therapist
+    public class Therapist
     {
         public Guid Id { get; private set; }
-        public FullName Name { get; private set; }
-        public Email Email { get; private set; } 
-        public string Specialization { get; private set; } 
+        public FullName Name { get; private set; } = null!;//Not nullable. It's a promise to the constructor, that property is set later. Fixes warning. 
+        public Email Email { get; private set; } = null!;
+        public string Specialization { get; private set; } = null!;
 
-        private Therapist() { } // Kræves af EF Core
+        private readonly List<TherapistTreatmentType> _qualifications = new();
+        public IReadOnlyCollection<TherapistTreatmentType> Qualifications 
+            => _qualifications.AsReadOnly();
+
+        private Therapist() 
+        {
+            _qualifications = new List<TherapistTreatmentType>();
+        }
 
         public Therapist(FullName name, Email email, string specialization)
         {
@@ -21,5 +28,24 @@ namespace BookRight.Domain.Aggregates.Therapist
             Email = email ?? throw new ArgumentNullException(nameof(email));
             Specialization = specialization;
         }
+
+        // Tilføj en kvalifikation for en behandlingstype
+        public void AddQualification(Guid treatmentTypeId, decimal basePrice)
+        {
+            var qualification = new TherapistTreatmentType(Id, treatmentTypeId, basePrice);
+            _qualifications.Add(qualification);
+        }
+
+        // Fjern en kvalifikation for en behandlingstype
+        public void RemoveQualification(Guid treatmentTypeId)
+        {
+            var qualification = _qualifications
+                .FirstOrDefault(q => q.TreatmentTypeId == treatmentTypeId);
+
+            if (qualification != null)
+            {
+                _qualifications.Remove(qualification);
+            }
+        }   
     }
 }

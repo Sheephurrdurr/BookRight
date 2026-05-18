@@ -8,7 +8,7 @@ using System.Text;
 
 namespace BookRight.Domain.Services
 {
-    public interface IPriceCalculator
+    public interface IPricecalculatorService
     {
         Money CalculateBasePrice(TreatmentType treatmenttype);
         Money ApplyAddOns(Money price, IEnumerable<AddOn> addOns);

@@ -1,6 +1,6 @@
 ﻿namespace BookRight.Domain.ValueObjects
 {
-    public record TimeSlot 
+    public sealed record TimeSlot 
     {
         public DateTime StartTime { get; private set; }
         public DateTime EndTime { get; private set; }
@@ -25,8 +25,9 @@
 
         // Overload metode tager TimeSlot og returnerer false hvis intet overlap er fundet
         public bool OverlapsWith(TimeSlot other)
-        {
-            return OverlapsWith(other.StartTime, other.EndTime);
+        {   // yaki -ændret 
+            /* return OverlapsWith(other.StartTime, other.EndTime);*/
+            return this.StartTime < other.EndTime && other.StartTime < this.EndTime;
         } 
         // Metode tager tidspunkter og returnerer false, hvis intet overlap er fundet.
         public bool OverlapsWith(DateTime startTime, DateTime endTime)

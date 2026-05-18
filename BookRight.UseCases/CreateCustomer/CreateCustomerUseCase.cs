@@ -8,9 +8,9 @@ namespace BookRight.UseCases.CreateCustomer
 {
     public class CreateCustomerUseCase : ICreateCustomerUseCase
     {
-        private readonly ICustomerRepository _repository;
+        private readonly Interfaces.ICustomerRepository _repository;
 
-        public CreateCustomerUseCase(ICustomerRepository repository)
+        public CreateCustomerUseCase(Interfaces.ICustomerRepository repository)
         {
             _repository = repository;
         }
@@ -20,12 +20,15 @@ namespace BookRight.UseCases.CreateCustomer
             var alreadyExists = await _repository.ExistsByEmailAsync(request.Email);
 
             if (alreadyExists)
-                throw new InvalidOperationException($"A therapist with email '{request.Email}' already exists."); 
+                throw new InvalidOperationException($"A customer with email '{request.Email}' already exists.");
 
             var customer = new Customer(
-                new FullName(request.FirstName, request.LastName),
-                new Email(request.Email),
-                new PhoneNumber(request.Phone)
+            new FullName(request.FirstName, request.LastName),
+            new Email(request.Email),
+            new PhoneNumber(request.Phone),
+            request.DateOfBirth,
+            request.HealthNotes,
+            request.PreferredTherapistId
             );
 
             await _repository.AddAsync(customer); 

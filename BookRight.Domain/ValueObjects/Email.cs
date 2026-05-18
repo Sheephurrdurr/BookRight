@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BookRight.Domain.ValueObjects
 {
-    public record Email
+    public sealed record Email
     {
         public string Value { get; }
 

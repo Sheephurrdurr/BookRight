@@ -34,6 +34,11 @@ namespace BookRight.Infrastructure.Persistence.Configurations
             builder.Property(t => t.Specialization)
                 .HasMaxLength(200)
                 .IsRequired();
+
+            builder.HasMany(t => t.Qualifications)
+                .WithOne()
+                .HasForeignKey(q => q.TherapistId) // Shadow property for FK
+                .OnDelete(DeleteBehavior.Cascade); // Sletter kvalifikationer hvis terapeut slettes
         }
     }
 }

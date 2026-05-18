@@ -1,0 +1,159 @@
+﻿@page "/opret-booking"
+@rendermode InteractiveServer
+@using BookRight.Facade.Interfaces
+@using BookRight.Facade.Interfaces.ClinicsUseCases
+@using BookRight.Facade.Interfaces.TherapistUseCases
+@using BookRight.Facade.DTOs.GetAllCustomersDTOs
+@using BookRight.Facade.DTOs.GetAllClinicsDTOs
+@using BookRight.Facade.DTOs.GetAllTherapistsDTOs
+@using BookRight.Facade.DTOs.GetAllTherapistTreatmentTypesDTOs
+@using BookRight.Facade.DTOs.CreateBookingDTOs
+@using BookRight.Facade.DTOs.ValueObjectDTOs
+@inject IGetAllCustomersUseCase GetAllCustomersUseCase
+@inject IGetAllClinicsUseCase GetAllClinicsUseCase
+@inject ICreateBookingUseCase CreateBookingUseCase
+@inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
+@inject IGetAllTherapistTreatmentTypesUseCase GetAllTherapistTreatmentTypesUseCase
+
+
+<PageTitle>Opret Booking</PageTitle>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Opret Booking</h1>
+    
+    <div class="row">
+        <article class="col-md-6">
+            <section class="card">
+                <div class="card-body">
+                    <h4 class="mb-0">Ny Booking</h4>
+                </div>
+
+                <div class="card-body">
+                    <div class="">
+                        <label>Kunde</label>
+                        <select class="form-select" @bind="selectedCustomerId">
+                            <option value="">-- Vælg Kunde --</option>
+                            @foreach (var customer in customers)
+                            {
+                                <option value="@customer.Id">@customer.FirstName @customer.LastName</option>
+                            }
+                        
+                        </select>
+                    </div>
+
+                    <div class="mt-4">
+                        <label>Klinik</label>
+                        <select class="form-select" @bind="selectedClinicId">
+                            <option value="">-- Vælg Klinik --</option>
+                            @foreach (var clinic in clinics)
+                            {
+                                <option value="@clinic.Id">@clinic.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mt-4">
+                        <label>Behandler</label>
+                        <select class="form-select" @bind="selectedTherapistId" @bind:after="OnTherapistChanged">
+                            <option value="">-- Vælg Behandler --</option>
+                            @foreach (var therapist in therapists)
+                            {
+                                <option value="@therapist.Id">@therapist.FirstName @therapist.LastName</option>
+                            }
+                        </select>
+
+                        <select class="form-select mt-4" @bind="selectedTherapistTreatmentTypeId">
+                            <option value="">-- Vælg Behandling --</option>
+                            @foreach (var ttt in filteredTreatmentTypes)
+                            {
+                                <option value="@ttt.Id">@ttt.TreatmentTypeName - @ttt.BasePrice kr.</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mt-4">
+                        <label>Dato og starttid</label>
+                        <input type="datetime-local" class="form-control" @bind="startTime" />
+                    </div>
+
+                    <button class="btn btn-primary mt-4" @onclick="HandleCreateBooking">Opret Booking</button>
+
+					@if (!string.IsNullOrEmpty(bookingMessage))
+					{
+						<div class="@bookingAlertClass mt-3">
+							@bookingMessage
+						</div>
+					}
+                </div>
+            </section>
+        </article>
+    </div>
+</div>
+
+@code {
+    private string selectedCustomerId = "";
+    private string selectedClinicId = "";
+    private string selectedTherapistId = "";
+    private string selectedTherapistTreatmentTypeId = "";
+    private DateTime startTime = DateTime.Now;
+    private DateTime endTime = DateTime.Now.AddHours(1);
+    private string bookingMessage = "";
+    private string bookingAlertClass = "";
+
+    private IReadOnlyList<GetAllCustomersResponse> customers = new List<GetAllCustomersResponse>();
+    private IReadOnlyList<GetAllClinicsResponse> clinics = new List<GetAllClinicsResponse>();
+    private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
+    private IReadOnlyList<GetAllTherapistTreatmentTypesResponse> allTherapistTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
+    private IReadOnlyList<GetAllTherapistTreatmentTypesResponse> filteredTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        customers = await GetAllCustomersUseCase.ExecuteAsync();
+        clinics = await GetAllClinicsUseCase.ExecuteAsync();
+        therapists = await GetAllTherapistsUseCase.ExecuteAsync();
+        allTherapistTreatmentTypes = await GetAllTherapistTreatmentTypesUseCase.ExecuteAsync();
+        filteredTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
+    }
+
+    public void OnTherapistChanged()
+    {
+        filteredTreatmentTypes = allTherapistTreatmentTypes
+            .Where(ttt => ttt.TherapistId.ToString() == selectedTherapistId)
+            .ToList();
+    }
+
+    private async Task HandleCreateBooking()
+    {
+        try
+        {
+            var request = new CreateBookingRequest
+			{
+			    CustomerId = Guid.Parse(selectedCustomerId),
+				ClinicId = Guid.Parse(selectedClinicId),
+				TimeSlot = new TimeSlotDto(startTime, endTime = startTime.AddMinutes(60)),
+				Lines = new List<BookingLineRequest>
+                {
+				    new BookingLineRequest
+                    {
+                        TherapistTreatmentTypeId = Guid.Parse(selectedTherapistTreatmentTypeId),
+                        BasePrice = 500
+                    }
+                }
+			};
+
+            var response = await CreateBookingUseCase.ExecuteAsync(request);
+			bookingMessage = $"Booking oprettet med ID: {response.Id}";
+			bookingAlertClass = "alert alert-success";
+        }
+        catch(Exception ex)
+        {
+            bookingMessage = $"Fejl: {ex.Message}";
+            bookingAlertClass = "alert alert-danger";
+        }
+    }
+}

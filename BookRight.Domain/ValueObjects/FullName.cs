@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BookRight.Domain.ValueObjects
 {
-    public record FullName
+    public sealed record FullName
     {
         public string FirstName { get; }
         public string LastName { get; }

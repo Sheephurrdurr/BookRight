@@ -10,6 +10,8 @@ namespace BookRight.Infrastructure.Persistence.Configurations
         {
             builder.ToTable("Customers");
             // PK konfiguration
+            builder.HasKey(t => t.Id);
+
             builder.Property(x => x.Id)
                 .ValueGeneratedNever(); // Db må ikke generere Id. I DDD styrer Domain dette.
 
@@ -37,6 +39,16 @@ namespace BookRight.Infrastructure.Persistence.Configurations
                     .HasMaxLength(50)
                     .IsRequired();
             });
+            builder.Property(x => x.DateOfBirth)
+                    .IsRequired();
+
+            builder.Property(x => x.HealthNotes)
+                    .HasMaxLength(1000)
+                    .IsRequired(false);
+
+            builder.Property(x => x.PreferredTherapistId)
+                    .IsRequired(false);
         }
     }
 }
+

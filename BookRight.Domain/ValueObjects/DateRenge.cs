@@ -1,34 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BookRight.Domain.ValueObjects
 {
-	public class DateRenge
-	{
-	  public DateTime Start { get; private set; }
-	  public DateTime End { get; private set; }
+    public sealed record DateRange
+    {
+        public DateTime Start { get; }
+        public DateTime End { get; }
 
+        public DateRange(DateTime start, DateTime end)
+        {
+            if (start >= end)
+                throw new ArgumentException(
+                    "Start skal være før end.",
+                    nameof(start));
 
-	  private DateRenge()  { } // Til EF core kræver en parameterløs constructor
+            Start = start;
+            End = end;
+        }
 
-	  public static DateRenge Create(DateTime start, DateTime end)
-	  {
-			if (start >= end)
-				throw new ArgumentException("Start skal være før end.");
+        public bool Overlaps(DateRange other)
+        {
+            return Start < other.End &&
+                   End > other.Start;
+        }
 
-
-		 return new DateRenge { Start = start,  End = end };
-	  }
-
-	  public bool Overlaps(DateRenge other)
-	  {
-			return Start < other.End && End > other.Start;
-	  }
-
-	  public bool Contains(DateTime date)
-	  {
-			return date >= Start && date <= End;
-	  }
-	}
+        public bool Contains(DateTime date)
+        {
+            return date >= Start &&
+                   date < End;
+        }
+    }
 }
+// public  -> Kan bruges fra andre layers/projekter.
+// sealed  -> Kan ikke nedarves.
+// record  -> Sammenlignes på værdier i stedet for reference.

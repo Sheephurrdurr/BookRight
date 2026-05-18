@@ -5,7 +5,7 @@ using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Services
 {
-    public class PriceCalculator : IPriceCalculator
+    public class PriceCalculatorService : IPricecalculatorService
     {
         public Money CalculateBasePrice(TreatmentType treatmentType) //Returns the base price of TreatmentType
         {
