@@ -38,7 +38,7 @@ namespace BookRight.Domain.Aggregates.AddOn
         Result = 60 kr*/
         public Money CalculateAmount(Money basePrice) 
         {
-            decimal multiplier = Percentage / 100;
+            decimal multiplier = Percentage / 100m;
 
             return basePrice * multiplier;
         }
