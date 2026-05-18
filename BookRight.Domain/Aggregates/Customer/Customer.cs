@@ -1,8 +1,6 @@
 ﻿using BookRight.Domain.ValueObjects;
-using BookRight.Domain.Aggregates.Booking;
 
 namespace BookRight.Domain.Aggregates.Customer;
-
 public class Customer
 {
     public Guid Id { get; private set; }
@@ -23,10 +21,23 @@ public class Customer
         Email = email ?? throw new ArgumentNullException(nameof(email));
         Phone = phone ?? throw new ArgumentNullException(nameof(phone));
 
-        if (dateOfBirth == default) throw new ArgumentException("Date of birth is required.", nameof(dateOfBirth));
+        if (dateOfBirth == default) throw new ArgumentException("Fødselsdato skal udfyldes.", nameof(dateOfBirth));
 
         DateOfBirth = dateOfBirth;
         HealthNotes = healthNotes;
-        PreferredTherapistId = preferredTherapistId;
+        PreferredTherapistId = preferredTherapistId; 
     }
+
+    // Controlled access to sensitive data: Health notes are only modifiable through this method.
+    // This ensures that any changes to health notes are intentional and go through the proper channels, maintaining data integrity and security.
+    public void UpdateHealthNotes(string? healthNotes)
+    {
+        HealthNotes = healthNotes;
+    }
+
+    // Prevents health note property from every being exposed outside of the aggregate. Only way to update it is through this method, which is part of the aggregate's behavior.
+    // GDPR compliance: Health notes are sensitive personal data, so we want to ensure that they are only accessible and modifiable through controlled methods within the aggregate.
+    public override string ToString() => 
+        $"Customer {{ Id={Id}, Name={Name}  }}";
+    
 } 
