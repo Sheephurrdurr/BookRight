@@ -17,6 +17,24 @@ public static class DomainErrorMessages //Static because we don't want to create
     public const string SpecializationIsRequired =
         "Specialisering er påkrævet";
 
+    public const string StreetCannotBeEmpty =
+        "Vejnavn er påkrævet";
+
+    public const string CityCannotBeEmpty =
+        "By er påkrævet";
+
+    public const string PostalCodeCannotBeEmpty =
+        "Postnummer er påkrævet";
+
+    public const string FirstNameIsRequired =
+        "Fornavn er påkrævet";
+
+    public const string LastNameIsRequired =
+        "Efternavn er påkrævet";
+
+    public const string InvalidEmailAddress =
+        "E-mailadressen er ugyldig";
+
     public const string AddOnPercentageOutOfRange =
         "Tillæg skal være mellem 0-100%";
 
@@ -46,6 +64,11 @@ public static class DomainErrorMessages //Static because we don't want to create
 
     public const string MaxParticipantsMustBeGreaterThanZero =
         "Maks. antal deltagere skal være større end 0";
+
+    public const string InsufficientAmount =
+        "Beløbet er ikke tilstrækkeligt";
+
+
 
 }
     

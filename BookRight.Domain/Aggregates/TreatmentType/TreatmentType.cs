@@ -1,8 +1,5 @@
 ﻿using BookRight.Domain.Errors;
 using BookRight.Domain.ValueObjects;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BookRight.Domain.Aggregates.TreatmentType
 {

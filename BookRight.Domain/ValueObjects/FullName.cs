@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using BookRight.Domain.Errors;
+using System;
 
 namespace BookRight.Domain.ValueObjects
 {
@@ -11,11 +10,15 @@ namespace BookRight.Domain.ValueObjects
 
         public FullName(string firstName, string lastName)
         {
-            if (string.IsNullOrWhiteSpace(firstName))
-                throw new ArgumentException("First name is required.", nameof(firstName));
-
-            if (string.IsNullOrWhiteSpace(lastName))
-                throw new ArgumentException("Last name is required.", nameof(lastName));
+            if (string.IsNullOrWhiteSpace(firstName)) //First name is required
+                throw new ArgumentException(
+                    DomainErrorMessages.FirstNameIsRequired,
+                    nameof(firstName));
+            
+            if (string.IsNullOrWhiteSpace(lastName)) //Last name is required
+                throw new ArgumentException(
+                    DomainErrorMessages.LastNameIsRequired,
+                    nameof(lastName));
 
             FirstName = firstName;
             LastName = lastName;
