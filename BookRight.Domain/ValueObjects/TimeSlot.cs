@@ -1,4 +1,6 @@
-﻿namespace BookRight.Domain.ValueObjects
+﻿using BookRight.Domain.Errors;
+
+namespace BookRight.Domain.ValueObjects
 {
     public sealed record TimeSlot 
     {
@@ -9,10 +11,14 @@
         public TimeSlot(DateTime startTime, DateTime endTime)
         {
             if (startTime < DateTime.Today)
-                throw new ArgumentException("Start time cannot be in the past.");
+                throw new ArgumentException(
+                    DomainErrorMessages.DateCannotBeBeforeToday,
+                    nameof(startTime));
 
             if (endTime <= startTime)
-                throw new ArgumentException("End time must be later than start time");
+                throw new ArgumentException(
+                    DomainErrorMessages.EndTimeMustBeLaterThanStartTime,
+                    nameof(endTime));
 
             StartTime = startTime;
             EndTime = endTime;
@@ -25,8 +31,10 @@
 
         // Overload metode tager TimeSlot og returnerer false hvis intet overlap er fundet
         public bool OverlapsWith(TimeSlot other)
-        {   // yaki -ændret 
-            /* return OverlapsWith(other.StartTime, other.EndTime);*/
+        {
+            if (other is null)
+                throw new ArgumentNullException(nameof(other));
+
             return this.StartTime < other.EndTime && other.StartTime < this.EndTime;
         } 
         // Metode tager tidspunkter og returnerer false, hvis intet overlap er fundet.

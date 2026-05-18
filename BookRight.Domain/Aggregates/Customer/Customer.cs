@@ -1,5 +1,6 @@
-﻿using BookRight.Domain.ValueObjects;
-using BookRight.Domain.Aggregates.Booking;
+﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Errors;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.Customer;
 
@@ -19,11 +20,14 @@ public class Customer
     {
         Id = Guid.NewGuid();
 
-        Name = name ?? throw new ArgumentNullException(nameof(name));
+        Name = name ?? throw new ArgumentNullException(nameof(name)); //Nullchecks
         Email = email ?? throw new ArgumentNullException(nameof(email));
         Phone = phone ?? throw new ArgumentNullException(nameof(phone));
 
-        if (dateOfBirth == default) throw new ArgumentException("Date of birth is required.", nameof(dateOfBirth));
+        if (dateOfBirth == default) //ErrorMessage
+            throw new ArgumentException(
+                DomainErrorMessages.DateOfBirthIsRequired,
+                nameof(dateOfBirth));
 
         DateOfBirth = dateOfBirth;
         HealthNotes = healthNotes;

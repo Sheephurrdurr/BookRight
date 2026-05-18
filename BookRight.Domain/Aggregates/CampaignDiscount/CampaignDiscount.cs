@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BookRight.Domain.Errors;
+using BookRight.Domain.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -25,13 +27,17 @@ namespace BookRight.Domain.Aggregates.CampaignDiscount
             DateOnly endDate)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Navn må ikke være tomt.");
+                throw new ArgumentException(
+                    DomainErrorMessages.NameCannotBeEmpty,
+                    nameof(name));
 
-            if (discountPercent <= 0 || discountPercent > 100)
-                throw new ArgumentException("Rabat skal være mellem 0 og 100.");
+            if (discountPercent <= 0 || discountPercent > 100) //CustomException
+                throw new InvalidPercentageException();
 
             if (endDate < startDate)
-                throw new ArgumentException("Slutdato må ikke være før startdato.");
+                throw new ArgumentException(
+                    DomainErrorMessages.EndDateCannotBeBeforeStartDate,
+                    nameof(endDate));
 
             Id = Guid.NewGuid();
             Name = name;

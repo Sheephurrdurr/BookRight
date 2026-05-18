@@ -1,4 +1,5 @@
-﻿using BookRight.Domain.ValueObjects;
+﻿using BookRight.Domain.Errors;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.Clinic
 {
@@ -22,16 +23,24 @@ namespace BookRight.Domain.Aggregates.Clinic
         public Clinic(string name, Address address, PhoneNumber phone, int numTreatmentRooms)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Klinikkens navn må ikke være tomt.");
+                throw new ArgumentException(
+                    DomainErrorMessages.NameCannotBeEmpty,
+                    nameof(name));
 
-            if (address == null)
-                throw new ArgumentException("Klinikkens adresse må ikke være tom.");
+            if (address is null)
+                throw new ArgumentNullException(
+                    nameof(address),
+                    DomainErrorMessages.AddressCannotBeNull);
 
-            if (phone == null)
-                throw new ArgumentException("Klinikkens telefonnummer må ikke være tomt.");
+            if (phone is null)
+                throw new ArgumentNullException(
+                    nameof(phone),
+                    DomainErrorMessages.PhoneNumberCannotBeNull);
 
             if (numTreatmentRooms <= 0)
-                throw new ArgumentException("Antal behandlingsrum skal være større end 0.");
+                throw new ArgumentException(
+                    DomainErrorMessages.NumberOfTreatmentRoomsMustBeGreaterThanZero,
+                    nameof(numTreatmentRooms));
 
             Id = Guid.NewGuid();
             Name = name;

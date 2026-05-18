@@ -1,4 +1,5 @@
-﻿using BookRight.Domain.ValueObjects;
+﻿using BookRight.Domain.Errors;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.Therapist
 {
@@ -20,7 +21,9 @@ namespace BookRight.Domain.Aggregates.Therapist
         public Therapist(FullName name, Email email, string specialization)
         {
             if (string.IsNullOrWhiteSpace(specialization))
-                throw new ArgumentException("Specialization is required.", nameof(specialization));
+                throw new ArgumentException(
+                    DomainErrorMessages.SpecializationIsRequired,
+                    nameof(specialization));
 
             Id = Guid.NewGuid();
             Name = name ?? throw new ArgumentNullException(nameof(name));

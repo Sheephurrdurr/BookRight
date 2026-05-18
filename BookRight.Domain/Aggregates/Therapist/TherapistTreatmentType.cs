@@ -1,4 +1,6 @@
 ﻿
+using BookRight.Domain.Errors;
+
 namespace BookRight.Domain.Aggregates.Therapist
 {
     public class TherapistTreatmentType //Ingen configurations endnu...
@@ -13,13 +15,15 @@ namespace BookRight.Domain.Aggregates.Therapist
         public TherapistTreatmentType(Guid therapistId, Guid treatmentTypeId, decimal basePrice)
         {
             if (therapistId == Guid.Empty)
-                throw new ArgumentException("Therapist ID må ikke være tomt.", nameof(therapistId));
+                throw new ArgumentException(nameof(therapistId));
 
             if (treatmentTypeId == Guid.Empty)
-                throw new ArgumentException("Treatment Type ID må ikke være tomt.", nameof(treatmentTypeId));
+                throw new ArgumentException(nameof(treatmentTypeId));
 
             if (basePrice <= 0)
-                throw new ArgumentException("Prisen skal være højere end nul.", nameof(basePrice));
+                throw new ArgumentException(
+                    DomainErrorMessages.PriceMustBeGreaterThanZero,
+                    nameof(basePrice));
 
             Id = Guid.NewGuid();
             TherapistId = therapistId;
