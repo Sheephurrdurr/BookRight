@@ -16,7 +16,7 @@ namespace BookRight.Domain.ValueObjects
 			    throw new ArgumentException("Street cannot be empty,", nameof(street));
 			if (string.IsNullOrWhiteSpace(city))
 				throw new ArgumentException("City cannot be empty.", nameof(city));
-			if (string.IsNullOrWhiteSpace(PostalCode))
+			if (string.IsNullOrWhiteSpace(postalCode))
 				throw new ArgumentException("Postalcode cannot be empty.");
 
 			Street = street;

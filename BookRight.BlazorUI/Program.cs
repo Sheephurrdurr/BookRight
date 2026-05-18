@@ -1,16 +1,24 @@
 using BookRight.BlazorUI.Components;
-using BookRight.Facade.Interfaces;
 using BookRight.Infrastructure.Persistence;
 using BookRight.Infrastructure.Persistence.Repositories;
 using BookRight.Infrastructure.Repositories;
+using BookRight.Infrastructure;
+
 using BookRight.UseCases.CreateCustomer;
 using BookRight.UseCases.CreateTherapist;
 using BookRight.UseCases.GetAllCustomers;
 using BookRight.UseCases.GetallTherapists;
-using BookRight.UseCases.GetAllClinics; 
+using BookRight.UseCases.GetAllClinics;
+using BookRight.UseCases.CreateBooking;
+using BookRight.UseCases.GetAllTherapistTreatmentType;
+
 using BookRight.UseCases.Interfaces;
+
 using Microsoft.EntityFrameworkCore;
+using BookRight.Facade.Interfaces;
 using BookRight.Facade.Interfaces.ClinicsUseCases;
+using BookRight.Facade.Interfaces.TherapistUseCases;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +30,9 @@ builder.Services.AddRazorComponents()
 builder.Services.AddDbContext<BookRightDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register DI for DbSeeder
+builder.Services.AddScoped<DbSeeder>();
 
 // Register DI for repositories
 builder.Services.AddScoped<ITherapistRepository, TherapistRepository>();
@@ -35,9 +46,18 @@ builder.Services.AddScoped<ICreateTherapistUseCase, CreateTherapistUseCase>();
 builder.Services.AddScoped<ICreateCustomerUseCase, CreateCustomerUseCase>();
 builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
 builder.Services.AddScoped<IGetAllCustomersUseCase, GetAllCustomersUseCase>();
+builder.Services.AddScoped<ICreateBookingUseCase, CreateBookingUseCase>();
 builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
+builder.Services.AddScoped<IGetAllTherapistTreatmentTypesUseCase, GetAllTherapistTreatmentTypeUseCase>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dbSeeder = services.GetRequiredService<DbSeeder>();
+    await dbSeeder.SeedAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
