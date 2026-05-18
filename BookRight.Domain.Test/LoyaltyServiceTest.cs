@@ -155,7 +155,7 @@ namespace BookRight.Domain.Test
             cancelledBooking.Cancel();
 
             var noShowBooking = CreateBooking(currentDate.AddDays(-1), 1000);
-            noShowBooking.MarkAsNOShow();
+            noShowBooking.MarkAsNoShow();
 
             var bookings = new List<Booking>
             {
