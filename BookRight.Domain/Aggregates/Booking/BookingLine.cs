@@ -33,13 +33,11 @@ namespace BookRight.Domain.Aggregates.Booking
         {
             if (therapistTreatmentTypeId == Guid.Empty)
                 throw new ArgumentException(
-                    DomainErrorMessages.InvalidId,
                     nameof(therapistTreatmentTypeId));
 
             if (basePrice is null)
                 throw new ArgumentNullException(
-                    nameof(basePrice),
-                    DomainErrorMessages.ValueCannotBeNull);
+                    nameof(basePrice));
 
             if (discountPercent < 0 || discountPercent > 100)
                 throw new InvalidPercentageException();
