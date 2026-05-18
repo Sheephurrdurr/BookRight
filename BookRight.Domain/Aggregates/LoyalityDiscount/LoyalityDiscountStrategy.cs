@@ -1,4 +1,4 @@
-﻿using Microsoft.Identity.Client;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +8,7 @@ namespace BookRight.Domain.Aggregates.LoyalityDiscount
 	public class LoyalityDiscountStrategy
 	{
 	   public Guid Id { get; private set; }
-		public string Level { get; private set; } = null;
+		public string Level { get; private set; } = null!;
 		public decimal DiscountPercent { get; private set; }
 		public decimal MinSpend { get; private set; }
 		public decimal MaxSpend { get; private set; }
@@ -29,7 +29,7 @@ namespace BookRight.Domain.Aggregates.LoyalityDiscount
 			if (discountPercent <= 0 || discountPercent  > 100)
 				throw new ArgumentException("Rabat skal være mellem 0 og 100.");
 
-			if(minSpend != decimal.MaxValue && maxSpend < minSpend)
+			if(minSpend < 0)
 			throw new ArgumentException("Minimumsbeløb må ikke være negativt.");
 
 			if (maxSpend != decimal.MaxValue && maxSpend < minSpend)
@@ -48,7 +48,7 @@ namespace BookRight.Domain.Aggregates.LoyalityDiscount
 			if (totalSpend >= 25_000)
 				return new LoyalityDiscountStrategy("Guld", 15, 25_000, decimal.MaxValue);
 
-			if (totalSpend  >= 10_000)
+			if (totalSpend  >= 10_001)
 				return new LoyalityDiscountStrategy("Sølv", 10, 10_001, 25_000);
 
 			if (totalSpend >= 3_000)

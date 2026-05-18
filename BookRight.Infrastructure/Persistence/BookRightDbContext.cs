@@ -2,6 +2,7 @@
 using BookRight.Domain.Aggregates.CampaignDiscount;
 using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.Customer;
+using BookRight.Domain.Aggregates.LoyalityDiscount;
 using BookRight.Domain.Aggregates.Therapist;
 using BookRight.Domain.Aggregates.TreatmentType;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ namespace BookRight.Infrastructure.Persistence
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<CampaignDiscount> CampaignDiscounts { get; set; }
         public DbSet<TreatmentType> TreatmentTypes {  get; set; }
+        public DbSet<LoyalityDiscountStrategy> LoyalityDicount { get; set; }
 
         public BookRightDbContext(DbContextOptions<BookRightDbContext> options)
             : base(options)
