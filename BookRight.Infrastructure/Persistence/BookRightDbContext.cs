@@ -4,8 +4,9 @@ using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.Aggregates.Therapist;
 using BookRight.Domain.Aggregates.TreatmentType;
+using BookRight.Domain.DomainService;
 using Microsoft.EntityFrameworkCore;
-
+using BookRight.Domain.DomainService;
 namespace BookRight.Infrastructure.Persistence
 {
     public class BookRightDbContext : DbContext
