@@ -1,8 +1,8 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.Enums;
+using BookRight.Domain.Services;
 using BookRight.Domain.ValueObjects;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
-using BookRight.Facade.DTOs.ValueObjectDTOs;
 using BookRight.Facade.Interfaces;
 using BookRight.UseCases.Interfaces;
 
@@ -11,20 +11,23 @@ namespace BookRight.UseCases.CreateBooking
 {
     public class CreateBookingUseCase : ICreateBookingUseCase
     {
-        private readonly Interfaces.IBookingRepository _bookingRepository;
-        private readonly Interfaces.ICustomerRepository _customerRepository;
+        private readonly IBookingRepository _bookingRepository;
+        private readonly ICustomerRepository _customerRepository;
         private readonly IClinicRepository _clinicRepository;
+        private readonly LoyaltyService _loyaltyService;
 
         public CreateBookingUseCase(
-            Interfaces.IBookingRepository bookingRepository,
-            Interfaces.ICustomerRepository customerRepository,
-            IClinicRepository clinicRepository)
+            IBookingRepository bookingRepository,
+            ICustomerRepository customerRepository,
+            IClinicRepository clinicRepository,
+            LoyaltyService loyaltyService)
         {
             _bookingRepository = bookingRepository;
 
             _clinicRepository = clinicRepository;
             _customerRepository = customerRepository;
 
+            _loyaltyService = new LoyaltyService(); // Initialize the loyalty service, which will be used to determine the customer's loyalty level based on their completed bookings.
         }
 
         public async Task<CreateBookingResponse> ExecuteAsync (CreateBookingRequest request)
@@ -40,7 +43,11 @@ namespace BookRight.UseCases.CreateBooking
             if (clinic == null)
                 throw new KeyNotFoundException($"Clinic with Id: {request.ClinicId} does not exist.");
 
-            var timeSlot = new TimeSlot(request.TimeSlot.StartTime, request.TimeSlot.EndTime); 
+            var completedBookings = await _bookingRepository.GetAllBookingsByCustomerIdAsync(request.CustomerId);
+
+            var loyaltyLevel = _loyaltyService.GetLoyaltyLevel(completedBookings, DateTime.Now);
+
+            var timeSlot = new TimeSlot(request.TimeSlot.StartTime, request.TimeSlot.EndTime);
 
             // Opret booking via domain factory
             var booking = new Booking(
@@ -49,7 +56,8 @@ namespace BookRight.UseCases.CreateBooking
                 request.ClinicId,
                 timeSlot
             );
-                request.Lines
+
+            request.Lines
                 .Select(lineRequest => new BookingLine(
                 lineRequest.TherapistTreatmentTypeId,
                 new Money(lineRequest.BasePrice),

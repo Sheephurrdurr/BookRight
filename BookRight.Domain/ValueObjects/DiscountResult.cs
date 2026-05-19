@@ -1,4 +1,5 @@
 ﻿using System;
+using BookRight.Domain.Enums;
 
 namespace BookRight.Domain.ValueObjects
 {
@@ -9,22 +10,22 @@ namespace BookRight.Domain.ValueObjects
     {
         public Money OriginalPrice { get; }
         public Money DiscountedPrice { get; }
-        public string DiscountName { get; }
+        public DiscountType AppliedDiscount { get; }
 
         public DiscountResult(
             Money originalPrice,
             Money discountedPrice,
-            string discountName)
+            DiscountType appliedDiscount)
         {
             OriginalPrice = originalPrice;
             DiscountedPrice = discountedPrice;
-            DiscountName = discountName;
+            AppliedDiscount = appliedDiscount;
         }
 
         public int CompareTo(DiscountResult? other)
         {
             if (other is null)
-                return -1;
+                return 1;
 
             return DiscountedPrice.Value
                 .CompareTo(other.DiscountedPrice.Value);
