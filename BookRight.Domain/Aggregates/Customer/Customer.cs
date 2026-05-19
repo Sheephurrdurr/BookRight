@@ -33,6 +33,11 @@ public class Customer
         PreferredTherapistId = preferredTherapistId; 
     }
 
+    public void UpdateHealthNotes(string? healthNotes)
+    {
+        HealthNotes = healthNotes;
+    }
+
     public bool IsEligibleForBirthdayDiscount(DateOnly treatmentDate)
     {
         bool IsBirthdayMonth = treatmentDate.Month == DateOfBirth.Month;
