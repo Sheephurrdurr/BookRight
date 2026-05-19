@@ -13,6 +13,7 @@ public class Customer
     public DateOnly DateOfBirth { get; private set; }
     public string? HealthNotes { get; private set; } //Nullable
     public Guid? PreferredTherapistId { get; private set; } //Nullable
+    public int? BirthdayDiscount { get; private set; }
 
     private Customer() { }
 
@@ -32,5 +33,14 @@ public class Customer
         DateOfBirth = dateOfBirth;
         HealthNotes = healthNotes;
         PreferredTherapistId = preferredTherapistId;
+    }
+
+    public bool IsEligibleForBirthdayDiscount(DateOnly treatmentDate)
+    {
+        bool IsBirthdayMonth = treatmentDate.Month == DateOfBirth.Month;
+
+        bool alreadyUsedDiscountThisYear = BirthdayDiscount == treatmentDate.Year;
+
+        return IsBirthdayMonth && !alreadyUsedDiscountThisYear;
     }
 } 
