@@ -1,4 +1,6 @@
-﻿using BookRight.Domain.ValueObjects;
+﻿    using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Errors;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.Customer;
 public class Customer
@@ -10,34 +12,33 @@ public class Customer
     public DateOnly DateOfBirth { get; private set; }
     public string? HealthNotes { get; private set; } //Nullable
     public Guid? PreferredTherapistId { get; private set; } //Nullable
-
+    public int? BirthdayDiscount { get; private set; }
     private Customer() { }
 
     public Customer(FullName name, Email email, PhoneNumber phone, DateOnly dateOfBirth, string? healthNotes, Guid? preferredTherapistId)
     {
         Id = Guid.NewGuid();
 
-        Name = name ?? throw new ArgumentNullException(nameof(name));
+        Name = name ?? throw new ArgumentNullException(nameof(name)); //Nullchecks
         Email = email ?? throw new ArgumentNullException(nameof(email));
         Phone = phone ?? throw new ArgumentNullException(nameof(phone));
 
-        if (dateOfBirth == default) throw new ArgumentException("Fødselsdato skal udfyldes.", nameof(dateOfBirth));
+        if (dateOfBirth == default) //ErrorMessage
+            throw new ArgumentException(
+                DomainErrorMessages.DateOfBirthIsRequired,
+                nameof(dateOfBirth));
 
         DateOfBirth = dateOfBirth;
         HealthNotes = healthNotes;
         PreferredTherapistId = preferredTherapistId; 
     }
 
-    // Controlled access to sensitive data: Health notes are only modifiable through this method.
-    // This ensures that any changes to health notes are intentional and go through the proper channels, maintaining data integrity and security.
-    public void UpdateHealthNotes(string? healthNotes)
+    public bool IsEligibleForBirthdayDiscount(DateOnly treatmentDate)
     {
-        HealthNotes = healthNotes;
-    }
+        bool IsBirthdayMonth = treatmentDate.Month == DateOfBirth.Month;
 
-    // Prevents health note property from every being exposed outside of the aggregate. Only way to update it is through this method, which is part of the aggregate's behavior.
-    // GDPR compliance: Health notes are sensitive personal data, so we want to ensure that they are only accessible and modifiable through controlled methods within the aggregate.
-    public override string ToString() => 
-        $"Customer {{ Id={Id}, Name={Name}  }}";
-    
+        bool alreadyUsedDiscountThisYear = BirthdayDiscount == treatmentDate.Year;
+
+        return IsBirthdayMonth && !alreadyUsedDiscountThisYear;
+    }
 } 

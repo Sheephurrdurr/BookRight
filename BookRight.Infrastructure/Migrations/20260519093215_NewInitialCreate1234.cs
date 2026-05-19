@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookRight.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate_1151w4t15h4pp3n1ng : Migration
+    public partial class NewInitialCreate1234 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -67,7 +67,8 @@ namespace BookRight.Infrastructure.Migrations
                     Phone_Value = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
                     HealthNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    PreferredTherapistId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    PreferredTherapistId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    BirthdayDiscount = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

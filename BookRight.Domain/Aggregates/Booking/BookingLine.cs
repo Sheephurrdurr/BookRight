@@ -1,5 +1,7 @@
 ﻿using BookRight.Domain.Aggregates.AddOn;
 using BookRight.Domain.Enums;
+using BookRight.Domain.Errors;
+using BookRight.Domain.Exceptions;
 using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.Booking
@@ -30,13 +32,16 @@ namespace BookRight.Domain.Aggregates.Booking
             AddOn.AddOn? addOn = null)
         {
             if (therapistTreatmentTypeId == Guid.Empty)
-                throw new ArgumentException("TherapistTreatmentTypeId cannot be empty.", nameof(therapistTreatmentTypeId));
+                throw new ArgumentException(
+                    nameof(therapistTreatmentTypeId));
 
             if (basePrice is null)
-                throw new ArgumentNullException(nameof(basePrice));
+                throw new ArgumentNullException(
+                    nameof(basePrice));
 
             if (discountPercent < 0 || discountPercent > 100)
-                throw new ArgumentException("DiscountPercent must be between 0 and 100.", nameof(discountPercent));
+                throw new InvalidPercentageException();
+
 
             Id = Guid.NewGuid();
             TherapistTreatmentTypeId = therapistTreatmentTypeId;

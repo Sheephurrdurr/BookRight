@@ -1,4 +1,6 @@
-﻿using BookRight.Domain.ValueObjects;
+﻿using BookRight.Domain.Errors;
+using BookRight.Domain.Exceptions;
+using BookRight.Domain.ValueObjects;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -23,11 +25,16 @@ namespace BookRight.Domain.Aggregates.Therapist
                 bool isWorking)
         {
             if (therapistId == Guid.Empty)
-                throw new ArgumentException("TherapistId må ikke være tom.");
+                throw new ArgumentException(nameof(therapistId)); //Only for developers. Errormessages is only for UI.
+
             if (clinicId == Guid.Empty)
-                throw new ArgumentException("ClinicId må ikke vare tom.");
+                throw new ArgumentException(nameof(clinicId));
+
             if (date < DateOnly.FromDateTime(DateTime.Today))
-                throw new ArgumentException("Dato må ikke være i fortidden.");
+                throw new ArgumentException(
+                    DomainErrorMessages.DateCannotBeBeforeToday,
+                    nameof(date));
+
             return new TherapistSchedule
             {
                 Id = Guid.NewGuid(),
@@ -37,28 +44,36 @@ namespace BookRight.Domain.Aggregates.Therapist
                 IsWorking = isWorking
             };
         }
-   
+
 
         public bool IsAvailable(TimeSlot slot)
         {
-           if (IsWorking == false)
-                return false;
-           foreach (TimeSlot t in _blockedSlots)
-                if (t.OverlapsWith(slot))
-                    return false;
-            return true;
-        }
-        public void BlockSlot(TimeSlot slot)
-        {
-            if (slot == null)
-                throw new ArgumentException("Vendligst andgi et tidspunkt");
+            if (slot is null)
+                throw new ArgumentNullException(nameof(slot)); //No errormessage, only for developers
+
             if (IsWorking == false)
-                throw new ArgumentException("Behandler arbejder ikke på dette tidspunkt");
+                return false;
+
             foreach (TimeSlot t in _blockedSlots)
                 if (t.OverlapsWith(slot))
-                    throw new ArgumentException("Behandler har allerde behandling på dette tidspunkt"); 
-            _blockedSlots.Add(slot);
+                    return false;
 
+            return true;
+        }
+
+        public void BlockSlot(TimeSlot slot)
+        {
+            if (slot is null)
+                throw new ArgumentNullException(nameof(slot));
+
+            if (IsWorking == false)
+                 throw new TherapistIsNotAvailableException(); //Custom exception
+
+            foreach (TimeSlot t in _blockedSlots)
+                if (t.OverlapsWith(slot))
+                    throw new TherapistAlreadyHasBookingException(); //Custom exception
+
+            _blockedSlots.Add(slot);
         }
     }
 }
