@@ -21,19 +21,19 @@ namespace BookRight.Domain.Aggregates.Booking
         public Booking(Guid id, Guid customerId, Guid clinicId, TimeSlot timeSlot)
         {
             if (id == Guid.Empty)
-                throw new ArgumentException("Id cannot be empty.", nameof(id));
+                throw new ArgumentException(nameof(id)); //No need for errormessages, because thy'll never be displayed in the UI.
 
             if (customerId == Guid.Empty)
-                throw new ArgumentException("CustomerId cannot be empty.", nameof(customerId));
+                throw new ArgumentException(nameof(customerId));
 
             if (clinicId == Guid.Empty)
-                throw new ArgumentException("ClinicId cannot be empty.", nameof(clinicId));
+                throw new ArgumentException(nameof(clinicId));
 
             if (timeSlot is null)
                 throw new ArgumentNullException(nameof(timeSlot));
 
             Id = id;
-            CustomerId = customerId;
+            CustomerId = customerId; 
             ClinicId = clinicId;
             TimeSlot = timeSlot;
             Status = BookingStatus.Confirmed;
@@ -41,7 +41,7 @@ namespace BookRight.Domain.Aggregates.Booking
 
         public void AddLine(BookingLine line)
         {
-            if (line == null)
+            if (line is null)
                 throw new ArgumentNullException(nameof(line));
 
             _lines.Add(line);
@@ -71,7 +71,9 @@ namespace BookRight.Domain.Aggregates.Booking
         }
 
         // MarkAsNoshow
-        public void MarkAsNOShow()
+        // Changes the booking status to NoShow.
+
+        public void MarkAsNoShow()
         {
             Status = BookingStatus.NoShow;
         }
