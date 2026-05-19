@@ -1,6 +1,12 @@
-﻿using System;
+﻿using BookRight.Domain.Exceptions;
+using System;
 
 namespace BookRight.Domain.ValueObjects
+
+//Represents a monetary value in the domain. It's a VO, meaning it's compared by it's value instead memory reference.
+//The Money object ensures that Money never can't be negative, invalid calculations are prevented.
+//Ex. 
+// Instead of using decimal directly everywhere in the system, we wrap it inside Money to protect domain logic.
 {
     // public  -> Kan bruges fra andre layers/projekter.
     // sealed  -> Kan ikke nedarves.
@@ -12,29 +18,26 @@ namespace BookRight.Domain.ValueObjects
         public Money(decimal value)
         {
             if (value < 0)
-                throw new ArgumentException(
-                    "Money cannot be negative.");
+                throw new ArgumentException(nameof(value));
 
             Value = value;
         }
 
-        public static Money operator +(Money left, Money right)
-            => new(left.Value + right.Value);
+        public static Money operator +(Money amount, Money amountToAdd)
+    => new(amount.Value + amountToAdd.Value);
 
-        public static Money operator -(Money left, Money right)
+        public static Money operator -(Money amount, Money amountToSubtract) //Thrown when attempting to subtract more Money than available
         {
-            if (right.Value > left.Value)
-                throw new InvalidOperationException(
-                    "Cannot subtract more than the current value.");
+            if (amountToSubtract.Value > amount.Value)
+                throw new InsufficientAmountException(); //CustomException
 
-            return new Money(left.Value - right.Value);
+            return new Money(amount.Value - amountToSubtract.Value);
         }
 
         public static Money operator *(Money money, decimal multiplier)
         {
             if (multiplier < 0)
-                throw new ArgumentException(
-                    "Multiplier cannot be negative.");
+                throw new ArgumentException(nameof(multiplier));
 
             return new Money(money.Value * multiplier);
         }
@@ -52,24 +55,24 @@ namespace BookRight.Domain.ValueObjects
             return $"{Value:0.00} kr";
         }
 
-        public static bool operator >(Money left, Money right)
+        public static bool operator >(Money amount, Money otherAmount)
         {
-            return left.Value > right.Value;
+            return amount.Value > otherAmount.Value;
         }
 
-        public static bool operator <(Money left, Money right)
+        public static bool operator <(Money amount, Money otherAmount)
         {
-            return left.Value < right.Value;
+            return amount.Value < otherAmount.Value;
         }
 
-        public static bool operator >=(Money left, Money right)
+        public static bool operator >=(Money amount, Money otherAmount)
         {
-            return left.Value >= right.Value;
+            return amount.Value >= otherAmount.Value;
         }
 
-        public static bool operator <=(Money left, Money right)
+        public static bool operator <=(Money amount, Money otherAmount)
         {
-            return left.Value <= right.Value;
+            return amount.Value <= otherAmount.Value;
         }
     }
 }

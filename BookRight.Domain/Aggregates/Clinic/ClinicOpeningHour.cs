@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BookRight.Domain.Errors;
+using System;
 
 namespace BookRight.Domain.Aggregates.Clinic
 {
@@ -19,10 +20,12 @@ namespace BookRight.Domain.Aggregates.Clinic
         public ClinicOpeningHour(Guid clinicId, DayOfWeek dayOfWeek, TimeOnly openTime, TimeOnly closeTime)
         {
             if (clinicId == Guid.Empty)
-                throw new ArgumentException("ClinicId må ikke være tom.", nameof(clinicId));
+                throw new ArgumentException(nameof(clinicId));
 
             if (openTime >= closeTime)
-                throw new ArgumentException("Åbningstid skal være før lukketid.");
+                throw new ArgumentException(
+                    DomainErrorMessages.OpeningTimeMustBeBeforeClosingTime,
+                    nameof(openTime));
 
             Id = Guid.NewGuid();
             ClinicId = clinicId;
