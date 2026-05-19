@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BookRight.Domain.Errors;
+using System;
 
 namespace BookRight.Domain.ValueObjects
 {
@@ -11,7 +12,7 @@ namespace BookRight.Domain.ValueObjects
         {
             if (start >= end)
                 throw new ArgumentException(
-                    "Start skal være før end.",
+                    DomainErrorMessages.EndDateCannotBeBeforeStartDate,
                     nameof(start));
 
             Start = start;
@@ -20,6 +21,8 @@ namespace BookRight.Domain.ValueObjects
 
         public bool Overlaps(DateRange other)
         {
+            if (other is null)
+                throw new ArgumentNullException(nameof(other)); //Guard clause
             return Start < other.End &&
                    End > other.Start;
         }

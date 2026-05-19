@@ -39,5 +39,10 @@ namespace BookRight.Infrastructure.Persistence.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public Task GetByIdAsync(object customerId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
