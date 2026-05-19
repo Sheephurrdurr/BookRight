@@ -14,17 +14,18 @@ namespace BookRight.UseCases.GetCustomerById
 
         public async Task<GetCustomerByIdResponse> ExecuteAsync(Guid customerId)
         {
-            var customers = await _repository.GetByIdAsync(customerId);
+            var customer = await _repository.GetByIdAsync(customerId);
 
-            return customers.Select(c => new GetCustomerByIdResponse(
-                c.Id,
-                c.Name.FirstName,
-                c.Name.LastName,
-                c.Email.Value,
-                c.Phone.Value,
-                c.Birth
-                
-            )).ToList();
+            return new GetCustomerByIdResponse(
+                customer.Id,
+                customer.Name.FirstName,
+                customer.Name.LastName,
+                customer.Email.Value,
+                customer.Phone.Value,
+                customer.DateOfBirth,
+                customer.PreferredTherapistId
+            ); 
+          
         }
     }
 }
