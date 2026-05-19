@@ -1,9 +1,9 @@
-﻿using BookRight.Facade.DTOs.GetCustomerHealthNotesDTOs;
+﻿using BookRight.Facade.DTOs.ChangeCustomerHealthNotesDTOs;
 
 namespace BookRight.Facade.Interfaces.CustomerUseCases
 {
     public interface IChangeCustomerHealthNotesUseCase
     {
-        Task<CustomerHealthNotesResponse> ExecuteAsync(Guid customerId);
+        Task ExecuteAsync(ChangeCustomerHealthNotesRequest request);
     }
 }
