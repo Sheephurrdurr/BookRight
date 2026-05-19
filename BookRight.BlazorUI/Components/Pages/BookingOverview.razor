@@ -1,0 +1,144 @@
+﻿@page "/booking-overview"
+@rendermode InteractiveServer
+
+@using BookRight.Domain.Enums
+@using BookRight.Domain.Aggregates.Booking
+@using BookRight.Domain.Aggregates.Clinic
+@using BookRight.Facade.DTOs.MarkBookingAsNoShowDTOs
+@using BookRight.Facade.Interfaces.BookingUseCases
+@using BookRight.UseCases.Interfaces
+
+@inject IBookingRepository BookingRepository
+@inject IClinicRepository ClinicRepository
+@inject IMarkBookingAsNoShowUseCase MarkBookingAsNoShowUseCase
+
+<PageTitle>Booking Overview</PageTitle>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Booking Overview</h3>
+    </div>
+
+    <div class="card-body">
+        <div class="mb-3">
+            <label class="form-label">Select clinic</label>
+
+            <select class="form-select" @bind="selectedClinicId">
+                <option value="">-- Select clinic --</option>
+
+                @foreach (var clinic in clinics)
+                {
+                    <option value="@clinic.Id">@clinic.Name</option>
+                }
+            </select>
+        </div>
+
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="@alertClass">
+                @message
+            </div>
+        }
+
+        @if (string.IsNullOrEmpty(selectedClinicId))
+        {
+            <p>Please select a clinic to see today's bookings.</p>
+        }
+        else if (!FilteredBookings.Any())
+        {
+            <p>No bookings found for this clinic today.</p>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Customer ID</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var booking in FilteredBookings)
+                    {
+                        <tr>
+                            <td>@booking.TimeSlot.StartTime.ToString("HH:mm")</td>
+                            <td>@booking.CustomerId</td>
+                            <td>
+                                @if (booking.Status == BookingStatus.NoShow)
+                                {
+                                    <span class="badge bg-danger">No-show</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@booking.Status</span>
+                                }
+                            </td>
+                            <td>
+                                @if (booking.Status == BookingStatus.Confirmed)
+                                {
+                                    <button class="btn btn-danger btn-sm"
+                                            @onclick="() => RegisterBookingAsNoShow(booking.Id)">
+                                        Register No-show
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@code {
+    private IReadOnlyList<Booking> bookings = new List<Booking>();
+    private IReadOnlyList<Clinic> clinics = new List<Clinic>();
+
+    private string selectedClinicId = "";
+    private string message = "";
+    private string alertClass = "";
+
+    private IEnumerable<Booking> FilteredBookings =>
+        bookings
+            .Where(b =>
+                b.ClinicId.ToString() == selectedClinicId &&
+                b.TimeSlot.StartTime.Date == DateTime.Today)
+            .OrderBy(b => b.TimeSlot.StartTime);
+
+    protected override async Task OnInitializedAsync()
+    {
+        clinics = await ClinicRepository.GetAllAsync();
+        bookings = await BookingRepository.GetAllAsync();
+    }
+
+    // Registers the selected booking as No-show.
+    private async Task RegisterBookingAsNoShow(Guid bookingId)
+    {
+        try
+        {
+            var request = new MarkBookingAsNoShowRequest
+            {
+                BookingId = bookingId
+            };
+
+            await MarkBookingAsNoShowUseCase.ExecuteAsync(request);
+
+            message = "Booking was registered as No-show.";
+            alertClass = "alert alert-success";
+
+            bookings = await BookingRepository.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+            alertClass = "alert alert-danger";
+        }
+    }
+}
