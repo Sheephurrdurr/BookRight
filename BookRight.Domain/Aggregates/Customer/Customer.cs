@@ -5,7 +5,6 @@ using BookRight.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookRight.Domain.Aggregates.Customer;
-
 public class Customer
 {
     public Guid Id { get; private set; }
@@ -32,7 +31,12 @@ public class Customer
 
         DateOfBirth = dateOfBirth;
         HealthNotes = healthNotes;
-        PreferredTherapistId = preferredTherapistId;
+        PreferredTherapistId = preferredTherapistId; 
+    }
+
+    public void UpdateHealthNotes(string? healthNotes)
+    {
+        HealthNotes = healthNotes;
     }
 
 } 
