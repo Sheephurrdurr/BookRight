@@ -8,7 +8,7 @@ using BookRight.Facade.Interfaces.DiscountUseCases;
 
 namespace BookRight.UseCases.Appointments
 {
-    public class CalculateAppointmentPriceUseCase : IAppointmentsUseCase
+   /* public class CalculateAppointmentPriceUseCase : IAppointmentsUseCase
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly ITreatmentTypeRepository _treatmentTypeRepository;
@@ -37,5 +37,5 @@ namespace BookRight.UseCases.Appointments
 
             return finalPrice;
         }
-    }
+    }*/
 }

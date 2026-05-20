@@ -5,7 +5,7 @@ using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.Facade.DTOs.ValueObjectDTOs;
 using BookRight.Facade.Interfaces;
 using BookRight.UseCases.Interfaces;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace BookRight.UseCases.CreateBooking
 {
@@ -14,7 +14,6 @@ namespace BookRight.UseCases.CreateBooking
         private readonly Interfaces.IBookingRepository _bookingRepository;
         private readonly Interfaces.ICustomerRepository _customerRepository;
         private readonly IClinicRepository _clinicRepository;
-
         public CreateBookingUseCase(
             Interfaces.IBookingRepository bookingRepository,
             Interfaces.ICustomerRepository customerRepository,
@@ -24,7 +23,6 @@ namespace BookRight.UseCases.CreateBooking
 
             _clinicRepository = clinicRepository;
             _customerRepository = customerRepository;
-
         }
 
         public async Task<CreateBookingResponse> ExecuteAsync (CreateBookingRequest request)
