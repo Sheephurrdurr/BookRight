@@ -29,6 +29,12 @@ namespace BookRight.Infrastructure.Persistence.Repositories
                .AnyAsync(t => t.Email.Value == email.ToLowerInvariant());
         }
 
+        public async Task UpdateAsync(Customer customer)
+        {
+            _context.Customers.Update(customer);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task AddAsync(Customer customer)
         {
             _context.Customers.Add(customer);
