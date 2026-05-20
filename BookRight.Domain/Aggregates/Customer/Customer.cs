@@ -13,7 +13,6 @@ public class Customer
     public DateOnly DateOfBirth { get; private set; }
     public string? HealthNotes { get; private set; } //Nullable
     public Guid? PreferredTherapistId { get; private set; } //Nullable
-    public int? BirthdayDiscount { get; private set; }
     private Customer() { }
 
     public Customer(FullName name, Email email, PhoneNumber phone, DateOnly dateOfBirth, string? healthNotes, Guid? preferredTherapistId)
