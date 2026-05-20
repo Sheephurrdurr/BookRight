@@ -1,10 +1,13 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 @using BookRight.Facade.Interfaces
+@using BookRight.Facade.Interfaces.ClinicsUseCases
 @using BookRight.Facade.DTOs.GetAllCustomersDTOs
 @using BookRight.Facade.DTOs.GetAllTherapistsDTOs
 @using BookRight.Facade.DTOs.CreateTherapistDTOs
 @using BookRight.Facade.DTOs.CreateCustomerDTOs
+@using BookRight.Facade.DTOs.GetAllClinicsDTOs
+@inject IGetAllClinicsUseCase GetAllClinicsUseCase
 @inject ICreateTherapistUseCase CreateTherapistUseCase
 @inject ICreateCustomerUseCase CreateCustomerUseCase
 @inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
