@@ -1,4 +1,4 @@
-﻿using BookRight.Domain.Aggregates.Booking;
+﻿    using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.Errors;
 using BookRight.Domain.ValueObjects;
 
@@ -14,7 +14,6 @@ public class Customer
     public string? HealthNotes { get; private set; } //Nullable
     public Guid? PreferredTherapistId { get; private set; } //Nullable
     public int? BirthdayDiscount { get; private set; }
-
     private Customer() { }
 
     public Customer(FullName name, Email email, PhoneNumber phone, DateOnly dateOfBirth, string? healthNotes, Guid? preferredTherapistId)

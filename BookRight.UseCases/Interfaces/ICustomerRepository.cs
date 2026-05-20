@@ -9,6 +9,5 @@ namespace BookRight.UseCases.Interfaces
         Task<IReadOnlyList<Customer>> GetAllAsync();
         Task AddAsync(Customer customer);
         Task SaveAsync();
-        Task GetByIdAsync(object customerId);
     }
 }

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BookRight.UseCases.Interfaces
+
+namespace BookRight.Facade.Interfaces.DiscountUseCases
 {
     public interface IAppointmentsUseCase
     {

@@ -1,9 +1,10 @@
-﻿using Azure.Core;
-using BookRight.Domain.Services;
+﻿using BookRight.Domain.Services;
 using BookRight.UseCases.Interfaces;
+using BookRight.Facade.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using BookRight.Facade.Interfaces.DiscountUseCases;
 
 namespace BookRight.UseCases.Appointments
 {
