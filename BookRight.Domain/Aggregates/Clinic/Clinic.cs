@@ -1,4 +1,5 @@
-﻿using BookRight.Domain.Errors;
+﻿using BookRight.Domain.Aggregates.Therapist;
+using BookRight.Domain.Errors;
 using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.Clinic
@@ -16,6 +17,9 @@ namespace BookRight.Domain.Aggregates.Clinic
 
         // Andre klasser kan kun læse åbningstiderne, ikke ændre dem direkte
         public IReadOnlyCollection<ClinicOpeningHour> OpeningHours => _openingHours.AsReadOnly();
+
+        private readonly List<TherapistSchedule> _therapistSchedules = new();
+        public IReadOnlyCollection<TherapistSchedule> TherapistSchedules => _therapistSchedules.AsReadOnly();
 
         private Clinic() { }
 
