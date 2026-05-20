@@ -5,7 +5,7 @@ using BookRight.Domain.ValueObjects;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.Facade.Interfaces;
 using BookRight.UseCases.Interfaces;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace BookRight.UseCases.CreateBooking
 {
@@ -14,8 +14,6 @@ namespace BookRight.UseCases.CreateBooking
         private readonly IBookingRepository _bookingRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IClinicRepository _clinicRepository;
-        private readonly LoyaltyService _loyaltyService;
-
         public CreateBookingUseCase(
             IBookingRepository bookingRepository,
             ICustomerRepository customerRepository,
@@ -26,8 +24,6 @@ namespace BookRight.UseCases.CreateBooking
 
             _clinicRepository = clinicRepository;
             _customerRepository = customerRepository;
-
-            _loyaltyService = new LoyaltyService(); // Initialize the loyalty service, which will be used to determine the customer's loyalty level based on their completed bookings.
         }
 
         public async Task<CreateBookingResponse> ExecuteAsync (CreateBookingRequest request)
