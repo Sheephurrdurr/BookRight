@@ -14,6 +14,7 @@ namespace BookRight.UseCases.CreateBooking
         private readonly IBookingRepository _bookingRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IClinicRepository _clinicRepository;
+        private readonly LoyaltyService _loyaltyService;
         public CreateBookingUseCase(
             IBookingRepository bookingRepository,
             ICustomerRepository customerRepository,
@@ -24,6 +25,8 @@ namespace BookRight.UseCases.CreateBooking
 
             _clinicRepository = clinicRepository;
             _customerRepository = customerRepository;
+
+            _loyaltyService = loyaltyService;
         }
 
         public async Task<CreateBookingResponse> ExecuteAsync (CreateBookingRequest request)

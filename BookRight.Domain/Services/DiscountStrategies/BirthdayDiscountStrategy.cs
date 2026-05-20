@@ -14,9 +14,6 @@ namespace BookRight.Domain.Services.DiscountStrategies
             var treatmentDate = DateOnly.FromDateTime(booking.TimeSlot.StartTime); 
             var originalPrice = booking.GetTotalPrice();
 
-            if (!customer.IsEligibleForBirthdayDiscount(treatmentDate)) 
-                return new DiscountResult(originalPrice, originalPrice, DiscountType.None);  // If customer is not eligible for a birthday discount,
-                                                                                            // return the original price as both the original and discounted price, along with a Status of None.
             var alreadyUsedDiscount = completedBookings.Any(b =>
                 b.Lines.Any(line => line.DiscountType == DiscountType.Birthday) &&           // Does any completed booking has a line with a Birthday discount?
                 DateOnly.FromDateTime(b.TimeSlot.StartTime).Month == treatmentDate.Month && // Does the month of the booking's time slot matches the month of the treatment date
