@@ -1,6 +1,8 @@
 ﻿    using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Enums;
 using BookRight.Domain.Errors;
 using BookRight.Domain.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookRight.Domain.Aggregates.Customer;
 
@@ -33,12 +35,4 @@ public class Customer
         PreferredTherapistId = preferredTherapistId;
     }
 
-    public bool IsEligibleForBirthdayDiscount(DateOnly treatmentDate)
-    {
-        bool IsBirthdayMonth = treatmentDate.Month == DateOfBirth.Month;
-
-        bool alreadyUsedDiscountThisYear = BirthdayDiscount == treatmentDate.Year;
-
-        return IsBirthdayMonth && !alreadyUsedDiscountThisYear;
-    }
 } 
