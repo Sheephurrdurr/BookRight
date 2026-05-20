@@ -17,7 +17,7 @@
 <PageTitle>BookRight Small - Test</PageTitle>
 
 <div class="container mt-4">
-    <h1 class="mb-4">BookRight Small</h1>
+    <h1 class="mb-4">BookRight</h1>
 
     <div class="row">
 
@@ -55,6 +55,8 @@
             </section>
         </article>
 
+
+
         <!-- CUSTOMER -->
         <article class="col-md-6">
             <section class="card">
@@ -86,6 +88,8 @@
                         <div class="alert @customerAlertClass mt-3">@customerMessage</div>
                     }
                 </div>
+
+
             </section>
         </article>
     </div>
@@ -149,6 +153,7 @@
                                     <th>Navn</th>
                                     <th>Email</th>
                                     <th>Telefon</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -158,6 +163,7 @@
                                         <td>@customer.FirstName @customer.LastName</td>
                                         <td>@customer.Email</td>
                                         <td>@customer.Phone</td>
+                                        <td><button class="btn btn-sm btn-outline-primary" @onclick="() => selectedCustomerId = customer.Id">Rediger helbredsnoter</button></td>
                                     </tr>
                                 }
                             </tbody>
@@ -167,6 +173,16 @@
             </section>
         </article>
     </div>
+
+    
+    @if (selectedCustomerId.HasValue)
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <CustomerHealthNotesEditor CustomerId="@selectedCustomerId.Value" />
+            </div>
+        </div>
+    }
 
 </div>
 
@@ -193,6 +209,9 @@
     // Lister der holder data fra GetAll, til at vise nyligt oprettede entities
     private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
     private IReadOnlyList<GetAllCustomersResponse> customers = new List<GetAllCustomersResponse>();
+
+    // HealthNotesEditor
+    private Guid? selectedCustomerId;
 
     protected override async Task OnInitializedAsync()
     {

@@ -6,7 +6,8 @@ namespace BookRight.UseCases.Interfaces
     {
         Task<Customer?> GetByIdAsync(Guid id);
         Task<bool> ExistsByEmailAsync(string email);
-        Task<IReadOnlyList<Customer>> GetAllAsync();
+        Task <IReadOnlyList<Customer>> GetAllAsync();
+        Task UpdateAsync(Customer customer);
         Task AddAsync(Customer customer);
         Task SaveAsync();
     }
