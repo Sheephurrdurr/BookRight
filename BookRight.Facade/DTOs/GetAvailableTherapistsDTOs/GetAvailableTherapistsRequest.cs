@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BookRight.Facade.DTOs.GetAvailableTherapistsDTOs
 {
-    public class GetAvailableTherapistsRequest
+    public record GetAvailableTherapistsRequest
     {
         public Guid ClinicId { get; set; }
         public DateOnly Date { get; set; }
