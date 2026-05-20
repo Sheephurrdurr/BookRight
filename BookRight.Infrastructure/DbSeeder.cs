@@ -140,29 +140,36 @@ namespace BookRight.Infrastructure
         {
             if (_context.Therapists.Any()) return;
 
+            var clinic1 = _context.Clinics.First(c => c.Name == "Klinik Vejle Ved Åen");
+            var clinic2 = _context.Clinics.First(c => c.Name == "Klinik Vejle Bredballe");
+            var clinic3 = _context.Clinics.First(c => c.Name == "Klinik Vejle Egtved");
             // Klinik Vejle Ved Åen
             var therapist1 = new Therapist(
                 new FullName("Hans", "Hansen"),
                 new Email("hansen@hans.com"),
-                "Massageterapeut"
+                "Massageterapeut",
+                clinic1.Id
             );
 
             var therapist2 = new Therapist(
                 new FullName("Lise", "Larsen"),
                 new Email("larsen@lise.com"),
-                "Fysioterapeut"
+                "Fysioterapeut",
+                clinic1.Id
              );
 
             var therapist3 = new Therapist(
                 new FullName("Peter", "Pedersen"),
                 new Email("pedersen@peter.com"),
-                "Kostvejleder"
+                "Kostvejleder",
+                clinic1.Id
             );
 
             var therapist4 = new Therapist(
                 new FullName("Anna", "Andersen"),
                 new Email("andersen@anna.com"),
-                "Akupunktør"
+                "Akupunktør",
+                clinic1.Id
             );
 
             // Klinik Vejle Bredballe
@@ -170,25 +177,29 @@ namespace BookRight.Infrastructure
             var therapist5 = new Therapist(
                 new FullName("Mette", "Madsen"),
                 new Email("madsen@mette.com"),
-                "Massageterapeut"
+                "Massageterapeut",
+                clinic2.Id
             );
 
             var therapist6 = new Therapist(
                 new FullName("Jens", "Jensen"),
                 new Email("jensen@jens.com"),
-                "Fysioterapeut"
+                "Fysioterapeut",
+                clinic2.Id
             );
 
             var therapist7 = new Therapist(
                 new FullName("Sofie", "Sørensen"),
                 new Email("sørensen@sofie.com"),
-                "Kostvejleder"
+                "Kostvejleder",
+                clinic2.Id
             );
 
             var therapist8 = new Therapist(
                 new FullName("Lars", "Larsen"),
                 new Email("larsen@lars.com"),
-                "Akupunktør"
+                "Akupunktør",
+                clinic2.Id
             );
 
             // Klinik Vejle Egtved
@@ -196,25 +207,29 @@ namespace BookRight.Infrastructure
             var therapist9 = new Therapist(
                 new FullName("Kirsten", "Kristensen"),
                 new Email("kristensen@kirsten.com"),
-                "Massageterapeut"
+                "Massageterapeut",
+                clinic3.Id
             );
 
             var therapist10 = new Therapist(
                 new FullName("Ole", "Olsen"),
                 new Email("olsen@ole.com"),
-                "Fysioterapeut"
+                "Fysioterapeut",
+                clinic3.Id
             );
 
             var therapist11 = new Therapist(
                 new FullName("Maria", "Møller"),
                 new Email("møller@maria.com"),
-                "Kostvejleder"
+                "Kostvejleder",
+                clinic3.Id
             );
 
             var therapist12 = new Therapist(
                 new FullName("Niels", "Nielsen"),
                 new Email("nielsen@niels.com"),
-                "Akupunktør"
+                "Akupunktør",
+                clinic3.Id
             );
 
             var sportsmassage30 = _context.TreatmentTypes.First(t => t.Name == "Sportsmassage 30 min.");
