@@ -11,8 +11,8 @@ namespace BookRight.Domain.Services.DiscountStrategies
 
         public DiscountResult CalculateDiscount(Customer customer, Booking booking, IEnumerable<Booking> completedBookings)
         {
-            var treatmentDate = DateOnly.FromDateTime(booking.TimeSlot.StartTime); // Save the treatment date for later use
-            var originalPrice = booking.GetTotalPrice(); // Get the original price of the booking through the GetTotalPrice method of the Booking aggregate
+            var treatmentDate = DateOnly.FromDateTime(booking.TimeSlot.StartTime); 
+            var originalPrice = booking.GetTotalPrice();
 
             if (!customer.IsEligibleForBirthdayDiscount(treatmentDate)) 
                 return new DiscountResult(originalPrice, originalPrice, DiscountType.None); // If the customer is not eligible for the birthday discount,
@@ -21,7 +21,7 @@ namespace BookRight.Domain.Services.DiscountStrategies
 
             // Calculate the discounted price by multiplying the original price by (1 - discount percentage).
             // (1 - dicount percentage) gives us the multiplier to apply to the original price to get the discounted price.
-            return new DiscountResult(originalPrice, originalPrice * (1m - _discountPercentage), DiscountType.Birthday); 
+            return new DiscountResult(originalPrice, originalPrice * (1m - _discountPercentage), DiscountType.Birthday); // (1 - 0.75) = 0.25, so the customer pays 25% of the original price.
         }
     }
 }

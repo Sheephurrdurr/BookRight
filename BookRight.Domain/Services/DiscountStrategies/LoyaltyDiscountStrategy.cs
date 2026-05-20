@@ -12,7 +12,7 @@ namespace BookRight.Domain.Services.DiscountStrategies
 
         public LoyaltyDiscountStrategy(LoyaltyService loyaltyService)
         {
-            _loyaltyService = loyaltyService; // Dependency injection of LoyaltyService
+            _loyaltyService = loyaltyService;
         }
 
         // Calculates the discount based on the customer's loyalty level, which is determined by their completed bookings in the last 12 months.
@@ -31,7 +31,7 @@ namespace BookRight.Domain.Services.DiscountStrategies
                 LoyaltyLevelType.Bronze => 0.95m,
                 LoyaltyLevelType.Silver => 0.90m,
                 LoyaltyLevelType.Gold => 0.85m,
-                _                   => 1.0m
+                _                   => 1.0m // Default case for any unexpected loyalty level, ensuring no discount is applied
             };
 
             var originalPrice = booking.GetTotalPrice(); // Get the original price of the booking before applying any discounts, via a method on the Booking aggregate
