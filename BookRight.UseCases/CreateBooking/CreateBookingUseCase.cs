@@ -31,19 +31,21 @@ namespace BookRight.UseCases.CreateBooking
 
         public async Task<CreateBookingResponse> ExecuteAsync (CreateBookingRequest request)
         {
-            // Valider at kunde findes
+            // Hent kunde via repository i infrastructure laget 
             var customer = await _customerRepository.GetByIdAsync(request.CustomerId);
 
             if (customer == null)
                 throw new KeyNotFoundException($"Customer with Id: {request.CustomerId} findes ikke.");
-            
+                        
             var clinic = await _clinicRepository.GetByIdAsync(request.ClinicId);
 
             if (clinic == null)
                 throw new KeyNotFoundException($"Clinic with Id: {request.ClinicId} does not exist.");
 
+            // Brug repository metode til at hente alle tidligere bookinger for kunden
             var completedBookings = await _bookingRepository.GetAllBookingsByCustomerIdAsync(request.CustomerId);
 
+            // Brug LoyaltyService til at beregne kundens loyalitetsniveau baseret på tidligere bookinger
             var loyaltyLevel = _loyaltyService.GetLoyaltyLevel(completedBookings, DateTime.Now);
 
             var timeSlot = new TimeSlot(request.TimeSlot.StartTime, request.TimeSlot.EndTime);
