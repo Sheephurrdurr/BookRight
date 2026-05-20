@@ -1,6 +1,6 @@
 ﻿using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.TreatmentType;
-using BookRight.Domain.Aggregates.Therapist;
+using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.ValueObjects;
 using BookRight.Infrastructure.Persistence;
@@ -61,7 +61,8 @@ namespace BookRight.Infrastructure
             var therapist1 = new Therapist(
                 new FullName("Hans", "Hansen"),
                 new Email("hansen@hans.com"),
-                "Massage"
+                "Massage",
+                clinicId
             );
 
             var treatmentType = _context.TreatmentTypes.First();

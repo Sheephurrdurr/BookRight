@@ -194,6 +194,7 @@
     private string therapistSpecialization = "";
     private string therapistMessage = "";
     private string therapistAlertClass = "";
+    private Guid clinicId = Guid.NewGuid(); //!!!!TODO: Replace temporary clinicId with selected ClinicId from UI dropdown
 
     // Customer form fields.
     private string customerFirstName = "";
@@ -232,7 +233,8 @@
                 therapistFirstName,
                 therapistLastName,
                 therapistEmail,
-                therapistSpecialization
+                therapistSpecialization,
+                clinicId
             );
 
             var response = await CreateTherapistUseCase.ExecuteAsync(request);

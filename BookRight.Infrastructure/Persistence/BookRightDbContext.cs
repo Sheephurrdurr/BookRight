@@ -2,7 +2,7 @@
 using BookRight.Domain.Aggregates.CampaignDiscount;
 using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.Customer;
-using BookRight.Domain.Aggregates.Therapist;
+using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.Domain.Aggregates.TreatmentType;
 using Microsoft.EntityFrameworkCore;
 

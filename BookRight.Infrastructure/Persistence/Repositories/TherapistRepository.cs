@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BookRight.Domain.Aggregates.Therapist;
+using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.UseCases.Interfaces;
 
 namespace BookRight.Infrastructure.Persistence.Repositories
