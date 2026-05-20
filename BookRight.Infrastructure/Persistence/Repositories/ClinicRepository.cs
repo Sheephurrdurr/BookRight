@@ -16,6 +16,7 @@ namespace BookRight.Infrastructure.Persistence.Repositories
         public async Task<Clinic?> GetByIdAsync(Guid clinicId) //Gets destinctive clinic by id
         {
             return await _context.Clinics
+                .Include(c => c.TherapistSchedules)
                 .FirstOrDefaultAsync(c => c.Id == clinicId);
         }
 

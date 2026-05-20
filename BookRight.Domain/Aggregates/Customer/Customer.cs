@@ -1,9 +1,10 @@
 ﻿    using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Enums;
 using BookRight.Domain.Errors;
 using BookRight.Domain.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookRight.Domain.Aggregates.Customer;
-
 public class Customer
 {
     public Guid Id { get; private set; }
@@ -13,7 +14,6 @@ public class Customer
     public DateOnly DateOfBirth { get; private set; }
     public string? HealthNotes { get; private set; } //Nullable
     public Guid? PreferredTherapistId { get; private set; } //Nullable
-    public int? BirthdayDiscount { get; private set; }
     private Customer() { }
 
     public Customer(FullName name, Email email, PhoneNumber phone, DateOnly dateOfBirth, string? healthNotes, Guid? preferredTherapistId)
@@ -31,15 +31,12 @@ public class Customer
 
         DateOfBirth = dateOfBirth;
         HealthNotes = healthNotes;
-        PreferredTherapistId = preferredTherapistId;
+        PreferredTherapistId = preferredTherapistId; 
     }
 
-    public bool IsEligibleForBirthdayDiscount(DateOnly treatmentDate)
+    public void UpdateHealthNotes(string? healthNotes)
     {
-        bool IsBirthdayMonth = treatmentDate.Month == DateOfBirth.Month;
-
-        bool alreadyUsedDiscountThisYear = BirthdayDiscount == treatmentDate.Year;
-
-        return IsBirthdayMonth && !alreadyUsedDiscountThisYear;
+        HealthNotes = healthNotes;
     }
+
 } 
