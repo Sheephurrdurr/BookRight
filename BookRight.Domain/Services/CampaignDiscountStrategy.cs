@@ -20,7 +20,7 @@ namespace BookRight.Domain.Services
         public DiscountResult CalculateDiscount(Customer customer, Booking booking, IEnumerable<Booking> completedBookings)
         {
             var originalPrice = booking.GetTotalPrice(); //Recieve base price of booking
-            return new DiscountResult(originalPrice, originalPrice * (1m - _discountPercent), DiscountType.Campaign.ToString()); //Calculate base price,
+            return new DiscountResult(originalPrice, originalPrice * (1m - _discountPercent), DiscountType.Campaign.ToString()); //Calculate base price *
         }
 
                                                    
