@@ -17,9 +17,10 @@ namespace BookRight.Domain.Enums
             // The percentage parameter is used to include the percentage in the display name for Loyalty and Campaign discounts.
             return discountType switch
             {
-                DiscountType.Loyalty => $"Loyalitetsrabat {percentage}%",
+                DiscountType.None => "0% rabat",
+                DiscountType.Loyalty => $"Loyalitetsrabat {percentage:0.#}%",
                 DiscountType.Birthday => $"Fødselsdagsrabat",
-                DiscountType.Campaign => $"{percentage}% rabat",
+                DiscountType.Campaign => $"{percentage:0.#}% rabat",
                 _ => throw new ArgumentOutOfRangeException(nameof(discountType))
             };
         }

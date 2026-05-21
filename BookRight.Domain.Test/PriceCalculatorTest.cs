@@ -79,7 +79,7 @@ namespace BookRight.Domain.Test
             var calculator = new PriceCalculatorService();
 
             // Act
-            var result = calculator.ApplyDiscount(basePrice, percentage, DiscountType.None);
+            var result = calculator.ApplyDiscount(basePrice, percentage, DiscountType.Campaign);
 
             // Assert
             Assert.Equal(new Money(400), result.OriginalPrice);
