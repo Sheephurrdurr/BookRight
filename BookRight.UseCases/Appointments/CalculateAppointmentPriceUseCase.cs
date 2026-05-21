@@ -1,5 +1,4 @@
-﻿using BookRight.Domain.Services;
-using BookRight.UseCases.Interfaces;
+﻿using BookRight.UseCases.Interfaces;
 using BookRight.Facade.Interfaces;
 using System;
 using System.Collections.Generic;

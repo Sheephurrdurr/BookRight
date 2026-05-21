@@ -10,17 +10,20 @@ namespace BookRight.Domain.ValueObjects
     {
         public Money OriginalPrice { get; }
         public Money DiscountedPrice { get; }
-        public DiscountType DiscountName { get; }
+        public DiscountType AppliedDiscount { get; }
+        public decimal DiscountPercentage =>
+            (1 - DiscountedPrice.Value / OriginalPrice.Value) * 100;
+        public string DiscountName => AppliedDiscount.ToDisplayName(DiscountPercentage);
 
 
         public DiscountResult(
             Money originalPrice,
             Money discountedPrice,
-            DiscountType discountName)
+            DiscountType appliedDiscount)
         {
             OriginalPrice = originalPrice;
             DiscountedPrice = discountedPrice;
-            DiscountName = discountName;
+            AppliedDiscount = appliedDiscount;
         }
 
         public int CompareTo(DiscountResult? other)
