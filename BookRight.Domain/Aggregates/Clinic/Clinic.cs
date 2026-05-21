@@ -1,4 +1,4 @@
-﻿using BookRight.Domain.Aggregates.Therapist;
+﻿using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.Domain.Errors;
 using BookRight.Domain.ValueObjects;
 
@@ -20,6 +20,10 @@ namespace BookRight.Domain.Aggregates.Clinic
 
         private readonly List<TherapistSchedule> _therapistSchedules = new();
         public IReadOnlyCollection<TherapistSchedule> TherapistSchedules => _therapistSchedules.AsReadOnly();
+
+        private readonly List<Therapist> _therapists = new(); //Private list of therapists at THIS clinic
+        public IReadOnlyCollection<Therapist> Therapists //Other classes readonly, not modify directly
+            => _therapists.AsReadOnly();
 
         private Clinic() { }
 

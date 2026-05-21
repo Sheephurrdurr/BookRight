@@ -156,9 +156,12 @@ namespace BookRight.Infrastructure.Migrations
                     b.ToTable("Customers", (string)null);
                 });
 
-            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.Therapist", b =>
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.Therapist", b =>
                 {
                     b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClinicId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Specialization")
@@ -168,10 +171,12 @@ namespace BookRight.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClinicId");
+
                     b.ToTable("Therapists", (string)null);
                 });
 
-            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.TherapistSchedule", b =>
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.TherapistSchedule", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -195,7 +200,7 @@ namespace BookRight.Infrastructure.Migrations
                     b.ToTable("TherapistSchedule");
                 });
 
-            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.TherapistTreatmentType", b =>
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.TherapistTreatmentType", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -459,8 +464,14 @@ namespace BookRight.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.Therapist", b =>
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.Therapist", b =>
                 {
+                    b.HasOne("BookRight.Domain.Aggregates.Clinic.Clinic", null)
+                        .WithMany("Therapists")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsOne("BookRight.Domain.ValueObjects.Email", "Email", b1 =>
                         {
                             b1.Property<Guid>("TherapistId")
@@ -509,7 +520,7 @@ namespace BookRight.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.TherapistSchedule", b =>
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.TherapistSchedule", b =>
                 {
                     b.HasOne("BookRight.Domain.Aggregates.Clinic.Clinic", null)
                         .WithMany("TherapistSchedules")
@@ -545,9 +556,9 @@ namespace BookRight.Infrastructure.Migrations
                     b.Navigation("BlockedSlots");
                 });
 
-            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.TherapistTreatmentType", b =>
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.TherapistTreatmentType", b =>
                 {
-                    b.HasOne("BookRight.Domain.Aggregates.Therapist.Therapist", null)
+                    b.HasOne("BookRight.Domain.Aggregates.TherapistAggregate.Therapist", null)
                         .WithMany("Qualifications")
                         .HasForeignKey("TherapistId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -559,9 +570,11 @@ namespace BookRight.Infrastructure.Migrations
                     b.Navigation("OpeningHours");
 
                     b.Navigation("TherapistSchedules");
+
+                    b.Navigation("Therapists");
                 });
 
-            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.Therapist", b =>
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.Therapist", b =>
                 {
                     b.Navigation("Qualifications");
                 });

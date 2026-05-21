@@ -1,10 +1,13 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 @using BookRight.Facade.Interfaces
+@using BookRight.Facade.Interfaces.ClinicsUseCases
 @using BookRight.Facade.DTOs.GetAllCustomersDTOs
 @using BookRight.Facade.DTOs.GetAllTherapistsDTOs
 @using BookRight.Facade.DTOs.CreateTherapistDTOs
 @using BookRight.Facade.DTOs.CreateCustomerDTOs
+@using BookRight.Facade.DTOs.GetAllClinicsDTOs
+@inject IGetAllClinicsUseCase GetAllClinicsUseCase
 @inject ICreateTherapistUseCase CreateTherapistUseCase
 @inject ICreateCustomerUseCase CreateCustomerUseCase
 @inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
@@ -43,6 +46,17 @@
                     <div class="mb-3">
                         <label class="form-label">Speciale</label>
                         <input class="form-control" @bind="therapistSpecialization" placeholder="Skriv speciale her..." />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Klinik</label>
+                        <select class="form-control" @bind="selectedClinicId">
+                            <option value="@Guid.Empty">Vælg klinik...</option>
+
+                            @foreach (var clinic in clinics)
+                            {
+                                <option value="@clinic.Id">@clinic.Name</option>
+                            }
+                        </select>
                     </div>
 
                     <button class="btn btn-primary" @onclick="CreateTherapist">Opret Therapist</button>
@@ -194,6 +208,7 @@
     private string therapistSpecialization = "";
     private string therapistMessage = "";
     private string therapistAlertClass = "";
+    private Guid selectedClinicId = Guid.Empty;
 
     // Customer form fields.
     private string customerFirstName = "";
@@ -209,6 +224,7 @@
     // Lister der holder data fra GetAll, til at vise nyligt oprettede entities
     private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
     private IReadOnlyList<GetAllCustomersResponse> customers = new List<GetAllCustomersResponse>();
+    private IReadOnlyList<GetAllClinicsResponse> clinics = new List<GetAllClinicsResponse>();
 
     // HealthNotesEditor
     private Guid? selectedCustomerId;
@@ -222,6 +238,7 @@
     {
         therapists = await GetAllTherapistsUseCase.ExecuteAsync();
         customers = await GetAllCustomersUseCase.ExecuteAsync();
+        clinics = await GetAllClinicsUseCase.ExecuteAsync();
     }
 
     private async Task CreateTherapist()
@@ -232,7 +249,8 @@
                 therapistFirstName,
                 therapistLastName,
                 therapistEmail,
-                therapistSpecialization
+                therapistSpecialization,
+                selectedClinicId
             );
 
             var response = await CreateTherapistUseCase.ExecuteAsync(request);

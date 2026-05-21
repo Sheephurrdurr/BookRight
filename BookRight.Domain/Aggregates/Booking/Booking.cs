@@ -55,6 +55,13 @@ namespace BookRight.Domain.Aggregates.Booking
                 .Aggregate(new Money(0), (total, price) => total + price);
         }
 
+        public Money GetBasePrice() //Sum of price before discount
+        {
+            return _lines
+                .Select(line => line.BasePrice)
+                .Aggregate(new Money(0), (total, price) => total + price);
+        }
+
         //Edit Booking TimeSlot
         public void EditTimeSlot(TimeSlot newTimeSlot)
         {
