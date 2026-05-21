@@ -29,21 +29,21 @@ namespace BookRight.Infrastructure
             if (_context.Clinics.Any()) return;
 
             var clinic1 = new Clinic(
-                "Klinik Vejle Ved Åen",
+                "BookRight Vejle Ved Åen",
                 new Address("Ågade 10", "Vejle", "7100"),
                 new PhoneNumber("12345678"),
                 5 // Number of treatment rooms
             );
 
             var clinic2 = new Clinic(
-                "Klinik Vejle Bredballe",
+                "BookRight Vejle Bredballe",
                 new Address("Bredballe Center 12", "Vejle", "7120"),
                 new PhoneNumber("87654321"),
                 4
             );
 
             var clinic3 = new Clinic(
-                "Klinik Vejle Egtved",
+                "BookRight Egtved",
                 new Address("Egtvedvej 25", "Egtved", "6040"),
                 new PhoneNumber("11223344"),
                 4
@@ -289,7 +289,7 @@ namespace BookRight.Infrastructure
             var therapist = _context.Therapists.First();
 
             var customer1 = new Customer(
-                new FullName("Customer", "Bill"),
+                new FullName("Customer", "Bill Gates"),
                 new Email("customer@bill.com"),
                 new PhoneNumber("87654321"),
                 new DateOnly(1990, 1, 1),
@@ -297,7 +297,202 @@ namespace BookRight.Infrastructure
                 therapist.Id
             );
 
-            await _context.Customers.AddAsync(customer1);
+            var customer2 = new Customer(
+                new FullName("Customer", "Anna Thomsen"),
+                new Email("customer@anna.com"),
+                new PhoneNumber("84872234"),
+                new DateOnly(1994, 4, 1),
+                null,
+                therapist.Id
+            );
+
+            var customer3 = new Customer(
+                new FullName("Mikkel", "Jensen"),
+                new Email("mikkel.jensen@example.com"),
+                new PhoneNumber("22334455"),
+                new DateOnly(1988, 6, 12),
+                null,
+                therapist.Id
+            );
+
+            var customer4 = new Customer(
+                new FullName("Sofie", "Larsen"),
+                new Email("sofie.larsen@example.com"),
+                new PhoneNumber("33445566"),
+                new DateOnly(1996, 9, 23),
+                null,
+                therapist.Id
+            );
+
+            var customer5 = new Customer(
+                new FullName("Peter", "Nielsen"),
+                new Email("peter.nielsen@example.com"),
+                new PhoneNumber("44556677"),
+                new DateOnly(1979, 11, 5),
+                null,
+                therapist.Id
+            );
+
+            var customer6 = new Customer(
+                new FullName("Maria", "Hansen"),
+                new Email("maria.hansen@example.com"),
+                new PhoneNumber("55667788"),
+                new DateOnly(1992, 2, 18),
+                null,
+                therapist.Id
+            );
+
+            var customer7 = new Customer(
+                new FullName("Jonas", "Pedersen"),
+                new Email("jonas.pedersen@example.com"),
+                new PhoneNumber("66778899"),
+                new DateOnly(1985, 7, 30),
+                null,
+                therapist.Id
+            );
+
+            var customer8 = new Customer(
+                new FullName("Camilla", "Madsen"),
+                new Email("camilla.madsen@example.com"),
+                new PhoneNumber("77889900"),
+                new DateOnly(1998, 12, 14),
+                null,
+                therapist.Id
+            );
+
+            var customer9 = new Customer(
+                new FullName("Lars", "Christensen"),
+                new Email("lars.christensen@example.com"),
+                new PhoneNumber("88990011"),
+                new DateOnly(1975, 3, 9),
+                null,
+                therapist.Id
+            );
+
+            var customer10 = new Customer(
+                new FullName("Line", "Rasmussen"),
+                new Email("line.rasmussen@example.com"),
+                new PhoneNumber("99001122"),
+                new DateOnly(1991, 8, 21),
+                null,
+                therapist.Id
+            );
+
+            var customer11 = new Customer(
+                new FullName("Frederik", "Mortensen"),
+                new Email("frederik.mortensen@example.com"),
+                new PhoneNumber("11224455"),
+                new DateOnly(1983, 5, 17),
+                null,
+                therapist.Id
+            );
+
+            var customer12 = new Customer(
+                new FullName("Emma", "Thomsen"),
+                new Email("emma.thomsen@example.com"),
+                new PhoneNumber("22335566"),
+                new DateOnly(1997, 10, 3),
+                null,
+                therapist.Id
+            );
+
+            var customer13 = new Customer(
+                new FullName("Nikolaj", "Sørensen"),
+                new Email("nikolaj.sorensen@example.com"),
+                new PhoneNumber("33446677"),
+                new DateOnly(1989, 1, 28),
+                null,
+                therapist.Id
+            );
+
+            var customer14 = new Customer(
+                new FullName("Julie", "Andersen"),
+                new Email("julie.andersen@example.com"),
+                new PhoneNumber("44557788"),
+                new DateOnly(1995, 6, 6),
+                null,
+                therapist.Id
+            );
+
+            var customer15 = new Customer(
+                new FullName("Martin", "Møller"),
+                new Email("martin.moeller@example.com"),
+                new PhoneNumber("55668899"),
+                new DateOnly(1981, 4, 24),
+                null,
+                therapist.Id
+            );
+
+            var customer16 = new Customer(
+                new FullName("Louise", "Kristensen"),
+                new Email("louise.kristensen@example.com"),
+                new PhoneNumber("66779900"),
+                new DateOnly(1993, 9, 12),
+                null,
+                therapist.Id
+            );
+
+            var customer17 = new Customer(
+                new FullName("Anders", "Olsen"),
+                new Email("anders.olsen@example.com"),
+                new PhoneNumber("77880011"),
+                new DateOnly(1978, 2, 2),
+                null,
+                therapist.Id
+            );
+
+            var customer18 = new Customer(
+                new FullName("Ida", "Johansen"),
+                new Email("ida.johansen@example.com"),
+                new PhoneNumber("88991122"),
+                new DateOnly(2000, 7, 19),
+                null,
+                therapist.Id
+            );
+
+            var customer19 = new Customer(
+                new FullName("Thomas", "Bach"),
+                new Email("thomas.bach@example.com"),
+                new PhoneNumber("99112233"),
+                new DateOnly(1986, 11, 27),
+                null,
+                therapist.Id
+            );
+
+            var customer20 = new Customer(
+                new FullName("Sara", "Poulsen"),
+                new Email("sara.poulsen@example.com"),
+                new PhoneNumber("10293847"),
+                new DateOnly(1999, 3, 15),
+                null,
+                therapist.Id
+            );
+
+
+
+            await _context.Customers.AddRangeAsync(
+                customer1, 
+                customer2, 
+                customer3, 
+                customer4, 
+                customer5,
+                customer6, 
+                customer7, 
+                customer8, 
+                customer9, 
+                customer10,
+                customer11, 
+                customer12, 
+                customer13, 
+                customer14, 
+                customer15,
+                customer16, 
+                customer17, 
+                customer18, 
+                customer19, 
+                customer20
+            );
+
             await _context.SaveChangesAsync();
         }
     }
