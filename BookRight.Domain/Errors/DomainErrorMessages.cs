@@ -71,6 +71,7 @@ public static class DomainErrorMessages //Static because we don't want to create
     public const string EndTimeMustBeLaterThanStartTime =
         "Sluttidspunkt skal være senere end starttidspunkt";
 
+    public const string BookingWasNotFound = "Bookingen blev ikke fundet.";
 
 
 }

@@ -6,11 +6,15 @@
 @using BookRight.Domain.Aggregates.Clinic
 @using BookRight.Facade.DTOs.MarkBookingAsNoShowDTOs
 @using BookRight.Facade.Interfaces.BookingUseCases
+@using BookRight.Facade.DTOs.RestoreBookingFromNoShowDTOs
 @using BookRight.UseCases.Interfaces
+@using BookRight.Domain.Aggregates.Customer
 
 @inject IBookingRepository BookingRepository
 @inject IClinicRepository ClinicRepository
 @inject IMarkBookingAsNoShowUseCase MarkBookingAsNoShowUseCase
+@inject ICustomerRepository CustomerRepository
+@inject IRestoreBookingFromNoShowUseCase RestoreBookingFromNoShowUseCase
 
 <PageTitle>Booking Overview</PageTitle>
 
@@ -54,7 +58,7 @@
                 <thead>
                     <tr>
                         <th>Time</th>
-                        <th>Customer ID</th>
+                        <th>Customer</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -65,11 +69,11 @@
                     {
                         <tr>
                             <td>@booking.TimeSlot.StartTime.ToString("HH:mm")</td>
-                            <td>@booking.CustomerId</td>
+                            <td>@GetCustomerName(booking.CustomerId)</td>
                             <td>
                                 @if (booking.Status == BookingStatus.NoShow)
                                 {
-                                    <span class="badge bg-danger">No-show</span>
+                                    <span class="badge bg-danger">Ikke mødt</span>
                                 }
                                 else
                                 {
@@ -81,7 +85,14 @@
                                 {
                                     <button class="btn btn-danger btn-sm"
                                             @onclick="() => RegisterBookingAsNoShow(booking.Id)">
-                                        Register No-show
+                                        Ikke mødt
+                                    </button>
+                                }
+                                else if (booking.Status == BookingStatus.NoShow)
+                                {
+                                    <button class="btn btn-success btn-sm"
+                                            @onclick="() => RestoreBookingFromNoShow(booking.Id)">
+                                        Gendan
                                     </button>
                                 }
                                 else
@@ -100,6 +111,7 @@
 @code {
     private IReadOnlyList<Booking> bookings = new List<Booking>();
     private IReadOnlyList<Clinic> clinics = new List<Clinic>();
+    private IReadOnlyList<Customer> customers = new List<Customer>();
 
     private string selectedClinicId = "";
     private string message = "";
@@ -116,6 +128,7 @@
     {
         clinics = await ClinicRepository.GetAllAsync();
         bookings = await BookingRepository.GetAllAsync();
+        customers = await CustomerRepository.GetAllAsync();
     }
 
     // Registers the selected booking as No-show.
@@ -131,6 +144,38 @@
             await MarkBookingAsNoShowUseCase.ExecuteAsync(request);
 
             message = "Booking was registered as No-show.";
+            alertClass = "alert alert-success";
+
+            bookings = await BookingRepository.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+            alertClass = "alert alert-danger";
+        }
+    }
+
+	// Helper method to get the customer's name based on their ID.
+    private string GetCustomerName(Guid customerId)
+    {
+        var customer = customers.FirstOrDefault(c => c.Id == customerId);
+
+        return customer is null
+            ? "Unknown customer"
+            : customer.Name.ToString();
+    }
+
+
+    // Restores a NoShow booking back to Confirmed.
+    private async Task RestoreBookingFromNoShow(Guid bookingId)
+    {
+        try
+        {
+            var request = new RestoreBookingFromNoShowRequest(bookingId);
+
+            await RestoreBookingFromNoShowUseCase.ExecuteAsync(request);
+
+            message = "Booking was restored to Confirmed.";
             alertClass = "alert alert-success";
 
             bookings = await BookingRepository.GetAllAsync();
