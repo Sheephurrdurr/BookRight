@@ -1,5 +1,6 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.Enums;
+using BookRight.Domain.Exceptions;
 using BookRight.Domain.ValueObjects;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.Facade.DTOs.ValueObjectDTOs;
@@ -31,12 +32,12 @@ namespace BookRight.UseCases.CreateBooking
             var customer = await _customerRepository.GetByIdAsync(request.CustomerId);
 
             if (customer == null)
-                throw new KeyNotFoundException($"Customer with Id: {request.CustomerId} findes ikke.");
-            
+                throw new CustomerNotFoundException(request.CustomerId);
+
             var clinic = await _clinicRepository.GetByIdAsync(request.ClinicId);
 
             if (clinic == null)
-                throw new KeyNotFoundException($"Clinic with Id: {request.ClinicId} does not exist.");
+                throw new ClinicNotFoundException(request.ClinicId);
 
             var timeSlot = new TimeSlot(request.TimeSlot.StartTime, request.TimeSlot.EndTime); 
 

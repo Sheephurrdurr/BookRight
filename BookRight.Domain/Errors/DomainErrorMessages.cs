@@ -72,7 +72,10 @@ public static class DomainErrorMessages //Static because we don't want to create
         "Sluttidspunkt skal være senere end starttidspunkt";
 
     public static string CustomerNotFound(Guid customerId) //Metode til CustomException med errormessage med customerid parameter)
-        => $"Kunde med ID {customerId} blev ikke fundet.";
+        => $"Kunde med ID {customerId} findes ikke";
+
+    public static string ClinicNotFound(Guid clinicId)
+    => $"Klinik med ID {clinicId} findes ikke";
 }
     
 
