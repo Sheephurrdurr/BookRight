@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BookRight.Domain\BookRight.Domain.csproj" />
     <ProjectReference Include="..\BookRight.Facade\BookRight.Facade.csproj" />
   </ItemGroup>
 
