@@ -2,10 +2,10 @@
 using BookRight.Domain.Enums;
 using BookRight.Domain.Exceptions;
 using BookRight.Domain.ValueObjects;
+using BookRight.Domain.Services;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.Facade.Interfaces;
 using BookRight.UseCases.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookRight.UseCases.CreateBooking
 {

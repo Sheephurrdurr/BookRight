@@ -20,7 +20,7 @@ namespace BookRight.UseCases.CreateCustomer
             var alreadyExists = await _repository.ExistsByEmailAsync(request.Email);
 
             if (alreadyExists)
-                throw new CustomerAlreadyExistsException(request.Email);
+                throw new EmailAlreadyExistsException(request.Email);
 
             var customer = new Customer(
             new FullName(request.FirstName, request.LastName),
