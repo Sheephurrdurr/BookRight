@@ -5,6 +5,8 @@ using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.ValueObjects;
 using Xunit;
 using BookRight.Domain.Enums;
+using BookRight.Domain.Services;
+using BookRight.Domain.Aggregates.Customer;
 namespace BookRight.Domain.Test
 {
 	public class BookingTest
@@ -124,6 +126,31 @@ namespace BookRight.Domain.Test
                 booking.ApplyCampaignDiscount(Guid.Empty));
         }
 
+        //Test 8: Booking pris returnerer rigtig rabat %
+        [Fact]
+        public void CalculateDiscount_ApplyCorrectPercentage()
+        {
+            //Arrange
+            var strategy = new CampaignDiscountStrategy(15m);
+            var customer = new Customer(
+                new FullName("Test", "Tester"),
+                new Email("test@dk"),
+                new PhoneNumber("10101010"),
+                new DateOnly(2003, 10, 10),
+                healthNotes: string.Empty,
+                preferredTherapistId: null
+                );
+            var booking = CreateValidBooking();
+            booking.AddLine(new BookingLine(Guid.NewGuid(), new Money(100m), 0m, DiscountType.None));
+
+            //Act
+            var results = strategy.CalculateDiscount(customer, booking, Enumerable.Empty<Booking>());
+
+            //Assert
+            Assert.Equal(100m, results.OriginalPrice.Value);
+            Assert.Equal(85m, results.DiscountedPrice.Value);
+            Assert.Equal("Campaign", results.DiscountName);
+        }
         // Hjælpemetoden som opretter en valid Booking med gyldige testdata
         private static Booking CreateValidBooking()
         {
