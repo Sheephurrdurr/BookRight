@@ -71,8 +71,8 @@ public static class DomainErrorMessages //Static because we don't want to create
     public const string EndTimeMustBeLaterThanStartTime =
         "Sluttidspunkt skal være senere end starttidspunkt";
 
-
-
+    public static string CustomerNotFound(Guid customerId) //Metode til CustomException med errormessage med customerid parameter)
+        => $"Kunde med ID {customerId} blev ikke fundet.";
 }
     
 
