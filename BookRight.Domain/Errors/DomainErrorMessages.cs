@@ -80,7 +80,12 @@ public static class DomainErrorMessages //Static because we don't want to create
     public static string EmailAlreadyExists(string email)
         => $"'{email}' er allerede i brug";
 
+    public static string BookingNotFound(Guid bookingId)
+    => $"Booking med ID '{bookingId}' findes ikke";
+
     public const string UnknownTreatmentType = "Ukendt behandlingstype";
+
+    
 
 
 }
