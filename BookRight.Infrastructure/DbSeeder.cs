@@ -140,9 +140,9 @@ namespace BookRight.Infrastructure
         {
             if (_context.Therapists.Any()) return;
 
-            var clinic1 = _context.Clinics.First(c => c.Name == "Klinik Vejle Ved Åen");
-            var clinic2 = _context.Clinics.First(c => c.Name == "Klinik Vejle Bredballe");
-            var clinic3 = _context.Clinics.First(c => c.Name == "Klinik Vejle Egtved");
+            var clinic1 = _context.Clinics.First(c => c.Name == "BookRight Vejle Ved Åen");
+            var clinic2 = _context.Clinics.First(c => c.Name == "BookRight Vejle Bredballe");
+            var clinic3 = _context.Clinics.First(c => c.Name == "BookRight Egtved");
             // Klinik Vejle Ved Åen
             var therapist1 = new Therapist(
                 new FullName("Hans", "Hansen"),
