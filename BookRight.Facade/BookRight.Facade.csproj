@@ -19,8 +19,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\BookRight.Domain\BookRight.Domain.csproj" />
-  </ItemGroup>
-
 </Project>

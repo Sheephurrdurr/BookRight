@@ -10,16 +10,17 @@ namespace BookRight.Domain.ValueObjects
     {
         public Money OriginalPrice { get; }
         public Money DiscountedPrice { get; }
-        public DiscountType AppliedDiscount { get; }
+        public DiscountType DiscountName { get; }
+
 
         public DiscountResult(
             Money originalPrice,
             Money discountedPrice,
-            DiscountType appliedDiscount)
+            DiscountType discountName)
         {
             OriginalPrice = originalPrice;
             DiscountedPrice = discountedPrice;
-            AppliedDiscount = appliedDiscount;
+            DiscountName = discountName;
         }
 
         public int CompareTo(DiscountResult? other)

@@ -1,5 +1,6 @@
 ﻿using BookRight.Domain.Aggregates.AddOn;
 using BookRight.Domain.ValueObjects;
+using BookRight.Domain.Enums;
 using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Services;
 
@@ -78,7 +79,7 @@ namespace BookRight.Domain.Test
             var calculator = new PriceCalculatorService();
 
             // Act
-            var result = calculator.ApplyDiscount(basePrice, percentage);
+            var result = calculator.ApplyDiscount(basePrice, percentage, DiscountType.None);
 
             // Assert
             Assert.Equal(new Money(400), result.OriginalPrice);
