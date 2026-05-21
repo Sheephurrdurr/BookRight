@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookRight.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate12321Ph : Migration
+    public partial class InitialCreateMona01010101 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -75,21 +75,6 @@ namespace BookRight.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Therapists",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name_FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Name_LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Email_Value = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Specialization = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Therapists", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TreatmentTypes",
                 columns: table => new
                 {
@@ -119,6 +104,28 @@ namespace BookRight.Infrastructure.Migrations
                     table.PrimaryKey("PK_ClinicOpeningHour", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ClinicOpeningHour_Clinics_ClinicId",
+                        column: x => x.ClinicId,
+                        principalTable: "Clinics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Therapists",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name_FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Name_LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email_Value = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Specialization = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    ClinicId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Therapists", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Therapists_Clinics_ClinicId",
                         column: x => x.ClinicId,
                         principalTable: "Clinics",
                         principalColumn: "Id",
@@ -267,6 +274,11 @@ namespace BookRight.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ClinicOpeningHour_ClinicId",
                 table: "ClinicOpeningHour",
+                column: "ClinicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Therapists_ClinicId",
+                table: "Therapists",
                 column: "ClinicId");
 
             migrationBuilder.CreateIndex(
