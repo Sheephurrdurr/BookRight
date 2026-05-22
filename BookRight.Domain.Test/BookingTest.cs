@@ -149,7 +149,7 @@ namespace BookRight.Domain.Test
             //Assert
             Assert.Equal(100m, results.OriginalPrice.Value);
             Assert.Equal(85m, results.DiscountedPrice.Value);
-            Assert.Equal("Campaign", results.DiscountName);
+            Assert.Equal("15% rabat", results.DiscountName);
         }
         // Hjælpemetoden som opretter en valid Booking med gyldige testdata
         private static Booking CreateValidBooking()

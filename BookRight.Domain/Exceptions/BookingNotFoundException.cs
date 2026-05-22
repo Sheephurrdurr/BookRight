@@ -4,8 +4,8 @@ namespace BookRight.Domain.Exceptions;
 
 public class BookingNotFoundException : DomainException
 {
-    public BookingNotFoundException()
-        : base(DomainErrorMessages.BookingWasNotFound)
+    public BookingNotFoundException(Guid bookingId)
+        : base(DomainErrorMessages.BookingNotFound(bookingId))
     {
     }
 }

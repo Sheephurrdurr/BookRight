@@ -1,4 +1,5 @@
-﻿using BookRight.Facade.DTOs.GetAvailableTherapistsDTOs;
+﻿using BookRight.Domain.Exceptions;
+using BookRight.Facade.DTOs.GetAvailableTherapistsDTOs;
 using BookRight.Facade.Interfaces.TherapistUseCases;
 using BookRight.UseCases.Interfaces;
 using System;
@@ -22,27 +23,27 @@ namespace BookRight.UseCases.GetAvailableTherapists
 
         public async Task<List<AvailableTherapistResponse>> ExecuteAsync(GetAvailableTherapistsRequest request)
         {
-            // 1. Hent klinikken (VIGTIGT: Husk at .Include(c => c.TherapistSchedules) i jeres repo-impl!)
+            // Hent klinikken
             var clinic = await _clinicRepository.GetByIdAsync(request.ClinicId);
             if (clinic == null)
-                throw new KeyNotFoundException("Klinikken blev ikke fundet.");
+                throw new ClinicNotFoundException(request.ClinicId);
 
-            // 2. Find de TherapistIds der har en vagtplan på datoen, hvor IsWorking er true
+            //Find de TherapistIds der har en vagtplan på datoen, hvor IsWorking er true
             var workingTherapistIds = clinic.TherapistSchedules
                 .Where(ts => ts.Date == request.Date && ts.IsWorking)
                 .Select(ts => ts.TherapistId)
                 .ToList();
 
-            // 3. Hent alle behandlere (eller lav en GetByIdsAsync i jeres repo, hvis I vil optimere)
+            //Hent alle behandlere (eller GetByIdsAsync i repo for optimering)
             var allTherapists = await _therapistRepository.GetAllAsync();
 
-            // 4. Filtrer listen af alle behandlere, så vi kun har dem, der er på arbejde i klinikken
+            //Filtrerer listen af alle behandlere, så vi kun har dem, der er på arbejde i klinikken
             var availableTherapists = allTherapists
                 .Where(t => workingTherapistIds.Contains(t.Id))
                 .Select(t => new AvailableTherapistResponse
                 {
                     TherapistId = t.Id,
-                    Name = t.Name.ToString() // Antager jeres Therapist har en .Name property
+                    Name = t.Name.ToString()
                 })
                 .ToList();
 

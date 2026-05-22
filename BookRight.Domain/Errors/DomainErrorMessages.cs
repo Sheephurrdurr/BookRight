@@ -71,7 +71,21 @@ public static class DomainErrorMessages //Static because we don't want to create
     public const string EndTimeMustBeLaterThanStartTime =
         "Sluttidspunkt skal være senere end starttidspunkt";
 
-    public const string BookingWasNotFound = "Bookingen blev ikke fundet.";
+    public static string CustomerNotFound(Guid customerId) //Metode til CustomException med errormessage med customerid parameter)
+        => $"Kunde med ID '{customerId}' findes ikke";
+
+    public static string ClinicNotFound(Guid clinicId)
+    => $"Klinik med ID '{clinicId}' findes ikke";
+
+    public static string EmailAlreadyExists(string email)
+        => $"'{email}' er allerede i brug";
+
+    public static string BookingNotFound(Guid bookingId)
+    => $"Booking med ID '{bookingId}' findes ikke";
+
+    public const string UnknownTreatmentType = "Ukendt behandlingstype";
+
+    
 
 
 }

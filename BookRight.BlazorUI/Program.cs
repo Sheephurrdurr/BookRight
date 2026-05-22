@@ -1,4 +1,5 @@
 using BookRight.BlazorUI.Components;
+using BookRight.Domain.Services;
 using BookRight.Facade.Interfaces;
 using BookRight.Facade.Interfaces.BookingUseCases;
 using BookRight.Facade.Interfaces.ClinicsUseCases;
@@ -34,6 +35,9 @@ builder.Services.AddRazorComponents()
 builder.Services.AddDbContext<BookRightDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register Domain Services
+builder.Services.AddScoped<LoyaltyService>();
 
 // Register DI for DbSeeder
 builder.Services.AddScoped<DbSeeder>();
