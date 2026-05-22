@@ -5,12 +5,14 @@
 @using BookRight.Domain.Aggregates.Booking
 @using BookRight.Domain.Aggregates.Clinic
 @using BookRight.Facade.DTOs.MarkBookingAsNoShowDTOs
+@using BookRight.Facade.DTOs.MarkBookingAsArrivedDTOs
 @using BookRight.Facade.Interfaces.BookingUseCases
 @using BookRight.UseCases.Interfaces
 
 @inject IBookingRepository BookingRepository
 @inject IClinicRepository ClinicRepository
 @inject IMarkBookingAsNoShowUseCase MarkBookingAsNoShowUseCase
+@inject IMarkBookingArrivedUseCase MarkBookingArrivedUseCase
 
 <PageTitle>Booking Overview</PageTitle>
 
@@ -84,6 +86,18 @@
                                         Register No-show
                                     </button>
                                 }
+								@if (booking.Status == BookingStatus.Confirmed)
+								{
+									<button class="btn btn-success btn-sm ms-2"
+											@onclick="() => RegisterBookingAsArrived(booking.Id)">
+										Register Arrived
+									</button>
+								}
+								)
+                                @if (booking.Status == BookingStatus.Arrived)
+                                {
+                                    <span class="badge bg-success">Arrived</span>
+                                }
                                 else
                                 {
                                     <span>-</span>
@@ -131,6 +145,30 @@
             await MarkBookingAsNoShowUseCase.ExecuteAsync(request);
 
             message = "Booking was registered as No-show.";
+            alertClass = "alert alert-success";
+
+            bookings = await BookingRepository.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+            alertClass = "alert alert-danger";
+        }
+    }
+
+    // Registers the selected booking as Arrived.
+    private async Task RegisterBookingAsArrived(Guid bookingId)
+    {
+        try
+        {
+            var request = new MarkBookingArrivedRequest
+            {
+                BookingId = bookingId
+            };
+
+            await MarkBookingArrivedUseCase.ExecuteAsync(request);
+
+            message = "Booking was registered as arrived.";
             alertClass = "alert alert-success";
 
             bookings = await BookingRepository.GetAllAsync();
