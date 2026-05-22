@@ -18,11 +18,11 @@ namespace BookRight.Domain.Aggregates.Clinic
         // Andre klasser kan kun læse åbningstiderne, ikke ændre dem direkte
         public IReadOnlyCollection<ClinicOpeningHour> OpeningHours => _openingHours.AsReadOnly();
 
-        private readonly List<TherapistSchedule> _therapistSchedules = new();
+        private readonly List<TherapistSchedule> _therapistSchedules = new(); // --- DDD POLICE!! WEEWOOO -- Aggregates are only linked to other aggregates via Ids, not direct refererences. Change this at some point, or Kaj is gonna grill us. Alive.
         public IReadOnlyCollection<TherapistSchedule> TherapistSchedules => _therapistSchedules.AsReadOnly();
 
-        private readonly List<Therapist> _therapists = new(); //Private list of therapists at THIS clinic
-        public IReadOnlyCollection<Therapist> Therapists //Other classes readonly, not modify directly
+        private readonly List<Therapist> _therapists = new(); //--- DDD POLICE!! WEEWOOO -- 
+        public IReadOnlyCollection<Therapist> Therapists // --DDD SWAT TEAM!! WEEWOOO -- Aggregates are only linked to other aggregates via Ids, not direct refererences. 
             => _therapists.AsReadOnly();
 
         private Clinic() { }

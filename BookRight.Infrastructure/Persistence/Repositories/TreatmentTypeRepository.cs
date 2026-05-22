@@ -26,6 +26,28 @@ namespace BookRight.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        // Method returns a dictionary mapping therapist treatment type IDs to their corresponding TreatmentType entities
+        public async Task<Dictionary<Guid, TreatmentType>> GetByTherapistTreatmentTypeIdsAsync(IEnumerable<Guid> therapistTreatmentTypeIds)
+        {
+            var matches = await _context.Therapists // // Go through all Therapists
+                .SelectMany(t => t.Qualifications) // Select(many) their Qualifications. SelectMany flattens Qualifications into a single collection
+                .Where(ttt => therapistTreatmentTypeIds.Contains(ttt.Id)) // Filter by the provided therapist treatment type IDs
+                .ToListAsync(); // Convert to a list
+
+            var treatmentTypeIds = matches.Select(m => m.TreatmentTypeId).ToList(); // extract the TreatmentTypeIds from the matches
+
+            // Query the TreatmentTypes table to get the TreatmentType entities that match the extracted TreatmentTypeIds
+            var treatmentTypes = await _context.TreatmentTypes 
+                .Where(tt => treatmentTypeIds.Contains(tt.Id))
+                .ToListAsync();
+
+            // Create a dictionary that maps the therapist treatment type IDs to their corresponding TreatmentType entities and return it.
+            return matches.ToDictionary(
+                ttt => ttt.Id,
+                ttt => treatmentTypes.First(tt => tt.Id == ttt.TreatmentTypeId)
+            );
+        }
+
         public async Task AddAsync(TreatmentType treatmentType)
         {
             await _context.TreatmentTypes.AddAsync(treatmentType);

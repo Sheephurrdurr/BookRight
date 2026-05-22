@@ -1,5 +1,4 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
-using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Enums;
 using BookRight.Domain.Errors;
 using BookRight.Domain.Services;
@@ -43,40 +42,59 @@ namespace BookRight.UseCases.CreateBooking
             if (customer == null)
                 throw new CustomerNotFoundException(request.CustomerId);
 
+            // Convert TimeSlot DTO til domain TimeSlot value object
+            var timeSlot = new TimeSlot(request.TimeSlot.StartTime, request.TimeSlot.EndTime);
+
             var clinic = await _clinicRepository.GetByIdAsync(request.ClinicId);
 
             if (clinic == null)
                 throw new ClinicNotFoundException(request.ClinicId);
 
+            // Get relevant treatment types for the booking lines to check for group treatments and max participants
             var treatmentTypes = await _treatmentTypeRepository
                 .GetByTherapistTreatmentTypeIdsAsync(
                     request.Lines.Select(l => l.TherapistTreatmentTypeId)
                 );
 
-            var groupTreatmentType = treatmentTypes.FirstOrDefault(t => t.MaxParticipants > 1);
-            
-            // Check for GroupTreatmentTypes. If none are found, skip this check.
-            if (groupTreatmentType == null)
+            // Find first treatment type that is a group treatment (MaxParticipants > 1)
+            var groupTreatmentType = treatmentTypes
+                .FirstOrDefault(kvp => kvp.Value.MaxParticipants > 1);
+
+            // Check if its a group treatment and if so, check current number of participants for the time slot against max participants allowed
+            if (groupTreatmentType.Key != Guid.Empty)
             {
-                return;
+                var currentCount = await _bookingRepository.CountParticipantsAsync(
+                    groupTreatmentType.Key,
+                    timeSlot
+                    );
+
+                // If current count is greater than or equal to max participants, return response indicating booking is rejected due to full capacity
+                if (currentCount >= groupTreatmentType.Value.MaxParticipants)
+                {
+                    return new CreateBookingResponse
+                    {
+                        Success = false,
+                        Message = $"Holdet er fuldt ({currentCount}/{groupTreatmentType.Value.MaxParticipants}). Booking Afvist.)"
+                    };
+                }
             }
 
-            // Brug repository metode til at hente alle tidligere bookinger for kunden
+            // Use Repository to get all completed bookings for the customer to determine loyalty level and potential discounts for the new booking
             var completedBookings = await _bookingRepository.GetAllBookingsByCustomerIdAsync(request.CustomerId);
 
-            // Brug LoyaltyService til at beregne kundens loyalitetsniveau baseret på tidligere bookinger
+            // Use LoyaltyService to calculate the customer's loyalty level based on previous bookings  
             var loyaltyLevel = _loyaltyService.GetLoyaltyLevel(completedBookings, DateTime.Now);
 
-            // Valider at bookingens starttidspunkt ikke er i fortiden
+            // Check if the requested time slot is in the past 
             if (request.TimeSlot.StartTime < DateTime.Now)
             {
                 throw new ArgumentException(
                     DomainErrorMessages.DateCannotBeBeforeToday,
                     nameof(request.TimeSlot.StartTime));
             }
-            var timeSlot = new TimeSlot(request.TimeSlot.StartTime, request.TimeSlot.EndTime);
 
-            // Opret booking via domain factory
+
+            // Create the new Booking object using the domain model
             var booking = new Booking(
                 Guid.NewGuid(),
                 request.CustomerId,
@@ -100,7 +118,8 @@ namespace BookRight.UseCases.CreateBooking
             // Returener response DTO
             return new CreateBookingResponse
             {
-                Id = booking.Id
+                Success = true,
+                Message = "Booking oprettet med ID: " + booking.Id
             };
         }
     }
