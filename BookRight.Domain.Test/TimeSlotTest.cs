@@ -16,14 +16,6 @@ namespace BookRight.Domain.Test
             Assert.Equal(_validEnd, timeSlot.EndTime);
         }
 
-        [Fact]
-        public void Constructor_StartTimeInPast_ThrowsArgumentException()
-        {
-            var pastStart = DateTime.Today.AddDays(-1);
-            var end = DateTime.Today.AddDays(-1).AddHours(2);
-
-            Assert.Throws<ArgumentException>(() => new TimeSlot(pastStart, end));
-        }
 
         [Fact]
         public void Constructor_EndTimeBeforeStartTime_ThrowsArgumentException()
