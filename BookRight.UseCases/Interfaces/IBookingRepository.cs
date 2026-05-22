@@ -1,4 +1,5 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.UseCases.Interfaces
 {
@@ -8,6 +9,9 @@ namespace BookRight.UseCases.Interfaces
         Task<IReadOnlyList<Booking>> GetAllAsync();
         Task<IReadOnlyList<Booking>> GetByCustomerIdAsync(Guid customerId);
         Task<IReadOnlyList<Booking>> GetAllBookingsByCustomerIdAsync(Guid customerId);
+
+        // number is used to determine the number of participants in a treatment type at a given time slot
+        Task<int> CountParticipantsAsync(Guid therapistTreatmentTypeId, TimeSlot timeSlot);
         Task CreateAsync(Booking booking);
         Task UpdateAsync(Booking booking);
         Task DeleteAsync(Guid bookingId);
