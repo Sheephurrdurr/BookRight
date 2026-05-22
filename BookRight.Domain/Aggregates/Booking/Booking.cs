@@ -79,8 +79,10 @@ namespace BookRight.Domain.Aggregates.Booking
             Status = BookingStatus.Completed; 
         }
 
-        // MarkAsNoshow
-        // Changes the booking status to NoShow.
+        public void MarkAsArrived()
+        {
+            Status = BookingStatus.Arrived;
+        }
 
         public void MarkAsNoShow()
         {

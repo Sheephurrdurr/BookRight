@@ -1,14 +1,18 @@
 using BookRight.BlazorUI.Components;
+
 using BookRight.Domain.Services;
+
 using BookRight.Facade.Interfaces;
 using BookRight.Facade.Interfaces.BookingUseCases;
 using BookRight.Facade.Interfaces.ClinicsUseCases;
 using BookRight.Facade.Interfaces.CustomerUseCases;
 using BookRight.Facade.Interfaces.TherapistUseCases;
+
 using BookRight.Infrastructure;
 using BookRight.Infrastructure.Persistence;
 using BookRight.Infrastructure.Persistence.Repositories;
 using BookRight.Infrastructure.Repositories;
+
 using BookRight.UseCases.ChangeCustomerHealthNotes;
 using BookRight.UseCases.CreateBooking;
 using BookRight.UseCases.CreateCustomer;
@@ -20,8 +24,10 @@ using BookRight.UseCases.GetAllTherapistTreatmentType;
 using BookRight.UseCases.GetCustomerById;
 using BookRight.UseCases.GetCustomerHealthNotes;
 using BookRight.UseCases.Interfaces;
+using BookRight.UseCases.MarkBookingArrived;
 using BookRight.UseCases.MarkBookingAsNoShow;
 using BookRight.UseCases.RestoreBookingFromNoShow;  
+using BookRight.UseCases.MarkBookingCompleted;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -58,6 +64,8 @@ builder.Services.AddScoped<ICreateBookingUseCase, CreateBookingUseCase>();
 builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
 builder.Services.AddScoped<IGetAllTherapistTreatmentTypesUseCase, GetAllTherapistTreatmentTypeUseCase>();
 builder.Services.AddScoped<IMarkBookingAsNoShowUseCase, MarkBookingAsNoShowUseCase>();
+builder.Services.AddScoped<IMarkBookingArrivedUseCase, MarkArrivedUseCase>();
+builder.Services.AddScoped<IMarkBookingCompletedUseCase, MarkBookingCompletedUseCase>();
 builder.Services.AddScoped<IGetCustomerByIdUseCase, GetCustomerByIdUseCase>();
 builder.Services.AddScoped<IGetCustomerHealthNotesUseCase, GetCustomerHealthNotesUseCase>();
 builder.Services.AddScoped<IChangeCustomerHealthNotesUseCase, ChangeCustomerHealthNotesUseCase>();
