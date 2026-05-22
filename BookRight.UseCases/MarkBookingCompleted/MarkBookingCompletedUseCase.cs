@@ -1,4 +1,4 @@
-﻿using BookRight.Facade.DTOs.MarkBookingCompleted;
+﻿using BookRight.Facade.DTOs.MarkBookingCompletedDTOs;
 using BookRight.Facade.Interfaces.BookingUseCases;
 using BookRight.UseCases.Interfaces;
 

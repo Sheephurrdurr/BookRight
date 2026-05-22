@@ -8,6 +8,7 @@ namespace BookRight.Domain.ValueObjects
         public DateTime EndTime { get; private set; }
         public TimeSpan Duration => EndTime - StartTime;
 
+        public TimeSlot() { } // Parameterless constructor for EF Core
         public TimeSlot(DateTime startTime, DateTime endTime)
         {
             if (startTime < DateTime.Today)

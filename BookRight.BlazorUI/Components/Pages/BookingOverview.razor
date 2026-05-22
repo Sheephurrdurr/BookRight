@@ -6,30 +6,34 @@
 @using BookRight.Domain.Aggregates.Clinic
 @using BookRight.Facade.DTOs.MarkBookingAsNoShowDTOs
 @using BookRight.Facade.DTOs.MarkBookingAsArrivedDTOs
+@using BookRight.Facade.DTOs.MarkBookingCompletedDTOs
 @using BookRight.Facade.Interfaces.BookingUseCases
 @using BookRight.Facade.DTOs.RestoreBookingFromNoShowDTOs
+
 @using BookRight.UseCases.Interfaces
 @using BookRight.Domain.Aggregates.Customer
 
 @inject IBookingRepository BookingRepository
 @inject IClinicRepository ClinicRepository
-@inject IMarkBookingAsNoShowUseCase MarkBookingAsNoShowUseCase
 @inject ICustomerRepository CustomerRepository
+@inject IMarkBookingAsNoShowUseCase MarkBookingAsNoShowUseCase
+@inject IMarkBookingArrivedUseCase MarkBookingArrivedUseCase
+@inject IMarkBookingCompletedUseCase MarkBookingCompletedUseCase
 @inject IRestoreBookingFromNoShowUseCase RestoreBookingFromNoShowUseCase
 
-<PageTitle>Booking Overview</PageTitle>
+<PageTitle>Booking Oversigt</PageTitle>
 
 <div class="card">
     <div class="card-header">
-        <h3>Booking Overview</h3>
+        <h3>Booking Oversig</h3>
     </div>
 
     <div class="card-body">
         <div class="mb-3">
-            <label class="form-label">Select clinic</label>
+            <label class="form-label">Vælg Klinik</label>
 
             <select class="form-select" @bind="selectedClinicId">
-                <option value="">-- Select clinic --</option>
+                <option value="">-- Vælg Klinik --</option>
 
                 @foreach (var clinic in clinics)
                 {
@@ -47,21 +51,21 @@
 
         @if (string.IsNullOrEmpty(selectedClinicId))
         {
-            <p>Please select a clinic to see today's bookings.</p>
+            <p>Vælg en klinik for, at se dagens planlagte bookinger.</p>
         }
         else if (!FilteredBookings.Any())
         {
-            <p>No bookings found for this clinic today.</p>
+            <p>Ingen bookinger i dag...</p>
         }
         else
         {
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Time</th>
-                        <th>Customer</th>
+                        <th>Tidspunkt</th>
+                        <th>Kundes navn</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        <th>Handling</th>
                     </tr>
                 </thead>
 
@@ -103,14 +107,17 @@
 										Register Arrived
 									</button>
 								}
-								)
+								
                                 @if (booking.Status == BookingStatus.Arrived)
                                 {
-                                    <span class="badge bg-success">Arrived</span>
+                                    <button class="btn btn-success btn-sm ms-2"
+                                            @onclick="() => RegisterBookingAsCompleted(booking.Id)">
+                                        Afslut behandling
+                                    </button>
                                 }
                                 else
                                 {
-                                    <span>-</span>
+                                    <span>Ingen handling tilgængelig...</span>
                                 }
                             </td>
                         </tr>
@@ -212,7 +219,32 @@
 
             await MarkBookingArrivedUseCase.ExecuteAsync(request);
 
-            message = "Booking was registered as arrived.";
+            message = "Kunde markeret som ankommet.";
+            alertClass = "alert alert-success";
+
+            bookings = await BookingRepository.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+            alertClass = "alert alert-danger";
+        }
+    }
+
+
+    // Registers the selected booking as Completed.
+    private async Task RegisterBookingAsCompleted(Guid bookingId)
+    {
+        try
+        {
+            var request = new MarkBookingCompletedRequest
+            {
+                BookingId = bookingId
+            };
+
+            await MarkBookingCompletedUseCase.ExecuteAsync(request);
+
+            message = "Booking er registreret som afsluttet.";
             alertClass = "alert alert-success";
 
             bookings = await BookingRepository.GetAllAsync();

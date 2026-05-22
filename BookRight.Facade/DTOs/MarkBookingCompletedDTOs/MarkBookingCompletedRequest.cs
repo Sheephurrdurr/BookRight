@@ -1,4 +1,4 @@
-﻿namespace BookRight.Facade.DTOs.MarkBookingCompleted
+﻿namespace BookRight.Facade.DTOs.MarkBookingCompletedDTOs
 {
     public record MarkBookingCompletedRequest
     {
