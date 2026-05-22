@@ -1,5 +1,7 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.Enums;
+using BookRight.Domain.Errors;
+using BookRight.Domain.Services;
 using BookRight.Domain.Exceptions;
 using BookRight.Domain.ValueObjects;
 using BookRight.Domain.Services;
@@ -48,6 +50,13 @@ namespace BookRight.UseCases.CreateBooking
             // Brug LoyaltyService til at beregne kundens loyalitetsniveau baseret på tidligere bookinger
             var loyaltyLevel = _loyaltyService.GetLoyaltyLevel(completedBookings, DateTime.Now);
 
+            // Valider at bookingens starttidspunkt ikke er i fortiden
+            if (request.TimeSlot.StartTime < DateTime.Now)
+            {
+                throw new ArgumentException(
+                    DomainErrorMessages.DateCannotBeBeforeToday,
+                    nameof(request.TimeSlot.StartTime));
+            }
             var timeSlot = new TimeSlot(request.TimeSlot.StartTime, request.TimeSlot.EndTime);
 
             // Opret booking via domain factory
