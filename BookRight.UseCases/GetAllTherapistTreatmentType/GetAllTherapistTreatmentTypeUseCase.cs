@@ -1,6 +1,7 @@
-﻿using BookRight.UseCases.Interfaces;
+﻿using BookRight.Domain.Errors;
 using BookRight.Facade.DTOs.GetAllTherapistTreatmentTypesDTOs;
 using BookRight.Facade.Interfaces.TherapistUseCases;
+using BookRight.UseCases.Interfaces;
 namespace BookRight.UseCases.GetAllTherapistTreatmentType
 {
     public class GetAllTherapistTreatmentTypeUseCase : IGetAllTherapistTreatmentTypesUseCase
@@ -37,7 +38,7 @@ namespace BookRight.UseCases.GetAllTherapistTreatmentType
                     }
                     else
                     {
-                        treatmentTypeName = "Ukendt behandlingstype";
+                        treatmentTypeName = DomainErrorMessages.UnknownTreatmentType;
                     }
 
                     result.Add(new GetAllTherapistTreatmentTypesResponse(

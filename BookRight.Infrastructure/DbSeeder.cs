@@ -289,8 +289,8 @@ namespace BookRight.Infrastructure
             var therapist = _context.Therapists.First();
 
             var customer1 = new Customer(
-                new FullName("Customer", "Bill Gates"),
-                new Email("customer@bill.com"),
+                new FullName("Bill","Gates"),
+                new Email("bill.gates@example.com"),
                 new PhoneNumber("87654321"),
                 new DateOnly(1990, 1, 1),
                 null,
@@ -298,8 +298,8 @@ namespace BookRight.Infrastructure
             );
 
             var customer2 = new Customer(
-                new FullName("Customer", "Anna Thomsen"),
-                new Email("customer@anna.com"),
+                new FullName("Anna", "Thomsen"),
+                new Email("anna.thomsen@example.com"),
                 new PhoneNumber("84872234"),
                 new DateOnly(1994, 4, 1),
                 null,

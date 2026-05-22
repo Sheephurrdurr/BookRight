@@ -26,7 +26,7 @@ using BookRight.UseCases.GetCustomerHealthNotes;
 using BookRight.UseCases.Interfaces;
 using BookRight.UseCases.MarkBookingArrived;
 using BookRight.UseCases.MarkBookingAsNoShow;
-
+using BookRight.UseCases.RestoreBookingFromNoShow;  
 using Microsoft.EntityFrameworkCore;
 
 
@@ -67,6 +67,7 @@ builder.Services.AddScoped<IMarkBookingArrivedUseCase, MarkArrivedUseCase>();
 builder.Services.AddScoped<IGetCustomerByIdUseCase, GetCustomerByIdUseCase>();
 builder.Services.AddScoped<IGetCustomerHealthNotesUseCase, GetCustomerHealthNotesUseCase>();
 builder.Services.AddScoped<IChangeCustomerHealthNotesUseCase, ChangeCustomerHealthNotesUseCase>();
+builder.Services.AddScoped<IRestoreBookingFromNoShowUseCase, RestoreBookingFromNoShowUseCase>();
 
 var app = builder.Build();
 

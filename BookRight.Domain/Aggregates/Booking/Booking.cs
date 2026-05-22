@@ -96,6 +96,12 @@ namespace BookRight.Domain.Aggregates.Booking
 
             CampaignDiscountId = campaignDiscountId;
         }
+
+        // Changes the booking status back to Confirmed fra Ikke-mødt.
+        public void RestoreFromNoShow()
+        {
+            Status = BookingStatus.Confirmed;
+        }
     }
 }
 
