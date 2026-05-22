@@ -1,5 +1,5 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
-using BookRight.Domain.Aggregates.Therapist;
+using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;

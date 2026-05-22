@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Text;
-namespace BookRight.Domain.Aggregates.Therapist
+namespace BookRight.Domain.Aggregates.TherapistAggregate
 {
     public class TherapistSchedule
     {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BookRight.Domain.Aggregates.Booking;
 using BookRight.UseCases.Interfaces;
+using BookRight.Domain.Enums;
 
 namespace BookRight.Infrastructure.Persistence.Repositories
 {
@@ -32,6 +33,14 @@ namespace BookRight.Infrastructure.Persistence.Repositories
             return await _context.Bookings
                 .Include(b => b.Lines)
                 .Where(b => b.CustomerId == customerId)
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<Booking>> GetAllBookingsByCustomerIdAsync(Guid customerId)
+        {
+            return await _context.Bookings
+                .Include(b => b.Lines)
+                .Where(b => b.CustomerId == customerId && b.Status == BookingStatus.Completed)
                 .ToListAsync();
         }
 

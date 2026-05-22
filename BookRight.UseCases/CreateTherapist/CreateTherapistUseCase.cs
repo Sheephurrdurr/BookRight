@@ -1,5 +1,5 @@
 ﻿using BookRight.Domain.ValueObjects;
-using BookRight.Domain.Aggregates.Therapist;
+using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.Facade.DTOs.CreateTherapistDTOs;
 using BookRight.Facade.Interfaces;
 using BookRight.UseCases.Interfaces;
@@ -25,7 +25,8 @@ namespace BookRight.UseCases.CreateTherapist
             var therapist = new Therapist(
                 new FullName(request.FirstName, request.LastName),
                 new Email(request.Email),
-                request.Specialization
+                request.Specialization,
+                request.ClinicId
             );
 
             await _repository.AddAsync(therapist); 

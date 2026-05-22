@@ -1,7 +1,4 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BookRight.UseCases.Interfaces
 {
@@ -10,6 +7,7 @@ namespace BookRight.UseCases.Interfaces
         Task<Booking?> GetByIdAsync(Guid bookingId);
         Task<IReadOnlyList<Booking>> GetAllAsync();
         Task<IReadOnlyList<Booking>> GetByCustomerIdAsync(Guid customerId);
+        Task<IReadOnlyList<Booking>> GetAllBookingsByCustomerIdAsync(Guid customerId);
         Task CreateAsync(Booking booking);
         Task UpdateAsync(Booking booking);
         Task DeleteAsync(Guid bookingId);

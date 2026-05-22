@@ -1,4 +1,6 @@
-﻿using BookRight.Domain.Enums;
+﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.Customer;
+using BookRight.Domain.Enums;
 using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.Booking
@@ -50,6 +52,13 @@ namespace BookRight.Domain.Aggregates.Booking
         {
             return _lines
                 .Select(line => line.FinalPrice)
+                .Aggregate(new Money(0), (total, price) => total + price);
+        }
+
+        public Money GetBasePrice() //Sum of price before discount
+        {
+            return _lines
+                .Select(line => line.BasePrice)
                 .Aggregate(new Money(0), (total, price) => total + price);
         }
 

@@ -1,7 +1,7 @@
 ﻿
 using BookRight.Domain.Errors;
 
-namespace BookRight.Domain.Aggregates.Therapist
+namespace BookRight.Domain.Aggregates.TherapistAggregate
 {
     public class TherapistTreatmentType //Ingen configurations endnu...
     {
