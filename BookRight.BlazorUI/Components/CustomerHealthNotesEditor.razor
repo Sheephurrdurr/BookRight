@@ -37,7 +37,7 @@
 	private string? healthNotes;
 	private string statusMessage = "";
 
-	protected override async Task OnInitializedAsync()
+	protected override async Task OnInitializedAsync() 
 	{
 		var response = await GetCustomerHealthNotesUseCase.ExecuteAsync(CustomerId);
 		healthNotes = response.HealthNotes;
