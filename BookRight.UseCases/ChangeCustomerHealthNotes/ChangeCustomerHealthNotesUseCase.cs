@@ -1,4 +1,5 @@
-﻿using BookRight.Facade.DTOs.ChangeCustomerHealthNotesDTOs;
+﻿using BookRight.Domain.Exceptions;
+using BookRight.Facade.DTOs.ChangeCustomerHealthNotesDTOs;
 using BookRight.Facade.Interfaces.CustomerUseCases;
 using BookRight.UseCases.Interfaces;
 
@@ -18,7 +19,7 @@ namespace BookRight.UseCases.ChangeCustomerHealthNotes
             var customer = await _repository.GetByIdAsync(request.CustomerId);
 
             if (customer == null)
-                throw new KeyNotFoundException($"Kunde med ID {request.CustomerId} blev ikke fundet");
+                throw new CustomerNotFoundException(request.CustomerId);
 
             customer.UpdateHealthNotes(request.HealthNotes);
 
