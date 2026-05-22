@@ -6,7 +6,7 @@ namespace BookRight.UseCases.Interfaces
 	{
 		Task<TreatmentType?> GetByIdAsync(Guid id);
 		Task<IEnumerable<TreatmentType>> GetAllAsync();
-		Task<IEnumerable<TreatmentType>> GetByIdsAsync(IEnumerable<Guid> therapistTreatmentTypeIds);
+		Task<IEnumerable<TreatmentType>> GetByTherapistTreatmentTypeIdsAsync(IEnumerable<Guid> therapistTreatmentTypeIds);
 		Task AddAsync(TreatmentType treatmentType);
 		void Update(TreatmentType treatmentType);
 		void Delete(TreatmentType treatmentType);
