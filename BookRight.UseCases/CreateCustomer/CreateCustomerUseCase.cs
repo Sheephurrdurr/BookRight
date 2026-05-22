@@ -1,5 +1,6 @@
-﻿using BookRight.Domain.ValueObjects;
-using BookRight.Domain.Aggregates.Customer;
+﻿using BookRight.Domain.Aggregates.Customer;
+using BookRight.Domain.Exceptions;
+using BookRight.Domain.ValueObjects;
 using BookRight.Facade.DTOs.CreateCustomerDTOs;
 using BookRight.Facade.Interfaces;
 
@@ -19,7 +20,7 @@ namespace BookRight.UseCases.CreateCustomer
             var alreadyExists = await _repository.ExistsByEmailAsync(request.Email);
 
             if (alreadyExists)
-                throw new InvalidOperationException($"A customer with email '{request.Email}' already exists.");
+                throw new EmailAlreadyExistsException(request.Email);
 
             var customer = new Customer(
             new FullName(request.FirstName, request.LastName),

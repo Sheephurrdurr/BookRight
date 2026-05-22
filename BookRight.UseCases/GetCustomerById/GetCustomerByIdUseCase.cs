@@ -1,4 +1,5 @@
-﻿using BookRight.Facade.DTOs.GetCustomerByIdDTOs;
+﻿using BookRight.Domain.Exceptions;
+using BookRight.Facade.DTOs.GetCustomerByIdDTOs;
 using BookRight.Facade.Interfaces.CustomerUseCases;
 using BookRight.UseCases.Interfaces;
 
@@ -19,7 +20,7 @@ namespace BookRight.UseCases.GetCustomerById
 
             if (customer == null)
             {
-                throw new KeyNotFoundException($"Customer with ID {customerId} not found.");
+                throw new CustomerNotFoundException(customerId);
             }
 
             // Bundle the data retrieved from the repository into a GetCustomerByIdResponse object and return it
