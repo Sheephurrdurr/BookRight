@@ -46,7 +46,7 @@ namespace BookRight.Infrastructure.Persistence.Repositories
         }
 
         // Count the number of participants for a specific TherapistTreatmentType and TimeSlot, excluding cancelled and no-show bookings.
-        public async Task<int> CountParticipants(Guid therapistTreatmentTypeId, TimeSlot timeSlot)
+        public async Task<int> CountParticipantsAsync(Guid therapistTreatmentTypeId, TimeSlot timeSlot)
         {
             return await _context.Bookings
                 .Where(b =>
@@ -56,7 +56,7 @@ namespace BookRight.Infrastructure.Persistence.Repositories
                     b.TimeSlot.StartTime == timeSlot.StartTime
                 )
                 .CountAsync();
-                    
+            
         }
 
         public async Task CreateAsync(Booking booking)
