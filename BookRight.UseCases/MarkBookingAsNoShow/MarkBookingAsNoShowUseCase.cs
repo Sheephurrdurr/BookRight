@@ -1,4 +1,5 @@
-﻿using BookRight.Domain.Exceptions;
+﻿using BookRight.Domain.Aggregates.Customer;
+using BookRight.Domain.Exceptions;
 using BookRight.Facade.DTOs.MarkBookingAsNoShowDTOs;
 using BookRight.Facade.Interfaces.BookingUseCases;
 using BookRight.UseCases.Interfaces;
@@ -21,7 +22,8 @@ namespace BookRight.UseCases.MarkBookingAsNoShow
         {
             var booking = await _bookingRepository.GetByIdAsync(request.BookingId);
 
-            throw new BookingNotFoundException(request.BookingId);
+            if (booking == null)
+                throw new BookingNotFoundException(request.BookingId);
 
             booking.MarkAsNoShow();
 
