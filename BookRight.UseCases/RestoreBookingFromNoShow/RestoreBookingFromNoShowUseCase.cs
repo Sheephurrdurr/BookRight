@@ -21,7 +21,7 @@ namespace BookRight.UseCases.RestoreBookingFromNoShow
             var booking = await _bookingRepository.GetByIdAsync(request.BookingId);
 
             if (booking is null)
-                throw new BookingNotFoundException();
+                throw new BookingNotFoundException(request.BookingId);
 
             // Restore status and save changes.
             booking.RestoreFromNoShow();
