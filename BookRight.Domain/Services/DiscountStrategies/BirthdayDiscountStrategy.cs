@@ -7,8 +7,8 @@ namespace BookRight.Domain.Services.DiscountStrategies
 {
     public class BirthdayDiscountStrategy : IDiscountStrategy
     {
-        private readonly decimal _discountPercentage = 0.75m; // 25% discount means the customer pays 75% of the original price, so we use 0.75 as the multiplier
-
+        private readonly decimal _discountPercentage = 0.25m; // 25% discount
+        
         public DiscountResult CalculateDiscount(Customer customer, Booking booking, IEnumerable<Booking> completedBookings)
         {
             var treatmentDate = DateOnly.FromDateTime(booking.TimeSlot.StartTime); 
@@ -23,10 +23,16 @@ namespace BookRight.Domain.Services.DiscountStrategies
             if (alreadyUsedDiscount)
                 return new DiscountResult(originalPrice , originalPrice, DiscountType.None); // If the customer has already used their birthday discount for this year, return the original price with a Status of None.
 
-
-             // Calculate the discounted price by multiplying the original price by (1 - discount percentage).
-            // (1 - dicount percentage) gives us the multiplier to apply to the original price to get the discounted price.
-            return new DiscountResult(originalPrice, originalPrice * (1m - _discountPercentage), DiscountType.Birthday); // (1 - 0.75) = 0.25, so the customer pays 25% of the original price.
+            // Return a DiscountResult where:
+            // - originalPrice is the full price before discount
+            // - discounted price is calculated by reducing the original price by 25%
+            // - DiscountType.Birthday marks that the birthday discount was applied
+            return new DiscountResult(
+                originalPrice,
+                originalPrice * (1m - _discountPercentage),
+                DiscountType.Birthday);
         }
+
+
     }
 }
