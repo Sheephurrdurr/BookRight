@@ -10,5 +10,6 @@ namespace BookRight.UseCases.Interfaces
         Task UpdateAsync(Customer customer);
         Task AddAsync(Customer customer);
         Task SaveAsync();
+        Task<IReadOnlyList<Customer>> SearchAsync(string query); //Search customer
     }
 }
