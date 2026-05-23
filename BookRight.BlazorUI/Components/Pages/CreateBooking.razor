@@ -3,17 +3,20 @@
 @using BookRight.Facade.Interfaces
 @using BookRight.Facade.Interfaces.ClinicsUseCases
 @using BookRight.Facade.Interfaces.TherapistUseCases
+@using BookRight.Facade.Interfaces.BookingUseCases
 @using BookRight.Facade.DTOs.GetAllCustomersDTOs
 @using BookRight.Facade.DTOs.GetAllClinicsDTOs
 @using BookRight.Facade.DTOs.GetAllTherapistsDTOs
 @using BookRight.Facade.DTOs.GetAllTherapistTreatmentTypesDTOs
 @using BookRight.Facade.DTOs.CreateBookingDTOs
+@using BookRight.Facade.DTOs.GetGroupSlotAvailabilityDTOs
 @using BookRight.Facade.DTOs.ValueObjectDTOs
 @inject IGetAllCustomersUseCase GetAllCustomersUseCase
 @inject IGetAllClinicsUseCase GetAllClinicsUseCase
 @inject ICreateBookingUseCase CreateBookingUseCase
 @inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
 @inject IGetAllTherapistTreatmentTypesUseCase GetAllTherapistTreatmentTypesUseCase
+@inject IGetGroupSlotAvailabilityUseCase GetGroupSlotAvailabilityUseCase
 
 
 <PageTitle>Opret Booking</PageTitle>
@@ -73,8 +76,21 @@
 
                     <div class="mt-4">
                         <label>Dato og starttid</label>
-                        <input type="datetime-local" class="form-control" @bind="startTime" />
+                        <input type="datetime-local" class="form-control" @bind="startTime" @bind:after="OnSlotChanged"/>
                     </div>
+                    @if (remainingSlots.HasValue)
+                    {
+                        <div class="alrt @(isFullyBooked ? "alert-danger" : "alert-success")">
+							@if (isFullyBooked)
+							{
+								<span>Holdet er fuldt.</span>
+							}
+							else
+							{
+								<span>Ledige pladser: @remainingSlots.Value </span>
+							}
+                        </div>
+                    }
 
                     <button class="btn btn-primary mt-4" @onclick="HandleCreateBooking">Opret Booking</button>
 
@@ -100,6 +116,9 @@
     private string bookingMessage = "";
     private string bookingAlertClass = "";
 
+    private int? remainingSlots = null;
+    private bool isFullyBooked = false;
+
     private IReadOnlyList<GetAllCustomersResponse> customers = new List<GetAllCustomersResponse>();
     private IReadOnlyList<GetAllClinicsResponse> clinics = new List<GetAllClinicsResponse>();
     private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
@@ -118,6 +137,26 @@
         therapists = await GetAllTherapistsUseCase.ExecuteAsync();
         allTherapistTreatmentTypes = await GetAllTherapistTreatmentTypesUseCase.ExecuteAsync();
         filteredTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
+    }
+
+    // Method is run when either the time slot or the treatment type changes, to check availability for the selected slot and treatment
+    public async Task OnSlotChanged()
+    {
+        if (selectedTherapistTreatmentTypeId == "" || startTime == default)
+            return;
+
+        var selectedTherapistTreatmentType = allTherapistTreatmentTypes
+            .FirstOrDefault(ttt => ttt.Id.ToString() == selectedTherapistTreatmentTypeId);
+        var request = new GetGroupSlotAvailabilityRequest
+		{
+
+            TherapistTreatmentTypeId = Guid.Parse(selectedTherapistTreatmentTypeId),
+			TimeSlot = new TimeSlotDto(startTime, startTime.AddMinutes(selectedTherapistTreatmentType?.DurationMinutes ?? 0))
+		};
+
+        var response = await GetGroupSlotAvailabilityUseCase.ExecuteAsync(request);
+        remainingSlots = response.RemainingSlots;
+        isFullyBooked = response.IsFullyBooked;
     }
 
     public void OnTherapistChanged()
@@ -147,8 +186,26 @@
 			};
 
             var response = await CreateBookingUseCase.ExecuteAsync(request);
-			bookingMessage = $"Booking oprettet med ID: {response.Id}";
-			bookingAlertClass = "alert alert-success";
+            bookingMessage = $"Booking oprettet med ID: {response.Id}";
+            bookingAlertClass = "alert alert-success";
+
+            if (response.Success)
+            {
+                // Clear form after successful booking
+                selectedCustomerId = "";
+                selectedClinicId = "";
+                selectedTherapistId = "";
+                selectedTherapistTreatmentTypeId = "";
+                startTime = DateTime.Now;
+                endTime = DateTime.Now.AddHours(1);
+                remainingSlots = null;
+                isFullyBooked = false;
+            }
+            else
+            {
+                bookingMessage = response.Message; 
+				bookingAlertClass = "alert alert-danger";
+            }
         }
         catch(Exception ex)
         {

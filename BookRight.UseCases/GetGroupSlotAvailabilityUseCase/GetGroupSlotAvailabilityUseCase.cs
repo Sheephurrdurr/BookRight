@@ -1,10 +1,11 @@
 ﻿using BookRight.Domain.ValueObjects;
 using BookRight.Facade.DTOs.GetGroupSlotAvailabilityDTOs;
+using BookRight.Facade.Interfaces.BookingUseCases;
 using BookRight.UseCases.Interfaces;
 
 namespace BookRight.UseCases.GetGroupSlotAvailabilityUseCase
 {
-    public class GetGroupSlotAvailabilityUseCase
+    public class GetGroupSlotAvailabilityUseCase : IGetGroupSlotAvailabilityUseCase
     {
         private readonly IBookingRepository _bookingRepository;
         private readonly ITreatmentTypeRepository _treatmentTypeRepository;

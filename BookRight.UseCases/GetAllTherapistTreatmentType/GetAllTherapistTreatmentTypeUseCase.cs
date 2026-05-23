@@ -47,11 +47,9 @@ namespace BookRight.UseCases.GetAllTherapistTreatmentType
                         $"{therapist.Name.FirstName} {therapist.Name.LastName}",
                         qualification.TreatmentTypeId,
                         treatmentTypeName,
-                        qualification.BasePrice
+                        qualification.BasePrice,
+                        treatmentType?.DurationMinutes ?? 0
                     ));
-
-
-
                 }
                 
             }

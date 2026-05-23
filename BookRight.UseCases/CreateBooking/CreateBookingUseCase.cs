@@ -42,6 +42,14 @@ namespace BookRight.UseCases.CreateBooking
             if (customer == null)
                 throw new CustomerNotFoundException(request.CustomerId);
 
+            // Check if the requested time slot is in the past 
+            if (request.TimeSlot.StartTime < DateTime.Now)
+            {
+                throw new ArgumentException(
+                    DomainErrorMessages.DateCannotBeBeforeToday,
+                    nameof(request.TimeSlot.StartTime));
+            }
+
             // Convert TimeSlot DTO til domain TimeSlot value object
             var timeSlot = new TimeSlot(request.TimeSlot.StartTime, request.TimeSlot.EndTime);
 
@@ -60,7 +68,7 @@ namespace BookRight.UseCases.CreateBooking
             var groupTreatmentType = treatmentTypes
                 .FirstOrDefault(kvp => kvp.Value.MaxParticipants > 1);
 
-            // Check if its a group treatment and if so, check current number of participants for the time slot against max participants allowed
+            // Check current number of participants for the TimeSlot against max participants allowed
             if (groupTreatmentType.Key != Guid.Empty)
             {
                 var currentCount = await _bookingRepository.CountParticipantsAsync(
@@ -68,33 +76,24 @@ namespace BookRight.UseCases.CreateBooking
                     timeSlot
                     );
 
-                // If current count is greater than or equal to max participants, return response indicating booking is rejected due to full capacity
+                // If currentCount is greater than or equal to maxParticipants, return response indicating booking is rejected due to full capacity
                 if (currentCount >= groupTreatmentType.Value.MaxParticipants)
                 {
                     return new CreateBookingResponse
                     {
                         Success = false,
-                        Message = $"Holdet er fuldt ({currentCount}/{groupTreatmentType.Value.MaxParticipants}). Booking Afvist.)"
+                        Message = $"Der er ikke plads på holdet: ({currentCount}/{groupTreatmentType.Value.MaxParticipants}). Booking Afvist.)"
                     };
                 }
             }
 
-            // Use Repository to get all completed bookings for the customer to determine loyalty level and potential discounts for the new booking
+            // Get all completed bookings for the customer to determine loyalty level and potential discounts for the new booking
             var completedBookings = await _bookingRepository.GetAllBookingsByCustomerIdAsync(request.CustomerId);
 
-            // Use LoyaltyService to calculate the customer's loyalty level based on previous bookings  
+            // Calculate the customer's loyalty level based on previous bookings  
             var loyaltyLevel = _loyaltyService.GetLoyaltyLevel(completedBookings, DateTime.Now);
 
-            // Check if the requested time slot is in the past 
-            if (request.TimeSlot.StartTime < DateTime.Now)
-            {
-                throw new ArgumentException(
-                    DomainErrorMessages.DateCannotBeBeforeToday,
-                    nameof(request.TimeSlot.StartTime));
-            }
-
-
-            // Create the new Booking object using the domain model
+            // Create new Booking object using the Booking constructor
             var booking = new Booking(
                 Guid.NewGuid(),
                 request.CustomerId,
@@ -103,23 +102,23 @@ namespace BookRight.UseCases.CreateBooking
             );
 
             request.Lines
-                .Select(lineRequest => new BookingLine( // Opret booking line for hver linje i request DTO
-                    lineRequest.TherapistTreatmentTypeId, // Brug ID fra request DTO
-                    new Money(lineRequest.BasePrice), // Opret Money value object fra base price i request DTO
+                .Select(lineRequest => new BookingLine( // Create BookingLine object for each line in the request DTO
+                    lineRequest.TherapistTreatmentTypeId, // Use ID from request DTO
+                    new Money(lineRequest.BasePrice), // Create Money value object from base price in request DTO
                     0,
                     DiscountType.None 
                 ))
                 .ToList()
                 .ForEach(booking.AddLine);
 
-            // Gem i databasen
+            // Create object of CreateBookingResponse DTO type to return as response
             await _bookingRepository.CreateAsync(booking);
 
-            // Returener response DTO
+            // Return success response
             return new CreateBookingResponse
             {
                 Success = true,
-                Message = "Booking oprettet med ID: " + booking.Id
+                Message = "Booking oprettet!"
             };
         }
     }

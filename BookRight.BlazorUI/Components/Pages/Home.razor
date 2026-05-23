@@ -245,13 +245,14 @@
     {
         try
         {
-            var request = new CreateTherapistRequest(
-                therapistFirstName,
-                therapistLastName,
-                therapistEmail,
-                therapistSpecialization,
-                selectedClinicId
-            );
+            var request = new CreateTherapistRequest
+                {
+                    FirstName = therapistFirstName,
+                    LastName = therapistLastName,
+                    Email = therapistEmail,
+                    Specialization = therapistSpecialization,
+                    ClinicId = selectedClinicId
+                };
 
             var response = await CreateTherapistUseCase.ExecuteAsync(request);
             therapistMessage = $"Terapeut oprettet med ID: {response.therapistId}";
