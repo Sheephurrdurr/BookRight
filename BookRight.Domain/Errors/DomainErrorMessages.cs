@@ -85,7 +85,10 @@ public static class DomainErrorMessages //Static because we don't want to create
 
     public const string UnknownTreatmentType = "Ukendt behandlingstype";
 
-    
+    public const string TreatmentTypeIdsMustNotBeEmpty =
+    "En kampagne skal gælde for mindst én behandlingstype";
+
+
 
 
 }

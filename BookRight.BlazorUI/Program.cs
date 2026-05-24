@@ -7,6 +7,7 @@ using BookRight.Facade.Interfaces.BookingUseCases;
 using BookRight.Facade.Interfaces.ClinicsUseCases;
 using BookRight.Facade.Interfaces.CustomerUseCases;
 using BookRight.Facade.Interfaces.TherapistUseCases;
+using BookRight.Facade.Interfaces.DiscountUseCases;
 
 using BookRight.Infrastructure;
 using BookRight.Infrastructure.Persistence;
@@ -31,6 +32,7 @@ using BookRight.UseCases.MarkBookingCompleted;
 using BookRight.UseCases.GetCustomerHistory;
 using Microsoft.EntityFrameworkCore;
 using BookRight.UseCases.GetGroupSlotAvailabilityUseCase;
+using BookRight.UseCases.CampaignDiscountUseCases;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +57,7 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IClinicRepository, ClinicRepository>();
 builder.Services.AddScoped<ITreatmentTypeRepository, TreatmentTypeRepository>();
+builder.Services.AddScoped<ICampaignDiscountRepository, CampaignDiscountRepository>();
 
 // Register DI for use cases
 builder.Services.AddScoped<ICreateTherapistUseCase, CreateTherapistUseCase>();
@@ -73,6 +76,7 @@ builder.Services.AddScoped<IChangeCustomerHealthNotesUseCase, ChangeCustomerHeal
 builder.Services.AddScoped<IRestoreBookingFromNoShowUseCase, RestoreBookingFromNoShowUseCase>();
 builder.Services.AddScoped<IGetCustomerHistoryUseCase, GetCustomerHistoryUseCase>();
 builder.Services.AddScoped<IGetGroupSlotAvailabilityUseCase, GetGroupSlotAvailabilityUseCase>();
+builder.Services.AddScoped<ICreateCampaignDiscountUseCase, CreateCampaignDiscountUseCase>();
 
 var app = builder.Build();
 
