@@ -4,7 +4,6 @@ using BookRight.Domain.Errors;
 using BookRight.Domain.Services;
 using BookRight.Domain.Exceptions;
 using BookRight.Domain.ValueObjects;
-using BookRight.Domain.Services;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.Facade.Interfaces;
 using BookRight.UseCases.Interfaces;
@@ -16,15 +15,19 @@ namespace BookRight.UseCases.CreateBooking
         private readonly IBookingRepository _bookingRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IClinicRepository _clinicRepository;
+        private readonly ITreatmentTypeRepository _treatmentTypeRepository;
+
         private readonly LoyaltyService _loyaltyService;
         public CreateBookingUseCase(
             IBookingRepository bookingRepository,
             ICustomerRepository customerRepository,
             IClinicRepository clinicRepository,
+            ITreatmentTypeRepository treatmentTypeRepository,
+
             LoyaltyService loyaltyService)
         {
             _bookingRepository = bookingRepository;
-
+            _treatmentTypeRepository = treatmentTypeRepository; 
             _clinicRepository = clinicRepository;
             _customerRepository = customerRepository;
 
@@ -39,27 +42,58 @@ namespace BookRight.UseCases.CreateBooking
             if (customer == null)
                 throw new CustomerNotFoundException(request.CustomerId);
 
-            var clinic = await _clinicRepository.GetByIdAsync(request.ClinicId);
-
-            if (clinic == null)
-                throw new ClinicNotFoundException(request.ClinicId);
-
-            // Brug repository metode til at hente alle tidligere bookinger for kunden
-            var completedBookings = await _bookingRepository.GetAllBookingsByCustomerIdAsync(request.CustomerId);
-
-            // Brug LoyaltyService til at beregne kundens loyalitetsniveau baseret på tidligere bookinger
-            var loyaltyLevel = _loyaltyService.GetLoyaltyLevel(completedBookings, DateTime.Now);
-
-            // Valider at bookingens starttidspunkt ikke er i fortiden
+            // Check if the requested time slot is in the past 
             if (request.TimeSlot.StartTime < DateTime.Now)
             {
                 throw new ArgumentException(
                     DomainErrorMessages.DateCannotBeBeforeToday,
                     nameof(request.TimeSlot.StartTime));
             }
+
+            // Convert TimeSlot DTO til domain TimeSlot value object
             var timeSlot = new TimeSlot(request.TimeSlot.StartTime, request.TimeSlot.EndTime);
 
-            // Opret booking via domain factory
+            var clinic = await _clinicRepository.GetByIdAsync(request.ClinicId);
+
+            if (clinic == null)
+                throw new ClinicNotFoundException(request.ClinicId);
+
+            // Get relevant treatment types for the booking lines to check for group treatments and max participants
+            var treatmentTypes = await _treatmentTypeRepository
+                .GetByTherapistTreatmentTypeIdsAsync(
+                    request.Lines.Select(l => l.TherapistTreatmentTypeId)
+                );
+
+            // Find first treatment type that is a group treatment (MaxParticipants > 1)
+            var groupTreatmentType = treatmentTypes
+                .FirstOrDefault(kvp => kvp.Value.MaxParticipants > 1);
+
+            // Check current number of participants for the TimeSlot against max participants allowed
+            if (groupTreatmentType.Key != Guid.Empty)
+            {
+                var currentCount = await _bookingRepository.CountParticipantsAsync(
+                    groupTreatmentType.Key,
+                    timeSlot
+                    );
+
+                // If currentCount is greater than or equal to maxParticipants, return response indicating booking is rejected due to full capacity
+                if (currentCount >= groupTreatmentType.Value.MaxParticipants)
+                {
+                    return new CreateBookingResponse
+                    {
+                        Success = false,
+                        Message = $"Der er ikke plads på holdet: ({currentCount}/{groupTreatmentType.Value.MaxParticipants}). Booking Afvist.)"
+                    };
+                }
+            }
+
+            // Get all completed bookings for the customer to determine loyalty level and potential discounts for the new booking
+            var completedBookings = await _bookingRepository.GetAllBookingsByCustomerIdAsync(request.CustomerId);
+
+            // Calculate the customer's loyalty level based on previous bookings  
+            var loyaltyLevel = _loyaltyService.GetLoyaltyLevel(completedBookings, DateTime.Now);
+
+            // Create new Booking object using the Booking constructor
             var booking = new Booking(
                 Guid.NewGuid(),
                 request.CustomerId,
@@ -68,22 +102,23 @@ namespace BookRight.UseCases.CreateBooking
             );
 
             request.Lines
-                .Select(lineRequest => new BookingLine(
-                lineRequest.TherapistTreatmentTypeId,
-                new Money(lineRequest.BasePrice),
-                0,
-                DiscountType.None
+                .Select(lineRequest => new BookingLine( // Create BookingLine object for each line in the request DTO
+                    lineRequest.TherapistTreatmentTypeId, // Use ID from request DTO
+                    new Money(lineRequest.BasePrice), // Create Money value object from base price in request DTO
+                    0,
+                    DiscountType.None 
                 ))
                 .ToList()
                 .ForEach(booking.AddLine);
 
-            // Gem i databasen
+            // Create object of CreateBookingResponse DTO type to return as response
             await _bookingRepository.CreateAsync(booking);
 
-            // Returener response DTO
+            // Return success response
             return new CreateBookingResponse
             {
-                Id = booking.Id
+                Success = true,
+                Message = "Booking oprettet!"
             };
         }
     }

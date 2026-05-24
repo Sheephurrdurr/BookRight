@@ -1,4 +1,6 @@
-﻿using BookRight.UseCases.CreateTherapist;
+﻿using BookRight.Domain.Aggregates.TherapistAggregate;
+using BookRight.Facade.DTOs.CreateTherapistDTOs;
+using BookRight.UseCases.CreateTherapist;
 using BookRight.UseCases.Interfaces;
 using Moq;
 using System;
@@ -19,12 +21,38 @@ namespace BookRight.UseCase.Test
                                                                                             //sådan at man ikke behæver at endre
                                                                                             //masse kode om det kommer flere afhengigheder                                                                                           
                                                                                             //senere, kun denne
-
+        
         [Fact]
-        public void PlaceHolder()
+        public async Task ExecuteAsync_ValidRequest_ReturnsTherapistId()
         {
-            Assert.True(true);
-        }
+            // Arrange
+            var mockRepo = new Mock<ITherapistRepository>();
 
+            // Make mockRepo able to mock ExistsByEmailAsync()
+            mockRepo.Setup(r => r.ExistsByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
+
+            // Make mockRepo able to mock AddAsync()
+            mockRepo.Setup(r => r.AddAsync(It.IsAny<Therapist>()))
+                .Returns(Task.CompletedTask);
+
+            var request = new CreateTherapistRequest
+            {
+                FirstName = "Test",
+                LastName = "Therapist",
+                Email = "test@therapist.dk",
+                Specialization = "Fysioterapeut",
+                ClinicId = Guid.NewGuid(),
+            };
+
+            //SUT = System Under Test,
+            var sut = new CreateTherapistUseCase(mockRepo.Object);
+
+            // Act
+            var response = await sut.ExecuteAsync(request);
+
+            // Assert
+            Assert.NotEqual(Guid.Empty, response.TherapistId);
+        }
     }
 }

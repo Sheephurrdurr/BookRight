@@ -325,20 +325,21 @@
 		clinics = await GetAllClinicsUseCase.ExecuteAsync();
 	}
 
-	private async Task CreateTherapist()
-	{
-		try
-		{
-			var request = new CreateTherapistRequest(
-				therapistFirstName,
-				therapistLastName,
-				therapistEmail,
-				therapistSpecialization,
-				selectedClinicId
-			);
+    private async Task CreateTherapist()
+    {
+        try
+        {
+            var request = new CreateTherapistRequest
+                {
+                    FirstName = therapistFirstName,
+                    LastName = therapistLastName,
+                    Email = therapistEmail,
+                    Specialization = therapistSpecialization,
+                    ClinicId = selectedClinicId
+                };
 
 			var response = await CreateTherapistUseCase.ExecuteAsync(request);
-			therapistMessage = $"Terapeut oprettet med ID: {response.therapistId}";
+			therapistMessage = $"Terapeut oprettet med ID: {response.TherapistId}";
 			therapistAlertClass = "alert-success";
 
 			// Nulstil felter efter oprettelse

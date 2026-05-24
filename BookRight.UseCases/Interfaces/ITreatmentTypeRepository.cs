@@ -1,7 +1,4 @@
 ﻿using BookRight.Domain.Aggregates.TreatmentType;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BookRight.UseCases.Interfaces
 {
@@ -9,9 +6,12 @@ namespace BookRight.UseCases.Interfaces
 	{
 		Task<TreatmentType?> GetByIdAsync(Guid id);
 		Task<IEnumerable<TreatmentType>> GetAllAsync();
+
+        // Takes in a list of therapist treatment type IDs and returns a dictionary, mapping each ID to its corresponding TreatmentType
+        Task<Dictionary<Guid, TreatmentType>> GetByTherapistTreatmentTypeIdsAsync(IEnumerable<Guid> therapistTreatmentTypeIds);
 		Task AddAsync(TreatmentType treatmentType);
 		void Update(TreatmentType treatmentType);
-		void Delete(TreatmentType treatement);
+		void Delete(TreatmentType treatmentType);
 		Task<bool> SaveChangesAsync();
 	}
 }

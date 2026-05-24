@@ -7,6 +7,7 @@ namespace BookRight.Facade.DTOs.GetAllTherapistTreatmentTypesDTOs
         string TherapistName,
         Guid TreatmentTypeId,
         string TreatmentTypeName,
-        decimal BasePrice
+        decimal BasePrice,
+        int DurationMinutes
     );
 }

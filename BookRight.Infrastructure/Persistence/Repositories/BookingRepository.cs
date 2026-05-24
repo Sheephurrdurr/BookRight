@@ -2,6 +2,7 @@
 using BookRight.Domain.Aggregates.Booking;
 using BookRight.UseCases.Interfaces;
 using BookRight.Domain.Enums;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Infrastructure.Persistence.Repositories
 {
@@ -42,6 +43,20 @@ namespace BookRight.Infrastructure.Persistence.Repositories
                 .Include(b => b.Lines)
                 .Where(b => b.CustomerId == customerId && b.Status == BookingStatus.Completed)
                 .ToListAsync();
+        }
+
+        // Count the number of participants for a specific TherapistTreatmentType and TimeSlot, excluding cancelled and no-show bookings.
+        public async Task<int> CountParticipantsAsync(Guid therapistTreatmentTypeId, TimeSlot timeSlot)
+        {
+            return await _context.Bookings
+                .Where(b =>
+                    b.Status != BookingStatus.Cancelled &&
+                    b.Status != BookingStatus.NoShow &&
+                    b.Lines.Any(l => l.TherapistTreatmentTypeId == therapistTreatmentTypeId) &&
+                    b.TimeSlot.StartTime == timeSlot.StartTime
+                )
+                .CountAsync();
+            
         }
 
         public async Task CreateAsync(Booking booking)
