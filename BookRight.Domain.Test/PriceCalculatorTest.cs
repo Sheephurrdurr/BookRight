@@ -1,8 +1,9 @@
 ﻿using BookRight.Domain.Aggregates.AddOn;
-using BookRight.Domain.ValueObjects;
-using BookRight.Domain.Enums;
 using BookRight.Domain.Aggregates.TreatmentType;
+using BookRight.Domain.Enums;
 using BookRight.Domain.Services;
+using BookRight.Domain.Services.DiscountStrategies;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Test
 {
@@ -16,7 +17,7 @@ namespace BookRight.Domain.Test
         {
             // Arrange
             var treatmentType = new TreatmentType("Massage", 60, 1, new Money(300));
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
 
             // Act
             var result = calculator.CalculateBasePrice(treatmentType);
@@ -42,7 +43,7 @@ namespace BookRight.Domain.Test
                 new AddOn("Weekend surcharge", 15)
             };
 
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
 
             // Act
             var result = calculator.ApplyAddOns(basePrice, addOns);
@@ -58,7 +59,7 @@ namespace BookRight.Domain.Test
             // Arrange
             var basePrice = new Money(300);
             var addOns = new List<AddOn>();
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
 
             // Act
             var result = calculator.ApplyAddOns(basePrice, addOns);
@@ -76,7 +77,7 @@ namespace BookRight.Domain.Test
             // 10% discount
             decimal percentage = 10;
 
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
 
             // Act
             var result = calculator.ApplyDiscount(basePrice, percentage, DiscountType.Campaign);
@@ -96,7 +97,7 @@ namespace BookRight.Domain.Test
             // Arrange
             var basePrice = new Money(400);
 
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
 
             // Act
             var result = calculator.ApplyDiscount(basePrice, 0, DiscountType.None);
@@ -112,12 +113,13 @@ namespace BookRight.Domain.Test
         [Fact]
         public void ApplyAddOns_WithSingle15PercentSurcharge_Adds15Percent()
         {
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
+
             var basePrice = new Money(300);
             var addOns = new List<AddOn>
-    {
-        new AddOn("Weekend surcharge", 15)
-    };
+            {
+                new AddOn("Weekend surcharge", 15)
+            };
 
             var result = calculator.ApplyAddOns(basePrice, addOns);
 
@@ -127,12 +129,18 @@ namespace BookRight.Domain.Test
         [Fact]
         public void ApplyDiscount_With100Percent_ReturnsZero()
         {
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
             var basePrice = new Money(400);
 
             var result = calculator.ApplyDiscount(basePrice, 100, DiscountType.None);
 
             Assert.Equal(new Money(0), result.DiscountedPrice);
+        }
+
+        // Helper method to create a PriceCalculatorService with no discount strategies for testing
+        private static PriceCalculatorService CreateCalculator()
+        {
+            return new PriceCalculatorService(new List<IDiscountStrategy>());
         }
 
     }
