@@ -1,13 +1,12 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.Enums;
-using BookRight.Domain.Services.DiscountStrategies;
 using BookRight.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BookRight.Domain.Services
+namespace BookRight.Domain.Services.DiscountStrategies
 {
     public class CampaignDiscountStrategy :IDiscountStrategy
 

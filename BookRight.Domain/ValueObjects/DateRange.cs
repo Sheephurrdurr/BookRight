@@ -5,32 +5,34 @@ namespace BookRight.Domain.ValueObjects
 {
     public sealed record DateRange
     {
-        public DateTime Start { get; }
-        public DateTime End { get; }
+        public DateOnly StartDate { get; }
+        public DateOnly EndDate { get; }
 
-        public DateRange(DateTime start, DateTime end)
+        public DateRange() { }
+        public DateRange(DateOnly start, DateOnly end)
         {
             if (start >= end)
                 throw new ArgumentException(
                     DomainErrorMessages.EndDateCannotBeBeforeStartDate,
                     nameof(start));
 
-            Start = start;
-            End = end;
+            StartDate = start;
+            EndDate = end;
         }
 
         public bool Overlaps(DateRange other)
         {
             if (other is null)
                 throw new ArgumentNullException(nameof(other)); //Guard clause
-            return Start < other.End &&
-                   End > other.Start;
+
+            return StartDate < other.EndDate &&
+                   EndDate > other.StartDate;
         }
 
-        public bool Contains(DateTime date)
+        public bool Contains(DateOnly date)
         {
-            return date >= Start &&
-                   date < End;
+            return date >= StartDate &&
+                   date < EndDate;
         }
     }
 }

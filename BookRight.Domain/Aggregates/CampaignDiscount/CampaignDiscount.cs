@@ -1,8 +1,6 @@
 ﻿using BookRight.Domain.Errors;
 using BookRight.Domain.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.CampaignDiscount
 {
@@ -11,9 +9,11 @@ namespace BookRight.Domain.Aggregates.CampaignDiscount
         public Guid Id { get; private set; }
         public string Name { get; private set; } = null!; //A promise to the EF constructor, that the property is set later. If not it results in a warning.
         public decimal DiscountPercent { get; private set; }
-        public DateOnly StartDate { get; private set; }
-        public DateOnly EndDate { get; private set; }
+        public DateRange DateRange { get; private set; }
 
+        private readonly List<Guid> _appliesToTreatmentTypeIds = new();
+        public IReadOnlyList<Guid> AppliesToTreatmentTypeIdss =>
+            _appliesToTreatmentTypeIds.AsReadOnly();
 
         private CampaignDiscount() //EF Core constructor
         {
@@ -23,8 +23,7 @@ namespace BookRight.Domain.Aggregates.CampaignDiscount
         public CampaignDiscount( //Opret kampagne
             string name,
             decimal discountPercent,
-            DateOnly startDate,
-            DateOnly endDate)
+            DateRange dateRange)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException(
@@ -34,21 +33,21 @@ namespace BookRight.Domain.Aggregates.CampaignDiscount
             if (discountPercent <= 0 || discountPercent > 100) //CustomException
                 throw new InvalidPercentageException();
 
-            if (endDate < startDate)
-                throw new ArgumentException(
-                    DomainErrorMessages.EndDateCannotBeBeforeStartDate,
-                    nameof(endDate));
-
             Id = Guid.NewGuid();
             Name = name;
             DiscountPercent = discountPercent;
-            StartDate = startDate;
-            EndDate = endDate;
+            DateRange = dateRange;
         }
 
         public bool IsActive(DateOnly date) //Tjek om kampagnen er aktiv
         {
-            return date >= StartDate && date <= EndDate;
+            return DateRange.Contains(date); // Tjek udføres af DateRange VO
         }
+
+        public bool AppliesTo(Guid treatmentTypeId)
+        {
+            return _appliesToTreatmentTypeIds.Contains(treatmentTypeId);
+        }
+           
     }
 }

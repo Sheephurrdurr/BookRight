@@ -7,6 +7,7 @@ using Xunit;
 using BookRight.Domain.Enums;
 using BookRight.Domain.Services;
 using BookRight.Domain.Aggregates.Customer;
+using BookRight.Domain.Services.DiscountStrategies;
 namespace BookRight.Domain.Test
 {
 	public class BookingTest
