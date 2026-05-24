@@ -30,7 +30,7 @@ using BookRight.UseCases.RestoreBookingFromNoShow;
 using BookRight.UseCases.MarkBookingCompleted;
 using BookRight.UseCases.GetCustomerHistory;
 using Microsoft.EntityFrameworkCore;
-
+using BookRight.UseCases.GetGroupSlotAvailabilityUseCase;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +72,7 @@ builder.Services.AddScoped<IGetCustomerHealthNotesUseCase, GetCustomerHealthNote
 builder.Services.AddScoped<IChangeCustomerHealthNotesUseCase, ChangeCustomerHealthNotesUseCase>();
 builder.Services.AddScoped<IRestoreBookingFromNoShowUseCase, RestoreBookingFromNoShowUseCase>();
 builder.Services.AddScoped<IGetCustomerHistoryUseCase, GetCustomerHistoryUseCase>();
+builder.Services.AddScoped<IGetGroupSlotAvailabilityUseCase, GetGroupSlotAvailabilityUseCase>();
 
 var app = builder.Build();
 

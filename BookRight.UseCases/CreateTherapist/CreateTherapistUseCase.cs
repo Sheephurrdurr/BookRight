@@ -32,7 +32,10 @@ namespace BookRight.UseCases.CreateTherapist
 
             await _repository.AddAsync(therapist); 
 
-            return new CreateTherapistResponse(therapist.Id); 
+            return new CreateTherapistResponse
+            {
+                TherapistId = therapist.Id
+             }; 
                                                               
         }
     }

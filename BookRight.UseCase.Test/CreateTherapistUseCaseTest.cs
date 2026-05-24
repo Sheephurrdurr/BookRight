@@ -52,7 +52,7 @@ namespace BookRight.UseCase.Test
             var response = await sut.ExecuteAsync(request);
 
             // Assert
-            Assert.NotEqual(Guid.Empty, response.therapistId);
+            Assert.NotEqual(Guid.Empty, response.TherapistId);
         }
     }
 }
