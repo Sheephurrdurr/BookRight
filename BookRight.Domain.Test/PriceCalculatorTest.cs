@@ -1,4 +1,6 @@
 ﻿using BookRight.Domain.Aggregates.AddOn;
+using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Enums;
 using BookRight.Domain.Services;
@@ -143,5 +145,70 @@ namespace BookRight.Domain.Test
             return new PriceCalculatorService(new List<IDiscountStrategy>());
         }
 
+        // Helper method to create a sample customer for testing
+        [Fact]
+        public async Task CalculateBestDiscountAsync_ReturnsLowestDiscountedPrice()
+        {
+            // Arrange
+            var strategies = new List<IDiscountStrategy>
+    {
+        new FakeDiscountStrategy(new Money(100), new Money(90), DiscountType.Loyalty),
+        new FakeDiscountStrategy(new Money(100), new Money(75), DiscountType.Birthday),
+        new FakeDiscountStrategy(new Money(100), new Money(80), DiscountType.Campaign)
+    };
+
+            var calculator = new PriceCalculatorService(strategies);
+
+            var customer = CreateCustomer();
+            var booking = CreateBooking();
+            var completedBookings = new List<Booking>();
+
+            // Act
+            var result = await calculator.CalculateBestDiscountAsync(customer, booking, completedBookings);
+
+            // Assert
+            Assert.Equal(new Money(75), result.DiscountedPrice);
+            Assert.Equal(DiscountType.Birthday, result.AppliedDiscount);
+        }
+
+        private class FakeDiscountStrategy : IDiscountStrategy
+        {
+            private readonly DiscountResult _result;
+
+            public FakeDiscountStrategy(Money originalPrice, Money discountedPrice, DiscountType discountType)
+            {
+                _result = new DiscountResult(originalPrice, discountedPrice, discountType);
+            }
+
+            public DiscountResult CalculateDiscount(Customer customer, Booking booking, IEnumerable<Booking> completedBookings)
+            {
+                return _result;
+            }
+        }
+
+        // Helper method to create a test booking
+        private static Booking CreateBooking()
+        {
+            var startTime = DateTime.Now.AddDays(1);
+            var endTime = startTime.AddHours(1);
+
+            return new Booking(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                new TimeSlot(startTime, endTime));
+        }
+
+        // Helper method to create a test customer
+        private static Customer CreateCustomer()
+        {
+            return new Customer(
+                new FullName("Test", "Customer"),
+                new Email("test@test.dk"),
+                new PhoneNumber("12345678"),
+                new DateOnly(1990, 5, 1),
+                string.Empty,
+                null);
+        }
     }
 }
