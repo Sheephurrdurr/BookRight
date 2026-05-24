@@ -1,5 +1,4 @@
-﻿using BookRight.Domain.Aggregates.Customer;
-using BookRight.Domain.Exceptions;
+﻿using BookRight.Domain.Exceptions;
 using BookRight.Facade.DTOs.MarkBookingAsNoShowDTOs;
 using BookRight.Facade.Interfaces.BookingUseCases;
 using BookRight.UseCases.Interfaces;
