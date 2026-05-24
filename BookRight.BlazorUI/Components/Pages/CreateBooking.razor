@@ -112,7 +112,6 @@
     private string selectedTherapistId = "";
     private string selectedTherapistTreatmentTypeId = "";
     private DateTime startTime = DateTime.Now;
-    private DateTime endTime = DateTime.Now.AddHours(1);
     private string bookingMessage = "";
     private string bookingAlertClass = "";
 
@@ -151,7 +150,7 @@
 		{
 
             TherapistTreatmentTypeId = Guid.Parse(selectedTherapistTreatmentTypeId),
-			TimeSlot = new TimeSlotDto(startTime, startTime.AddMinutes(selectedTherapistTreatmentType?.DurationMinutes ?? 0))
+			TimeSlot = new TimeSlotDto {StartTime = startTime, EndTime = startTime.AddMinutes(selectedTherapistTreatmentType?.DurationMinutes ?? 0) }
 		};
 
         var response = await GetGroupSlotAvailabilityUseCase.ExecuteAsync(request);
@@ -174,7 +173,7 @@
 			{
 			    CustomerId = Guid.Parse(selectedCustomerId),
 				ClinicId = Guid.Parse(selectedClinicId),
-				TimeSlot = new TimeSlotDto(startTime, endTime = startTime.AddMinutes(60)),
+				TimeSlot = new TimeSlotDto { StartTime = startTime, EndTime = startTime.AddMinutes(60) },
 				Lines = new List<BookingLineRequest>
                 {
 				    new BookingLineRequest
@@ -197,7 +196,6 @@
                 selectedTherapistId = "";
                 selectedTherapistTreatmentTypeId = "";
                 startTime = DateTime.Now;
-                endTime = DateTime.Now.AddHours(1);
                 remainingSlots = null;
                 isFullyBooked = false;
             }

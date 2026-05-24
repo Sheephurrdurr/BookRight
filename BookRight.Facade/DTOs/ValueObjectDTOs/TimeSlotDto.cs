@@ -2,7 +2,7 @@
 {
     public record TimeSlotDto 
     {
-        public DateTime StartTime { get; set; } 
-        public DateTime EndTime { get; set; }
+        public DateTime StartTime { get; init; } 
+        public DateTime EndTime { get; init; }
     };
 }
