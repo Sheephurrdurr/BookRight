@@ -31,7 +31,7 @@ namespace BookRight.Infrastructure.Persistence.Repositories
         public async Task<IReadOnlyList<CampaignDiscount>> GetActiveAsync(DateOnly date)
         {
             return await _context.CampaignDiscounts
-                .Where(c => date >= c.StartDate && date <= c.EndDate)
+                .Where(c => date >= c.DateRange.StartDate && date <= c.DateRange.EndDate)
                 .ToListAsync();
         }
 
