@@ -54,8 +54,5 @@ namespace BookRight.UseCase.Test
             // Assert
             Assert.NotEqual(Guid.Empty, response.therapistId);
         }
-
-
-
     }
 }
