@@ -4,12 +4,14 @@
 @using BookRight.Facade.Interfaces.ClinicsUseCases
 @using BookRight.Facade.Interfaces.TherapistUseCases
 @using BookRight.Facade.Interfaces.BookingUseCases
+@using BookRight.Facade.Interfaces.DiscountUseCases
 @using BookRight.Facade.DTOs.GetAllCustomersDTOs
 @using BookRight.Facade.DTOs.GetAllClinicsDTOs
 @using BookRight.Facade.DTOs.GetAllTherapistsDTOs
 @using BookRight.Facade.DTOs.GetAllTherapistTreatmentTypesDTOs
 @using BookRight.Facade.DTOs.CreateBookingDTOs
 @using BookRight.Facade.DTOs.GetGroupSlotAvailabilityDTOs
+@using BookRight.Facade.DTOs.GetAllCampaignDiscountsDTOs
 @using BookRight.Facade.DTOs.ValueObjectDTOs
 @inject IGetAllCustomersUseCase GetAllCustomersUseCase
 @inject IGetAllClinicsUseCase GetAllClinicsUseCase
@@ -17,6 +19,7 @@
 @inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
 @inject IGetAllTherapistTreatmentTypesUseCase GetAllTherapistTreatmentTypesUseCase
 @inject IGetGroupSlotAvailabilityUseCase GetGroupSlotAvailabilityUseCase
+@inject IGetAllCampaignDiscountsUseCase GetAllCampaignDiscountsUseCase
 
 
 <PageTitle>Opret Booking</PageTitle>
@@ -75,6 +78,21 @@
                     </div>
 
                     <div class="mt-4">
+                        <label>Kampagnerabat (valgfri)</label>
+
+                        <select class="form-select" @bind="selectedCampaignId">
+                            <option value="">-- Ingen kampagne --</option>
+                            @foreach (var campaign in campaigns)
+                            {
+                                <option value="@campaign.Id">
+                                    @campaign.Name - @campaign.DiscountPercentage%
+                                    (@campaign.StartDate.ToString("dd/MM") - @campaign.EndDate.ToString("dd/MM"))
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mt-4">
                         <label>Dato og starttid</label>
                         <input type="datetime-local" class="form-control" @bind="startTime" @bind:after="OnSlotChanged"/>
                     </div>
@@ -100,6 +118,14 @@
 							@bookingMessage
 						</div>
 					}
+                    @if (lastResponse != null && lastResponse.Success) 
+                    {
+                        <div>
+                            <p>Oprindelig pris: @lastResponse.OriginalPrice kr.</p>
+                            <p>Rabattype: @lastResponse.DiscountType</p>
+                            <p>Rabatpris: @lastResponse.DiscountedPrice kr.</p>
+                        </div>
+                    }
                 </div>
             </section>
         </article>
@@ -114,6 +140,7 @@
     private DateTime startTime = DateTime.Now;
     private string bookingMessage = "";
     private string bookingAlertClass = "";
+    private string selectedCampaignId = "";
 
     private int? remainingSlots = null;
     private bool isFullyBooked = false;
@@ -123,6 +150,9 @@
     private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
     private IReadOnlyList<GetAllTherapistTreatmentTypesResponse> allTherapistTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
     private IReadOnlyList<GetAllTherapistTreatmentTypesResponse> filteredTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
+    private IReadOnlyList<GetAllCampaignDiscountsResponse> campaigns = new List<GetAllCampaignDiscountsResponse>();
+
+    private CreateBookingResponse? lastResponse = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -134,6 +164,7 @@
         customers = await GetAllCustomersUseCase.ExecuteAsync();
         clinics = await GetAllClinicsUseCase.ExecuteAsync();
         therapists = await GetAllTherapistsUseCase.ExecuteAsync();
+        campaigns = await GetAllCampaignDiscountsUseCase.ExecuteAsync();
         allTherapistTreatmentTypes = await GetAllTherapistTreatmentTypesUseCase.ExecuteAsync();
         filteredTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
     }
@@ -146,6 +177,7 @@
 
         var selectedTherapistTreatmentType = allTherapistTreatmentTypes
             .FirstOrDefault(ttt => ttt.Id.ToString() == selectedTherapistTreatmentTypeId);
+
         var request = new GetGroupSlotAvailabilityRequest
 		{
 
@@ -169,18 +201,30 @@
     {
         try
         {
+            var selectedTherapistTreatmentType = allTherapistTreatmentTypes
+                .FirstOrDefault(ttt => ttt.Id.ToString() == selectedTherapistTreatmentTypeId);  
+
             var request = new CreateBookingRequest
 			{
 			    CustomerId = Guid.Parse(selectedCustomerId),
 				ClinicId = Guid.Parse(selectedClinicId),
                 TherapistId = Guid.Parse(selectedTherapistId),
-				TimeSlot = new TimeSlotDto { StartTime = startTime, EndTime = startTime.AddMinutes(60) },
+
+                CampaignDiscountId = string.IsNullOrEmpty(selectedCampaignId) 
+                ? (Guid?)null 
+                : Guid.Parse(selectedCampaignId),
+
+				TimeSlot = new TimeSlotDto 
+                { 
+                    StartTime = startTime, 
+                    EndTime = startTime.AddMinutes(selectedTherapistTreatmentType?.DurationMinutes ?? 60) 
+                },
 				Lines = new List<BookingLineRequest>
                 {
 				    new BookingLineRequest
                     {
                         TherapistTreatmentTypeId = Guid.Parse(selectedTherapistTreatmentTypeId),
-                        BasePrice = 500
+                        BasePrice = selectedTherapistTreatmentType?.BasePrice ?? 0
                     }
                 }
 			};
@@ -196,9 +240,12 @@
                 selectedClinicId = "";
                 selectedTherapistId = "";
                 selectedTherapistTreatmentTypeId = "";
+                selectedCampaignId = "";
                 startTime = DateTime.Now;
                 remainingSlots = null;
                 isFullyBooked = false;
+                lastResponse = response;
+               
             }
             else
             {

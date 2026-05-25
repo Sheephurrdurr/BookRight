@@ -1,7 +1,7 @@
 using BookRight.BlazorUI.Components;
 
 using BookRight.Domain.Services;
-
+using BookRight.Domain.Services.DiscountStrategies;
 using BookRight.Facade.Interfaces;
 using BookRight.Facade.Interfaces.BookingUseCases;
 using BookRight.Facade.Interfaces.ClinicsUseCases;
@@ -34,6 +34,7 @@ using BookRight.UseCases.GetCustomerHistory;
 using BookRight.UseCases.GetGroupSlotAvailabilityUseCase;
 using BookRight.UseCases.CampaignDiscountUseCases;
 using BookRight.UseCases.GetAllTreatmentTypes;
+using BookRight.UseCases.GetAllCampaignDiscounts;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -51,6 +52,12 @@ builder.Services.AddDbContext<BookRightDbContext>(options =>
 // Register Domain Services
 builder.Services.AddScoped<LoyaltyService>();
 builder.Services.AddScoped<DoubleBookingVerificationService>();
+
+// Register DI for PriceCalculatorService with its dependencies
+builder.Services.AddScoped<IDiscountStrategy, LoyaltyDiscountStrategy>();
+builder.Services.AddScoped<IDiscountStrategy, BirthdayDiscountStrategy>();
+builder.Services.AddScoped<IDiscountStrategy, CampaignDiscountStrategy>();
+builder.Services.AddScoped<PriceCalculatorService>();
 
 // Register DI for DbSeeder
 builder.Services.AddScoped<DbSeeder>();
@@ -82,6 +89,7 @@ builder.Services.AddScoped<IGetCustomerHistoryUseCase, GetCustomerHistoryUseCase
 builder.Services.AddScoped<IGetGroupSlotAvailabilityUseCase, GetGroupSlotAvailabilityUseCase>();
 builder.Services.AddScoped<ICreateCampaignDiscountUseCase, CreateCampaignDiscountUseCase>();
 builder.Services.AddScoped<IGetAllTreatmentTypeUseCase, GetAllTreatmentTypesUseCase>();
+builder.Services.AddScoped<IGetAllCampaignDiscountsUseCase, GetAllCampaignDiscountsUseCase>();
 
 var app = builder.Build();
 
