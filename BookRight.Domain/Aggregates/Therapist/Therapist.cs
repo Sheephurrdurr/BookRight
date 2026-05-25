@@ -9,6 +9,7 @@ namespace BookRight.Domain.Aggregates.TherapistAggregate //Rename because of nam
         public FullName Name { get; private set; } = null!;//Not nullable. It's a promise to the constructor, that property is set later. Fixes warning. 
         public Email Email { get; private set; } = null!;
         public string Specialization { get; private set; } = null!;
+        public Authorization Authorization { get; private set; } = null!;
         public Guid ClinicId { get; private set; } //FK to Clinic. 1 therapist belongs to 1 Clinic
 
         private readonly List<TherapistTreatmentType> _qualifications = new();
