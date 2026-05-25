@@ -1,0 +1,46 @@
+﻿@using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
+
+
+<div>
+	@foreach (var treatmentType in TreatmentTypes)
+	{
+		<div class="form-check">
+
+			<input class="form-check-input"
+				   type="checkbox"
+				   id="treatmentType-@treatmentType.Id"
+				   checked="@SelectedIds.Contains(treatmentType.Id)"
+				   @onchange="() => OnToggle(treatmentType.Id)" />
+
+			<label class="form-check-label" for="treatmentType-@treatmentType.Id">
+				@treatmentType.Name (@treatmentType.DurationMinutes min)
+			</label>
+
+		</div>
+	}
+</div>
+
+@code {
+
+
+	[Parameter, EditorRequired]
+	public IReadOnlyList<GetAllTreatmentTypesResponse> TreatmentTypes { get; set; } = [];
+
+	[Parameter, EditorRequired]
+	public List<Guid> SelectedIds { get; set; } = [];
+
+	[Parameter, EditorRequired]
+	public EventCallback<List<Guid>> SelectedIdsChanged { get; set; }
+
+	private async Task OnToggle(Guid id)
+	{
+		var updated = SelectedIds.ToList();
+
+		if (updated.Contains(id))
+			updated.Remove(id);
+		else
+			updated.Add(id);
+
+		await SelectedIdsChanged.InvokeAsync(updated);
+	}
+}
