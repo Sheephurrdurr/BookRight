@@ -27,6 +27,9 @@ namespace BookRight.UseCases.CreateTherapist
                 new FullName(request.FirstName, request.LastName),
                 new Email(request.Email),
                 request.Specialization,
+                new Authorization(
+                request.AuthorizationType,
+                request.AuthorizationNumber),
                 request.ClinicId
             );
 
