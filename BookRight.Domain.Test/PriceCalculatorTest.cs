@@ -186,6 +186,65 @@ namespace BookRight.Domain.Test
             }
         }
 
+        // Tests that a weekend booking gets a 15% automatic add-on.
+        [Fact]
+        public void GetAutomaticAddOns_Weekend_Returns15PercentAddOn()
+        {
+            // Arrange
+            var calculator = CreateCalculator();
+
+            var timeSlot = new TimeSlot(
+                new DateTime(2027, 5, 8, 10, 0, 0), // Saturday
+                new DateTime(2027, 5, 8, 11, 0, 0));
+
+            // Act
+            var result = calculator.GetAutomaticAddOns(timeSlot).ToList();
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal("Aften-/weekendtillæg", result[0].Name);
+            Assert.Equal(15, result[0].Percentage);
+        }
+
+        // Tests that an evening booking gets a 15% automatic add-on.
+        [Fact]
+        public void GetAutomaticAddOns_Evening_Returns15PercentAddOn()
+        {
+            // Arrange
+            var calculator = CreateCalculator();
+
+            var timeSlot = new TimeSlot(
+                new DateTime(2027, 5, 10, 18, 0, 0), // Monday evening
+                new DateTime(2027, 5, 10, 19, 0, 0));
+
+            // Act
+            var result = calculator.GetAutomaticAddOns(timeSlot).ToList();
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal("Aften-/weekendtillæg", result[0].Name);
+            Assert.Equal(15, result[0].Percentage);
+        }
+
+        // Tests that a normal weekday booking does not get any automatic add-ons.
+        [Fact]
+        public void GetAutomaticAddOns_NormalWeekday_ReturnsNoAddOns()
+        {
+            // Arrange
+            var calculator = CreateCalculator();
+
+            var timeSlot = new TimeSlot(
+                new DateTime(2027, 5, 10, 10, 0, 0), // Monday daytime
+                new DateTime(2027, 5, 10, 11, 0, 0));
+
+            // Act
+            var result = calculator.GetAutomaticAddOns(timeSlot).ToList();
+
+            // Assert
+            Assert.Empty(result);
+        }
+
+
         // Helper method to create a test booking
         private static Booking CreateBooking()
         {
