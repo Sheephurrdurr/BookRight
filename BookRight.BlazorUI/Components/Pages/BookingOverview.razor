@@ -1,5 +1,5 @@
 ﻿@page "/booking-overview" 
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @using BookRight.Domain.Enums
 @using BookRight.Domain.Aggregates.Booking

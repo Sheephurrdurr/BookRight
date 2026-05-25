@@ -1,0 +1,60 @@
+﻿@using BookRight.BlazorUI.Models
+@using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
+
+
+<EditForm Model="@Model" OnValidSubmit="OnValidSubmit" FormName="campaign-form">
+	<DataAnnotationsValidator/>
+	<ValidationSummary/>
+
+	<fieldset>
+
+		<legend>Ny kampagne</legend>
+
+		<div class="mb-3">
+			<label for="nameInput" class="form-label">Kampagne Navn</label>
+			<InputText id="nameInput" @bind-Value="Model.Name" class="form-control"/>
+			<ValidationMessage For="() => Model.Name"/>
+		</div>
+
+		<div class="mb-3">
+			<label for="discountInput" class="form-label">Rabatprocent</label>
+			<InputNumber id="discountInput" class="form-control" @bind-Value="Model.DiscountPercent"/>
+			<ValidationMessage For="() => Model.DiscountPercent" />
+		</div>
+
+		<div class="mb-3">
+			<label for="startDateInput" class="form-label">Startdato</label>
+			<InputDate id="startDateInput" @bind-Value="Model.StartDate" class="form-control" />
+			<ValidationMessage For="() => Model.StartDate" />
+		</div>
+
+		<div class="mb-3">
+			<label for="endDateInput" class="form-label">Slutdato</label>
+			<InputDate id="endDateInput" @bind-Value="Model.EndDate" class="form-control" />
+			<ValidationMessage For="() => Model.EndDate" />
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label">Behandlingstyper</label>
+			<TreatmentTypeCheckList
+				TreatmentTypes="@TreatmentTypes"
+				SelectedIds="@Model.TreatmentTypeIds"
+				SelectedIdsChanged="@((ids) => { Model.TreatmentTypeIds = ids; })"/>
+		</div>
+
+		<button class="btn btn-primary" type="submit">Opret Kampagne</button>
+
+	</fieldset>
+</EditForm>
+
+@code {
+	[Parameter, EditorRequired]
+	public IReadOnlyList<GetAllTreatmentTypesResponse> TreatmentTypes { get; set; } = [];
+
+
+	[Parameter, EditorRequired]
+	public CreateCampaignInputModel Model { get; set; } = default!;
+
+	[Parameter, EditorRequired]
+	public EventCallback OnValidSubmit { get; set; }
+}
