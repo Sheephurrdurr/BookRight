@@ -1,8 +1,11 @@
 ﻿using BookRight.Domain.Aggregates.AddOn;
-using BookRight.Domain.ValueObjects;
-using BookRight.Domain.Enums;
+using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.Aggregates.TreatmentType;
+using BookRight.Domain.Enums;
 using BookRight.Domain.Services;
+using BookRight.Domain.Services.DiscountStrategies;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Test
 {
@@ -16,7 +19,7 @@ namespace BookRight.Domain.Test
         {
             // Arrange
             var treatmentType = new TreatmentType("Massage", 60, 1, new Money(300));
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
 
             // Act
             var result = calculator.CalculateBasePrice(treatmentType);
@@ -42,7 +45,7 @@ namespace BookRight.Domain.Test
                 new AddOn("Weekend surcharge", 15)
             };
 
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
 
             // Act
             var result = calculator.ApplyAddOns(basePrice, addOns);
@@ -58,7 +61,7 @@ namespace BookRight.Domain.Test
             // Arrange
             var basePrice = new Money(300);
             var addOns = new List<AddOn>();
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
 
             // Act
             var result = calculator.ApplyAddOns(basePrice, addOns);
@@ -76,7 +79,7 @@ namespace BookRight.Domain.Test
             // 10% discount
             decimal percentage = 10;
 
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
 
             // Act
             var result = calculator.ApplyDiscount(basePrice, percentage, DiscountType.Campaign);
@@ -96,7 +99,7 @@ namespace BookRight.Domain.Test
             // Arrange
             var basePrice = new Money(400);
 
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
 
             // Act
             var result = calculator.ApplyDiscount(basePrice, 0, DiscountType.None);
@@ -112,12 +115,13 @@ namespace BookRight.Domain.Test
         [Fact]
         public void ApplyAddOns_WithSingle15PercentSurcharge_Adds15Percent()
         {
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
+
             var basePrice = new Money(300);
             var addOns = new List<AddOn>
-    {
-        new AddOn("Weekend surcharge", 15)
-    };
+            {
+                new AddOn("Weekend surcharge", 15)
+            };
 
             var result = calculator.ApplyAddOns(basePrice, addOns);
 
@@ -127,7 +131,7 @@ namespace BookRight.Domain.Test
         [Fact]
         public void ApplyDiscount_With100Percent_ReturnsZero()
         {
-            var calculator = new PriceCalculatorService();
+            var calculator = CreateCalculator();
             var basePrice = new Money(400);
 
             var result = calculator.ApplyDiscount(basePrice, 100, DiscountType.None);
@@ -135,5 +139,76 @@ namespace BookRight.Domain.Test
             Assert.Equal(new Money(0), result.DiscountedPrice);
         }
 
+        // Helper method to create a PriceCalculatorService with no discount strategies for testing
+        private static PriceCalculatorService CreateCalculator()
+        {
+            return new PriceCalculatorService(new List<IDiscountStrategy>());
+        }
+
+        // Helper method to create a sample customer for testing
+        [Fact]
+        public async Task CalculateBestDiscountAsync_ReturnsLowestDiscountedPrice()
+        {
+            // Arrange
+            var strategies = new List<IDiscountStrategy>
+    {
+        new FakeDiscountStrategy(new Money(100), new Money(90), DiscountType.Loyalty),
+        new FakeDiscountStrategy(new Money(100), new Money(75), DiscountType.Birthday),
+        new FakeDiscountStrategy(new Money(100), new Money(80), DiscountType.Campaign)
+    };
+
+            var calculator = new PriceCalculatorService(strategies);
+
+            var customer = CreateCustomer();
+            var booking = CreateBooking();
+            var completedBookings = new List<Booking>();
+
+            // Act
+            var result = await calculator.CalculateBestDiscountAsync(customer, booking, completedBookings);
+
+            // Assert
+            Assert.Equal(new Money(75), result.DiscountedPrice);
+            Assert.Equal(DiscountType.Birthday, result.AppliedDiscount);
+        }
+
+        private class FakeDiscountStrategy : IDiscountStrategy
+        {
+            private readonly DiscountResult _result;
+
+            public FakeDiscountStrategy(Money originalPrice, Money discountedPrice, DiscountType discountType)
+            {
+                _result = new DiscountResult(originalPrice, discountedPrice, discountType);
+            }
+
+            public DiscountResult CalculateDiscount(Customer customer, Booking booking, IEnumerable<Booking> completedBookings)
+            {
+                return _result;
+            }
+        }
+
+        // Helper method to create a test booking
+        private static Booking CreateBooking()
+        {
+            var startTime = DateTime.Now.AddDays(1);
+            var endTime = startTime.AddHours(1);
+
+            return new Booking(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                new TimeSlot(startTime, endTime));
+        }
+
+        // Helper method to create a test customer
+        private static Customer CreateCustomer()
+        {
+            return new Customer(
+                new FullName("Test", "Customer"),
+                new Email("test@test.dk"),
+                new PhoneNumber("12345678"),
+                new DateOnly(1990, 5, 1),
+                string.Empty,
+                null);
+        }
     }
 }
