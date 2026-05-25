@@ -46,10 +46,20 @@
 						<label class="form-label">Email</label>
 						<input class="form-control" @bind="therapistEmail" placeholder="Skriv email her..." />
 					</div>
-					<div class="mb-3">
-						<label class="form-label">Speciale</label>
-						<input class="form-control" @bind="therapistSpecialization" placeholder="Skriv speciale her..." />
-					</div>
+					<select class="form-control" @bind="therapistSpecialization">
+						<option value="">Vælg speciale</option>
+						<option value="Fysioterapeut">Fysioterapeut</option>
+						<option value="Massageterapeut">Massageterapeut</option>
+						<option value="Akupunktør">Akupunktør</option>
+						<option value="Kostvejleder">Kostvejleder</option>
+					</select>
+					<input class="form-control"
+						   @bind="therapistAuthorizationType"
+						   placeholder="Skriv autorisationstype her..." />
+
+					<input class="form-control"
+						   @bind="therapistAuthorizationNumber"
+						   placeholder="Skriv autorisationsnummer her..." />
 					<div class="mb-3">
 						<label class="form-label">Klinik</label>
 						<select class="form-control" @bind="selectedClinicId">
