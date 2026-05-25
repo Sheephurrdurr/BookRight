@@ -18,13 +18,15 @@ namespace BookRight.UseCases.CreateBooking
         private readonly ITreatmentTypeRepository _treatmentTypeRepository;
 
         private readonly LoyaltyService _loyaltyService;
+        private readonly DoubleBookingVerificationService _doubleBookingVerificationService;
         public CreateBookingUseCase(
             IBookingRepository bookingRepository,
             ICustomerRepository customerRepository,
             IClinicRepository clinicRepository,
             ITreatmentTypeRepository treatmentTypeRepository,
 
-            LoyaltyService loyaltyService)
+            LoyaltyService loyaltyService,
+            DoubleBookingVerificationService doubleBookingVerificationService)
         {
             _bookingRepository = bookingRepository;
             _treatmentTypeRepository = treatmentTypeRepository; 
@@ -32,6 +34,7 @@ namespace BookRight.UseCases.CreateBooking
             _customerRepository = customerRepository;
 
             _loyaltyService = loyaltyService;
+            _doubleBookingVerificationService = doubleBookingVerificationService;
         }
 
         public async Task<CreateBookingResponse> ExecuteAsync (CreateBookingRequest request)
@@ -89,17 +92,26 @@ namespace BookRight.UseCases.CreateBooking
 
             // Get all completed bookings for the customer to determine loyalty level and potential discounts for the new booking
             var completedBookings = await _bookingRepository.GetAllBookingsByCustomerIdAsync(request.CustomerId);
+            //Get all bookings by customer and therapist to check for overlap
+            var allCustomerBooking = await _bookingRepository.GetByCustomerIdAsync(request.CustomerId);
+            var allTherapistBooking = await _bookingRepository.GetByTherapistIdAsync(request.TherapistId);
 
             // Calculate the customer's loyalty level based on previous bookings  
             var loyaltyLevel = _loyaltyService.GetLoyaltyLevel(completedBookings, DateTime.Now);
+
+            //Verifying both customer and therapist against double booking
+            _doubleBookingVerificationService.CustomerBookingVerification(allCustomerBooking, timeSlot);
+            _doubleBookingVerificationService.TherapistVerification(allTherapistBooking, timeSlot);
 
             // Create new Booking object using the Booking constructor
             var booking = new Booking(
                 Guid.NewGuid(),
                 request.CustomerId,
+                request.TherapistId,
                 request.ClinicId,
                 timeSlot
             );
+
 
             request.Lines
                 .Select(lineRequest => new BookingLine( // Create BookingLine object for each line in the request DTO

@@ -16,11 +16,12 @@ namespace BookRight.Domain.Aggregates.Booking
 
         // Foreign key og INGEN Navigation property
         public Guid CustomerId { get; private set; }
+        public Guid TherapistId { get; private set; }
         public Guid ClinicId { get; private set; }
         public Guid? CampaignDiscountId { get; private set; } 
 
         private Booking() { }
-        public Booking(Guid id, Guid customerId, Guid clinicId, TimeSlot timeSlot)
+        public Booking(Guid id, Guid customerId, Guid therapistId, Guid clinicId, TimeSlot timeSlot)
         {
             if (id == Guid.Empty)
                 throw new ArgumentException(nameof(id)); //No need for errormessages, because thy'll never be displayed in the UI.
@@ -35,7 +36,8 @@ namespace BookRight.Domain.Aggregates.Booking
                 throw new ArgumentNullException(nameof(timeSlot));
 
             Id = id;
-            CustomerId = customerId; 
+            CustomerId = customerId;
+            TherapistId = therapistId;
             ClinicId = clinicId;
             TimeSlot = timeSlot;
             Status = BookingStatus.Confirmed;

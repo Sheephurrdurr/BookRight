@@ -45,6 +45,7 @@ builder.Services.AddDbContext<BookRightDbContext>(options =>
 
 // Register Domain Services
 builder.Services.AddScoped<LoyaltyService>();
+builder.Services.AddScoped<DoubleBookingVerificationService>();
 
 // Register DI for DbSeeder
 builder.Services.AddScoped<DbSeeder>();

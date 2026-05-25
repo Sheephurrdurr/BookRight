@@ -9,6 +9,7 @@ namespace BookRight.UseCases.Interfaces
         Task<IReadOnlyList<Booking>> GetAllAsync();
         Task<IReadOnlyList<Booking>> GetByCustomerIdAsync(Guid customerId);
         Task<IReadOnlyList<Booking>> GetAllBookingsByCustomerIdAsync(Guid customerId);
+        Task<IReadOnlyList<Booking>> GetByTherapistIdAsync(Guid therapistId);
 
         // number is used to determine the number of participants in a treatment type at a given time slot
         Task<int> CountParticipantsAsync(Guid therapistTreatmentTypeId, TimeSlot timeSlot);

@@ -37,6 +37,14 @@ namespace BookRight.Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IReadOnlyList<Booking>> GetByTherapistIdAsync(Guid therapistId)
+        {
+            return await _context.Bookings
+                .Include(b => b.Lines)
+                .Where(b => b.TherapistId == therapistId)
+                .ToListAsync();
+        }
+
         public async Task<IReadOnlyList<Booking>> GetAllBookingsByCustomerIdAsync(Guid customerId)
         {
             return await _context.Bookings
