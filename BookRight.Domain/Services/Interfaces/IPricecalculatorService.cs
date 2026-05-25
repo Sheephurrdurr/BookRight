@@ -19,5 +19,24 @@ namespace BookRight.Domain.Services
         Customer customer,
         Booking booking,
         IEnumerable<Booking> completedBookings);
+
+        // This method determines which add-ons should be automatically applied based on the time of the booking.
+        public IEnumerable<AddOn> GetAutomaticAddOns(TimeSlot timeSlot)
+        {
+            var addOns = new List<AddOn>();
+
+            var isWeekend =
+                timeSlot.StartTime.DayOfWeek == DayOfWeek.Saturday ||
+                timeSlot.StartTime.DayOfWeek == DayOfWeek.Sunday;
+
+            var isEvening = timeSlot.StartTime.Hour >= 17;
+
+            if (isWeekend || isEvening)
+            {
+                addOns.Add(new AddOn("Aften-/weekendtillæg", 15));
+            }
+
+            return addOns;
+        }
     }
 }
