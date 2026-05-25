@@ -46,6 +46,7 @@
 						<label class="form-label">Email</label>
 						<input class="form-control" @bind="therapistEmail" placeholder="Skriv email her..." />
 					</div>
+
 					<select class="form-control" @bind="therapistSpecialization">
 						<option value="">Vælg speciale</option>
 
@@ -56,13 +57,7 @@
 							</option>
 						}
 					</select>
-					<input class="form-control"
-						   @bind="therapistAuthorizationType"
-						   placeholder="Skriv autorisationstype her..." />
-
-					<input class="form-control"
-						   @bind="therapistAuthorizationNumber"
-						   placeholder="Skriv autorisationsnummer her..." />
+					
 					<div class="mb-3">
 						<label class="form-label">Klinik</label>
 						<select class="form-control" @bind="selectedClinicId">
@@ -144,6 +139,9 @@
 									<th>Navn</th>
 									<th>Email</th>
 									<th>Speciale</th>
+									<th>Autorisation</th>
+									<th>Autorisationsnummer</th>
+									<th>Klinik</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -153,6 +151,9 @@
 										<td>@therapist.FirstName @therapist.LastName</td>
 										<td>@therapist.Email</td>
 										<td>@therapist.Specialization</td>
+										<td>@therapist.AuthorizationType</td>
+										<td>@therapist.AuthorizationNumber</td>
+										<td>@therapist.ClinicName</td>
 									</tr>
 								}
 							</tbody>

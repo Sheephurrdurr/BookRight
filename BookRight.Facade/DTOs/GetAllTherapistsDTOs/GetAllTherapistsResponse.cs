@@ -5,6 +5,10 @@
          string FirstName,
          string LastName,
          string Email,
-         string Specialization
+         string Specialization,
+         string AuthorizationType,
+         string AuthorizationNumber,
+         Guid ClinicId,
+         string ClinicName
      );
 }
