@@ -61,63 +61,84 @@ namespace BookRight.Infrastructure
                 "Sportsmassage 30 min.", 
                 30, // Duration in minutes
                 1, // Max participants
-                new Money(350) // Price for the treatment
+                new Money(350), // Price for the treatment
+                false, // Om kan combineres med andre bookings
+                "Massør" //Required specialization
+
+
+
             );
 
             var treatmentType2 = new TreatmentType(
                 "Sportsmassage 60 min.",
                 60,
                 1,
-                new Money(699)
+                new Money(699),
+                false,
+                "Massør"
             );
 
             var treatmentType3 = new TreatmentType(
                 "Fysioterapi 30 min.",
                 30,
                 1,
-                new Money(395)
+                new Money(395),
+                true,
+                "Fysioterapaut"
             );
 
             var treatmentType4 = new TreatmentType(
                 "Fysioterapi 45 min.",
                 45,
                 1,
-                new Money(589)
+                new Money(589),
+                true,
+                "Fysioterapaut"
             );
 
             var treatmentType5 = new TreatmentType(
                 "Fysioterapi 60 min.",
                 60,
                 1,
-                new Money(745)
+                new Money(745),
+                true,
+                "Fysioterapaut"
             );
 
             var treatmentType6 = new TreatmentType(
                 "Kostvejledning 60 min. førstegangskonsultation",
                 60,
                 1,
-                new Money(799)
+                new Money(799),
+                false,
+                "Kostvejleder"
             );
 
             var treatmentType7 = new TreatmentType(
                 "Kostvejledning 30 min. opfølgning",
                 30,
                 1,
-                new Money(450)
+                new Money(450),
+                true,
+                "Kostvejleder"
             );
 
             var treatmentType8 = new TreatmentType(
                 "Akupunktur 45 min.",
                 45,
                 1,
-                new Money(550)
+                new Money(550),
+                true,
+                "Akupunktør"
             );
 
             var treatmentType9 = new TreatmentType(
                 "Holdtræning/genoptræning 60 min.",
                 60,
                 6, // Max participants for group training
-                new Money(150)
+                new Money(150),
+                false,
+                null
             );
 
             // Add the treatment types to the database context

@@ -59,6 +59,9 @@ namespace BookRight.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<Guid>("TherapistId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CampaignDiscountId");
@@ -220,6 +223,9 @@ namespace BookRight.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("CanBeCombined")
+                        .HasColumnType("bit");
+
                     b.Property<int>("DurationMinutes")
                         .HasColumnType("int");
 
@@ -232,6 +238,9 @@ namespace BookRight.Infrastructure.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("RequiredSpecialization")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

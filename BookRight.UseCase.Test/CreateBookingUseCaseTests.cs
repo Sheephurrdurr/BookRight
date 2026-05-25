@@ -1,7 +1,6 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.Customer;
-using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Services;
 using BookRight.Domain.ValueObjects;

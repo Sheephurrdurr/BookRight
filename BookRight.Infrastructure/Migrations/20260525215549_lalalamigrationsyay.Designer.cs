@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookRight.Infrastructure.Migrations
 {
     [DbContext(typeof(BookRightDbContext))]
-    [Migration("20260525113124_InitialCreate_112325243678")]
-    partial class InitialCreate_112325243678
+    [Migration("20260525215549_lalalamigrationsyay")]
+    partial class lalalamigrationsyay
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,9 @@ namespace BookRight.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("TherapistId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -223,6 +226,9 @@ namespace BookRight.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("CanBeCombined")
+                        .HasColumnType("bit");
+
                     b.Property<int>("DurationMinutes")
                         .HasColumnType("int");
 
@@ -235,6 +241,9 @@ namespace BookRight.Infrastructure.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("RequiredSpecialization")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
