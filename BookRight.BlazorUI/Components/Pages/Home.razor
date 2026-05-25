@@ -57,6 +57,33 @@
 							</option>
 						}
 					</select>
+					<div class="mb-3">
+						<label class="form-label">Autorisation</label>
+
+						<select class="form-control" @onchange="OnAuthorizationTypeChanged">
+							<option value="">Vælg autorisation</option>
+
+							@foreach (var authorizationType in authorizationTypes)
+							{
+								<option value="@authorizationType">
+									@authorizationType
+								</option>
+							}
+						</select>
+						
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Autorisationsnummer</label>
+
+						<input class="form-control"
+							   @bind="therapistAuthorizationNumber"
+							   placeholder="Skriv autorisationsnummer her..." />
+
+						<small class="text-muted">
+							Fortsæt med næste nummer i rækken.
+							Seneste registrerede nummer: @latestAuthorizationNumber
+						</small>
+					</div>
 					
 					<div class="mb-3">
 						<label class="form-label">Klinik</label>
@@ -303,6 +330,8 @@
 	private string therapistMessage = "";
 	private string therapistAlertClass = "";
 	private List<string> specializations = [];
+	private string latestAuthorizationNumber = "";
+	private List<string> authorizationTypes = [];
 	private Guid selectedClinicId = Guid.Empty;
 
 	// Customer form fields.
@@ -345,6 +374,12 @@
 		.Distinct()
 		.OrderBy(s => s)
 		.ToList();
+		authorizationTypes = therapists
+		.Select(t => t.AuthorizationType)
+		.Where(a => !string.IsNullOrWhiteSpace(a))
+		.Distinct()
+		.OrderBy(a => a)
+		.ToList();
 	}
 
     private async Task CreateTherapist()
@@ -370,6 +405,10 @@
 			therapistLastName = "";
 			therapistEmail = "";
 			therapistSpecialization = "";
+			therapistAuthorizationType = "";
+			therapistAuthorizationNumber = "";
+			latestAuthorizationNumber = "";
+			selectedClinicId = Guid.Empty;
 
 			await LoadData();
 		}
@@ -435,6 +474,20 @@
 			customerHistoryAlertClass = "alert-danger";
 		}
 
+	}
+
+	//Finds the latest authorization number based on selected authorization type
+	private void UpdateLatestAuthorizationNumber()
+	{
+		latestAuthorizationNumber = therapists
+			.Where(t => t.AuthorizationType == therapistAuthorizationType)
+			.Select(t => t.AuthorizationNumber)
+			.LastOrDefault() ?? "Ingen tidligere autorisation fundet";
+	}
+	private void OnAuthorizationTypeChanged(ChangeEventArgs e) //Uses in-memory LINQ filtering on already loaded therapist data from LoadData(). No database/repository calls are made here, so async/await would be unnecessary fake async
+	{
+		therapistAuthorizationType = e.Value?.ToString() ?? "";
+		UpdateLatestAuthorizationNumber();
 	}
 
 }
