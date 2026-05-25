@@ -1,12 +1,11 @@
 ﻿namespace BookRight.Facade.DTOs.CreateTherapistDTOs
 {
-    public record CreateTherapistRequest
-    {
-       public string FirstName { get; set; }
-       public string LastName { get; set; }
-       public string Email { get; set; }
-       public string Specialization { get; set; }
-       public Guid ClinicId { get; set; }
-    }
-       
+    public record CreateTherapistRequest(
+        string FirstName,
+        string LastName,
+        string Email,
+        string Specialization,
+        string AuthorizationType,
+        string AuthorizationNumber,
+        Guid ClinicId);
 }
