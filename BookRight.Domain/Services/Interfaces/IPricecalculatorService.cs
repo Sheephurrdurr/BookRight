@@ -12,31 +12,14 @@ namespace BookRight.Domain.Services
         Money CalculateBasePrice(TreatmentType treatmentType);
         Money ApplyAddOns(Money price, IEnumerable<AddOn> addOns);
         DiscountResult ApplyDiscount(Money basePrice, decimal percentage, DiscountType discountType);
+        IEnumerable<AddOn> GetAutomaticAddOns(TimeSlot timeSlot);
+
 
         // This method iterates through all registered discount strategies, calculates the discount for each strategy, 
 
         Task<DiscountResult> CalculateBestDiscountAsync(
-        Customer customer,
-        Booking booking,
-        IEnumerable<Booking> completedBookings);
-
-        // This method determines which add-ons should be automatically applied based on the time of the booking.
-        public IEnumerable<AddOn> GetAutomaticAddOns(TimeSlot timeSlot)
-        {
-            var addOns = new List<AddOn>();
-
-            var isWeekend =
-                timeSlot.StartTime.DayOfWeek == DayOfWeek.Saturday ||
-                timeSlot.StartTime.DayOfWeek == DayOfWeek.Sunday;
-
-            var isEvening = timeSlot.StartTime.Hour >= 17;
-
-            if (isWeekend || isEvening)
-            {
-                addOns.Add(new AddOn("Aften-/weekendtillæg", 15));
-            }
-
-            return addOns;
-        }
+            Customer customer,
+            Booking booking,
+            IEnumerable<Booking> completedBookings);
     }
 }
