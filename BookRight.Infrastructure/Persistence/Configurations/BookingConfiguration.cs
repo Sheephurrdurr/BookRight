@@ -1,6 +1,7 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.Aggregates.CampaignDiscount;
 using BookRight.Domain.Aggregates.Customer;
+using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -22,8 +23,12 @@ namespace BookRight.Infrastructure.Persistence.Configurations
                     .HasForeignKey(x => x.CustomerId)
                     .IsRequired();
 
-                // TimeSlot VO konfiguration
-                builder.OwnsOne(b => b.TimeSlot, timeSlot =>
+            builder.HasOne<Therapist>() // Definér 1 til mange relation
+                .WithMany()
+                .HasForeignKey(x => x.TherapistId);
+
+            // TimeSlot VO konfiguration
+            builder.OwnsOne(b => b.TimeSlot, timeSlot =>
                 {
                     timeSlot.Property(t => t.StartTime)
                         .IsRequired();
