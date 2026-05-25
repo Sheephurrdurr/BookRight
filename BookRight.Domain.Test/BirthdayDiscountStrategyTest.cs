@@ -102,6 +102,7 @@ namespace BookRight.Domain.Test
                 Guid.NewGuid(), // CustomerId
                 Guid.NewGuid(), // TherapistId
                 Guid.NewGuid(), // ClinicId
+                Guid.NewGuid(), //TherapistId
                 new TimeSlot(startTime, startTime.AddHours(1)));
 
             // Add one line to the booking with the given price.
