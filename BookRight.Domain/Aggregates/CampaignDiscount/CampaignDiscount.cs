@@ -23,7 +23,8 @@ namespace BookRight.Domain.Aggregates.CampaignDiscount
         public CampaignDiscount( //Opret kampagne
             string name,
             decimal discountPercent,
-            DateRange dateRange)
+            DateRange dateRange,
+            IEnumerable<Guid> treatmentTypeIds)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException(
@@ -33,10 +34,17 @@ namespace BookRight.Domain.Aggregates.CampaignDiscount
             if (discountPercent <= 0 || discountPercent > 100) //CustomException
                 throw new InvalidPercentageException();
 
+            var ids = treatmentTypeIds?.ToList() ?? new List<Guid>();
+            if (ids.Count == 0)
+                throw new ArgumentException(
+                    DomainErrorMessages.TreatmentTypeIdsMustNotBeEmpty,
+                    nameof(treatmentTypeIds));
+
             Id = Guid.NewGuid();
             Name = name;
             DiscountPercent = discountPercent;
             DateRange = dateRange;
+            _appliesToTreatmentTypeIds.AddRange(ids);
         }
 
         public bool IsActive(DateOnly date) //Tjek om kampagnen er aktiv
