@@ -20,7 +20,7 @@ namespace BookRight.Domain.Aggregates.TherapistAggregate //Rename because of nam
         {
         }
 
-        public Therapist(FullName name, Email email, string specialization, Guid clinicId)
+        public Therapist(FullName name, Email email, string specialization, Authorization authorization, Guid clinicId)
         {
             if (clinicId == Guid.Empty)
                 throw new ArgumentException(nameof(clinicId));
