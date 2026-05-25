@@ -22,7 +22,11 @@ namespace BookRight.UseCases.GetallTherapists
                 t.Name.FirstName,
                 t.Name.LastName,
                 t.Email.Value,
-                t.Specialization
+                t.Specialization,
+                t.Authorization.Type,
+                t.Authorization.Number,
+                t.ClinicId,
+                "Ukendt klinik"
             )).ToList();
         }
     }
