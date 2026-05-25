@@ -19,6 +19,7 @@ namespace BookRight.Domain.Test
 			//Arrange
 			var id = Guid.NewGuid();
 			var customerId = Guid.NewGuid();
+            var therapistId = Guid.NewGuid();
 			var clinicId = Guid.NewGuid();
 			var timeSlot = new TimeSlot(
 			   DateTime.Today.AddDays(1).AddHours(10),
@@ -26,7 +27,7 @@ namespace BookRight.Domain.Test
 
 
 			// Act
-			var booking = new Booking(id, customerId, clinicId, timeSlot);
+			var booking = new Booking(id, customerId, clinicId, therapistId, timeSlot);
 
 			//Assert
 			Assert.NotNull(booking);
@@ -42,6 +43,7 @@ namespace BookRight.Domain.Test
 
             // Empty Guid to test validation
             var customerId = Guid.Empty;
+            var therapistId = Guid.Empty;
 
             var clinicId = Guid.NewGuid();
 
@@ -51,7 +53,7 @@ namespace BookRight.Domain.Test
 
             // Act & Assert
             Assert.Throws<ArgumentException>(() =>
-                new Booking(id, customerId, clinicId, timeSlot));
+                new Booking(id, customerId, clinicId, therapistId, timeSlot));
         }
 
         // Test 3: Booking må ikke oprettes uden ClinicId
@@ -64,6 +66,7 @@ namespace BookRight.Domain.Test
 
             // Empty Guid to test validation
             var clinicId = Guid.Empty;
+            var therapistId = Guid.Empty;
 
             var timeSlot = new TimeSlot(
                 DateTime.Today.AddDays(1).AddHours(10),
@@ -71,7 +74,7 @@ namespace BookRight.Domain.Test
 
             // Act & Assert
             Assert.Throws<ArgumentException>(() =>
-                new Booking(id, customerId, clinicId, timeSlot));
+                new Booking(id, customerId, clinicId,therapistId, timeSlot));
         }
 
         // Test 4: Booking må ikke oprettes uden TimeSlot
@@ -81,13 +84,14 @@ namespace BookRight.Domain.Test
             // Arrange
             var id = Guid.NewGuid();
             var customerId = Guid.NewGuid();
+            var therapistId = Guid.NewGuid();
             var clinicId = Guid.NewGuid();
 
             TimeSlot? timeSlot = null;
 
             // Act & Assert
             Assert.Throws<ArgumentNullException>(() =>
-                new Booking(id, customerId, clinicId, timeSlot!));
+                new Booking(id, customerId, therapistId, clinicId, timeSlot!));
         }
 
         // Test 5: Ny booking får status Confirmed
@@ -160,6 +164,7 @@ namespace BookRight.Domain.Test
                 DateTime.Today.AddDays(1).AddHours(11));
 
             return new Booking(
+                Guid.NewGuid(),
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 Guid.NewGuid(),

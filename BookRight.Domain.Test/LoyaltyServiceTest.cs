@@ -218,6 +218,7 @@ namespace BookRight.Domain.Test
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 Guid.NewGuid(),
+                Guid.NewGuid(),
                 new TimeSlot(
                     startTime,
                     startTime.AddMinutes(60))

@@ -56,6 +56,9 @@ public static class DomainErrorMessages //Static because we don't want to create
     public const string TherapistAlreadyHasBooking =
         "Behandleren er allerede booket på det valgte tidspunkt";
 
+    public const string CUstomerAlreadyHasBooking =
+        "Kunden er allerede booket på det valgte tidspunkt";
+
     public const string PriceMustBeGreaterThanZero =
         "Prisen skal være højere end 0 kr.";
 

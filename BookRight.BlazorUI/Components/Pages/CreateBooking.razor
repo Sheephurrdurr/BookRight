@@ -173,6 +173,7 @@
 			{
 			    CustomerId = Guid.Parse(selectedCustomerId),
 				ClinicId = Guid.Parse(selectedClinicId),
+                TherapistId = Guid.Parse(selectedTherapistId),
 				TimeSlot = new TimeSlotDto { StartTime = startTime, EndTime = startTime.AddMinutes(60) },
 				Lines = new List<BookingLineRequest>
                 {

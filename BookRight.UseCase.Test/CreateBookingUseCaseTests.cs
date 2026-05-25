@@ -1,6 +1,7 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.Customer;
+using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Services;
 using BookRight.Domain.ValueObjects;
@@ -19,6 +20,7 @@ namespace BookRight.UseCase.Test
         private readonly Mock<IClinicRepository> _mockClinicRepository;
         private readonly Mock<ITreatmentTypeRepository> _mockTreatmentTypeRepository;
         private readonly LoyaltyService _loyaltyService;
+        private readonly DoubleBookingVerificationService _doubleBookingVerificationService;
         private readonly CreateBookingUseCase _sut;
 
         public CreateBookingUseCaseTests()
@@ -27,14 +29,17 @@ namespace BookRight.UseCase.Test
             _mockCustomerRepository = new Mock<ICustomerRepository>();
             _mockClinicRepository = new Mock<IClinicRepository>();
             _mockTreatmentTypeRepository = new Mock<ITreatmentTypeRepository>();
+            
             _loyaltyService = new LoyaltyService();
+            _doubleBookingVerificationService = new DoubleBookingVerificationService();
 
             _sut = new CreateBookingUseCase(
                 _mockBookingRepository.Object,
                 _mockCustomerRepository.Object,
                 _mockClinicRepository.Object,
                 _mockTreatmentTypeRepository.Object,
-                _loyaltyService
+                _loyaltyService,
+                _doubleBookingVerificationService
 
             );
         }
