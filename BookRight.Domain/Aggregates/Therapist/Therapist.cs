@@ -35,6 +35,7 @@ namespace BookRight.Domain.Aggregates.TherapistAggregate //Rename because of nam
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Email = email ?? throw new ArgumentNullException(nameof(email));
             Specialization = specialization;
+            Authorization = authorization ?? throw new ArgumentNullException(nameof(authorization));
         }
 
         // Tilføj en kvalifikation for en behandlingstype
