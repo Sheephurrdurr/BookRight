@@ -48,10 +48,13 @@
 					</div>
 					<select class="form-control" @bind="therapistSpecialization">
 						<option value="">Vælg speciale</option>
-						<option value="Fysioterapeut">Fysioterapeut</option>
-						<option value="Massageterapeut">Massageterapeut</option>
-						<option value="Akupunktør">Akupunktør</option>
-						<option value="Kostvejleder">Kostvejleder</option>
+
+						@foreach (var specialization in specializations) //DropDown list of all the already created specializations
+						{
+							<option value="@specialization">
+								@specialization
+							</option>
+						}
 					</select>
 					<input class="form-control"
 						   @bind="therapistAuthorizationType"
@@ -298,6 +301,7 @@
 	private string therapistAuthorizationNumber = "";
 	private string therapistMessage = "";
 	private string therapistAlertClass = "";
+	private List<string> specializations = [];
 	private Guid selectedClinicId = Guid.Empty;
 
 	// Customer form fields.
@@ -335,6 +339,11 @@
 		therapists = await GetAllTherapistsUseCase.ExecuteAsync();
 		customers = await GetAllCustomersUseCase.ExecuteAsync();
 		clinics = await GetAllClinicsUseCase.ExecuteAsync();
+		specializations = therapists //Data already fetched. This is just filtering/UI presentation (NOT BL)
+		.Select(t => t.Specialization)
+		.Distinct()
+		.OrderBy(s => s)
+		.ToList();
 	}
 
     private async Task CreateTherapist()
