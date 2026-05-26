@@ -88,7 +88,23 @@
 							Seneste registrerede nummer: @latestAuthorizationNumber
 						</small>
 					</div>
-					
+					<div class="mb-3">
+					<label class="form-label">Behandlingstyper / Qualifications</label>
+
+						@foreach (var treatmentType in treatmentTypes)
+						{
+							<div class="form-check">
+								<input class="form-check-input"
+									   type="checkbox"
+									   value="@treatmentType.Id"
+									   @onchange="e => ToggleTreatmentType(treatmentType.Id, e)" />
+
+								<label class="form-check-label">
+									@treatmentType.Name - @treatmentType.Price kr.
+								</label>
+							</div>
+						}
+					</div>
 					<div class="mb-3">
 						<label class="form-label">Klinik</label>
 						<select class="form-control" @bind="selectedClinicId">
@@ -498,5 +514,18 @@
 		therapistAuthorizationType = e.Value?.ToString() ?? "";
 		UpdateLatestAuthorizationNumber();
 	}
+	private void ToggleTreatmentType(Guid treatmentTypeId, ChangeEventArgs e)
+{
+    var isChecked = (bool?)e.Value == true;
+
+    if (isChecked)
+    {
+        selectedTreatmentTypeIds.Add(treatmentTypeId);
+    }
+    else
+    {
+        selectedTreatmentTypeIds.Remove(treatmentTypeId);
+    }
+}
 
 }
