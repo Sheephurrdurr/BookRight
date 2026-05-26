@@ -1,18 +1,15 @@
 using BookRight.BlazorUI.Components;
-
 using BookRight.Domain.Services;
-
 using BookRight.Facade.Interfaces;
 using BookRight.Facade.Interfaces.BookingUseCases;
 using BookRight.Facade.Interfaces.ClinicsUseCases;
 using BookRight.Facade.Interfaces.CustomerUseCases;
+using BookRight.Facade.Interfaces.RevenueReportUseCase;
 using BookRight.Facade.Interfaces.TherapistUseCases;
-
 using BookRight.Infrastructure;
 using BookRight.Infrastructure.Persistence;
 using BookRight.Infrastructure.Persistence.Repositories;
 using BookRight.Infrastructure.Repositories;
-
 using BookRight.UseCases.ChangeCustomerHealthNotes;
 using BookRight.UseCases.CreateBooking;
 using BookRight.UseCases.CreateCustomer;
@@ -23,14 +20,15 @@ using BookRight.UseCases.GetallTherapists;
 using BookRight.UseCases.GetAllTherapistTreatmentType;
 using BookRight.UseCases.GetCustomerById;
 using BookRight.UseCases.GetCustomerHealthNotes;
+using BookRight.UseCases.GetCustomerHistory;
+using BookRight.UseCases.GetGroupSlotAvailabilityUseCase;
+using BookRight.UseCases.GetRevenueReport;
 using BookRight.UseCases.Interfaces;
 using BookRight.UseCases.MarkBookingArrived;
 using BookRight.UseCases.MarkBookingAsNoShow;
-using BookRight.UseCases.RestoreBookingFromNoShow;  
 using BookRight.UseCases.MarkBookingCompleted;
-using BookRight.UseCases.GetCustomerHistory;
+using BookRight.UseCases.RestoreBookingFromNoShow;  
 using Microsoft.EntityFrameworkCore;
-using BookRight.UseCases.GetGroupSlotAvailabilityUseCase;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,6 +72,9 @@ builder.Services.AddScoped<IChangeCustomerHealthNotesUseCase, ChangeCustomerHeal
 builder.Services.AddScoped<IRestoreBookingFromNoShowUseCase, RestoreBookingFromNoShowUseCase>();
 builder.Services.AddScoped<IGetCustomerHistoryUseCase, GetCustomerHistoryUseCase>();
 builder.Services.AddScoped<IGetGroupSlotAvailabilityUseCase, GetGroupSlotAvailabilityUseCase>();
+builder.Services.AddScoped<IGetRevenueReportUseCase, GetRevenueReportUseCase>();
+builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
+builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
 
 var app = builder.Build();
 

@@ -1,5 +1,6 @@
 ﻿using BookRight.Domain.Enums;
 using BookRight.Facade.DTOs.GetRevenueReport;
+using BookRight.Facade.Interfaces.RevenueReportUseCase;
 using BookRight.UseCases.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace BookRight.UseCases.GetRevenueReport
 {
-    public class GetRevenueReportUseCase
+    public class GetRevenueReportUseCase : IGetRevenueReportUseCase
     {
         private readonly IBookingRepository _bookingRepository;
         private readonly IClinicRepository _clinicRepository;       // Tilføjes hvis nødvendigt
@@ -20,7 +21,7 @@ namespace BookRight.UseCases.GetRevenueReport
             _therapistRepository = therapistRepository;
         }
 
-        public async Task<GetRevenueReportResponse> Handle(GetRevenueReportRequest request)
+        public async Task<GetRevenueReportResponse> ExecuteAsync(GetRevenueReportRequest request)
         {
             // 1. Hent ALLE bookings med tilhørende linjer
             var allBookings = await _bookingRepository.GetAllAsync();
@@ -29,6 +30,8 @@ namespace BookRight.UseCases.GetRevenueReport
                 .Where(b => b.Status == BookingStatus.Completed)
                 .Where(b => !request.TherapistId.HasValue || b.TherapistId == request.TherapistId)
                 .Where(b => !request.ClinicId.HasValue || b.ClinicId == request.ClinicId)
+                .Where(b => b.TimeSlot.StartTime >= request.StartDate)
+                .Where(b => b.TimeSlot.EndTime <= request.EndDate)
                 .ToList();
 
             // 3. Beregn omsætning
