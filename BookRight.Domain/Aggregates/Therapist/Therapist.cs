@@ -38,6 +38,29 @@ namespace BookRight.Domain.Aggregates.TherapistAggregate //Rename because of nam
             Authorization = authorization ?? throw new ArgumentNullException(nameof(authorization));
         }
 
+        //Used to update therapist data through domain behavior instead of modifying private setters directly from the use case
+        public void UpdateDetails(
+            FullName name,
+            Email email,
+            string specialization,
+            Authorization authorization,
+            Guid clinicId)
+            {
+            if (clinicId == Guid.Empty)
+                throw new ArgumentException(nameof(clinicId));
+
+            if (string.IsNullOrWhiteSpace(specialization))
+                throw new ArgumentException(
+                    DomainErrorMessages.SpecializationIsRequired,
+                    nameof(specialization));
+
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Email = email ?? throw new ArgumentNullException(nameof(email));
+            Specialization = specialization;
+            Authorization = authorization ?? throw new ArgumentNullException(nameof(authorization));
+            ClinicId = clinicId;
+        }
+
         // Tilføj en kvalifikation for en behandlingstype
         public void AddQualification(Guid treatmentTypeId, decimal basePrice)
         {
