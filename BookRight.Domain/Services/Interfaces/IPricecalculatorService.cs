@@ -1,6 +1,4 @@
 ﻿using BookRight.Domain.Aggregates.AddOn;
-using BookRight.Domain.Aggregates.Booking;
-using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Enums;
 using BookRight.Domain.ValueObjects;
@@ -17,9 +15,6 @@ namespace BookRight.Domain.Services
 
         // This method iterates through all registered discount strategies, calculates the discount for each strategy, 
 
-        Task<DiscountResult> CalculateBestDiscountAsync(
-            Customer customer,
-            Booking booking,
-            IEnumerable<Booking> completedBookings);
+        Task<DiscountResult> CalculateBestDiscountAsync(PricingContext context);
     }
 }

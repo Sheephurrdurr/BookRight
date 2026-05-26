@@ -1,5 +1,4 @@
 ﻿using BookRight.Domain.Errors;
-using System;
 
 namespace BookRight.Domain.ValueObjects
 {

@@ -12,7 +12,7 @@ namespace BookRight.Domain.Aggregates.CampaignDiscount
         public DateRange DateRange { get; private set; }
 
         private readonly List<Guid> _appliesToTreatmentTypeIds = new();
-        public IReadOnlyList<Guid> AppliesToTreatmentTypeIdss =>
+        public IReadOnlyList<Guid> AppliesToTreatmentTypeIds =>
             _appliesToTreatmentTypeIds.AsReadOnly();
 
         private CampaignDiscount() //EF Core constructor

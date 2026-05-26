@@ -3,6 +3,7 @@ using BookRight.Domain.ValueObjects;
 using BookRight.Domain.Enums;
 using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.Services.DiscountStrategies;
+using BookRight.Domain.Aggregates.CampaignDiscount;
 namespace BookRight.Domain.Test
 {
 	public class BookingTest
@@ -131,7 +132,8 @@ namespace BookRight.Domain.Test
         public void CalculateDiscount_ApplyCorrectPercentage()
         {
             //Arrange
-            var strategy = new CampaignDiscountStrategy(15m);
+            var strategy = new CampaignDiscountStrategy();
+
             var customer = new Customer(
                 new FullName("Test", "Tester"),
                 new Email("test@dk"),
@@ -140,11 +142,29 @@ namespace BookRight.Domain.Test
                 healthNotes: string.Empty,
                 preferredTherapistId: null
                 );
+
             var booking = CreateValidBooking();
-            booking.AddLine(new BookingLine(Guid.NewGuid(), new Money(100m), 0m, DiscountType.None));
+
+            var campaign = new CampaignDiscount(
+                "Test-Kampagne",
+                15m,
+                new DateRange(
+                    DateOnly.FromDateTime(DateTime.Today.AddDays(-1)),
+                    DateOnly.FromDateTime(DateTime.Today.AddDays(30))),
+                new List<Guid> { Guid.NewGuid() });
+
+
+            var pricingContext = new PricingContext
+            {
+                Customer = customer,
+                Booking = booking,
+                CompletedBookings = Enumerable.Empty<Booking>(),
+                CampaignDiscount = campaign,
+                BasePrice = new Money(100m)
+            };
 
             //Act
-            var results = strategy.CalculateDiscount(customer, booking, Enumerable.Empty<Booking>());
+            var results = strategy.CalculateDiscount(pricingContext);
 
             //Assert
             Assert.Equal(100m, results.OriginalPrice.Value);
