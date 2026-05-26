@@ -100,7 +100,7 @@
 									   @onchange="e => ToggleTreatmentType(treatmentType.Id, e)" />
 
 								<label class="form-check-label">
-									@treatmentType.Name - @treatmentType.Price kr.
+									@treatmentType.Name
 								</label>
 							</div>
 						}
@@ -189,6 +189,7 @@
 									<th>Autorisation</th>
 									<th>Autorisationsnummer</th>
 									<th>Klinik</th>
+									<th></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -201,6 +202,12 @@
 										<td>@therapist.AuthorizationType</td>
 										<td>@therapist.AuthorizationNumber</td>
 										<td>@therapist.ClinicName</td>
+										<td>
+											<button class="btn btn-sm btn-outline-primary"
+													@onclick="() => StartEditTherapist(therapist)">
+												Rediger
+											</button>
+										</td>
 									</tr>
 								}
 							</tbody>
@@ -353,6 +360,7 @@
 	private string latestAuthorizationNumber = "";
 	private List<string> authorizationTypes = [];
 	private Guid selectedClinicId = Guid.Empty;
+	private Guid? editingTherapistId;
 
 	// Customer form fields.
 	private string customerFirstName = "";
@@ -428,6 +436,7 @@
 			therapistAlertClass = "alert-success";
 
 			// Nulstil felter efter oprettelse
+			selectedTreatmentTypeIds.Clear();
 			therapistFirstName = "";
 			therapistLastName = "";
 			therapistEmail = "";
@@ -517,7 +526,7 @@
 		UpdateLatestAuthorizationNumber();
 	}
 	private void ToggleTreatmentType(Guid treatmentTypeId, ChangeEventArgs e)
-{
+	{
     var isChecked = (bool?)e.Value == true;
 
     if (isChecked)
@@ -528,6 +537,19 @@
     {
         selectedTreatmentTypeIds.Remove(treatmentTypeId);
     }
-}
+
+	}
+	// Loads therapist data into the form for editing
+	private void StartEditTherapist(GetAllTherapistsResponse therapist)
+	{
+		editingTherapistId = therapist.Id;
+		therapistFirstName = therapist.FirstName;
+		therapistLastName = therapist.LastName;
+		therapistEmail = therapist.Email;
+		therapistSpecialization = therapist.Specialization;
+		therapistAuthorizationType = therapist.AuthorizationType;
+		therapistAuthorizationNumber = therapist.AuthorizationNumber;
+		selectedClinicId = therapist.ClinicId;
+	}
 
 }
