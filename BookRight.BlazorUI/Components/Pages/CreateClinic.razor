@@ -1,0 +1,40 @@
+﻿@page "/opret-klinik"
+@rendermode InteractiveServer
+
+<h3>Opret klinik</h3>
+
+<EditForm Model="clinicModel">
+    <div class="mb-3">
+        <label>Navn</label>
+        <InputText class="form-control" @bind-Value="clinicModel.Name" />
+    </div>
+
+    <div class="mb-3">
+        <label>Adresse</label>
+        <InputText class="form-control" @bind-Value="clinicModel.Address" />
+    </div>
+
+    <div class="mb-3">
+        <label>Åbningstider</label>
+        <InputText class="form-control" @bind-Value="clinicModel.OpeningHours" />
+    </div>
+
+    <div class="mb-3">
+        <label>Antal behandlingsrum</label>
+        <InputNumber class="form-control" @bind-Value="clinicModel.NumberOfTreatmentRooms" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">Opret klinik</button>
+</EditForm>
+
+@code {
+    private CreateClinicModel clinicModel = new();
+
+    private class CreateClinicModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string OpeningHours { get; set; } = string.Empty;
+        public int NumberOfTreatmentRooms { get; set; }
+    }
+}

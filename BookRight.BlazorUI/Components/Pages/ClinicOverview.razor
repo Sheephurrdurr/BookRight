@@ -1,0 +1,60 @@
+﻿@page "/administrer-klinikker"
+@rendermode InteractiveServer
+
+@using BookRight.Facade.DTOs.GetAllClinicsDTOs
+@using BookRight.Facade.Interfaces.ClinicsUseCases
+@inject IGetAllClinicsUseCase GetAllClinicsUseCase
+
+<h3>Administrer klinikker</h3>
+
+<a class="btn btn-primary mb-3" href="/opret-klinik">Opret klinik</a>
+
+
+
+@if (clinics is null)
+{
+    <p>Indlæser klinikker...</p>
+}
+else if (!clinics.Any())
+{
+    <p>Der findes ingen klinikker endnu.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Vores klinikker</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var clinic in clinics)
+            {
+                <tr>
+                    <td>@clinic.Name</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary">
+                            Rediger
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    // Stores the list of clinics fetched from the database.
+    // IReadOnlyList is used to prevent modification of the collection from the UI.
+    private IReadOnlyList<GetAllClinicsResponse>? clinics;
+
+    // Loads all clinics when the page is initialized
+    // and sorts them alphabetically by clinic name.
+    protected override async Task OnInitializedAsync()
+    {
+        clinics = (await GetAllClinicsUseCase.ExecuteAsync())
+        .OrderBy(clinic => clinic.Name)
+        .ToList();
+    }
+}
