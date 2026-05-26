@@ -91,7 +91,8 @@ public static class DomainErrorMessages //Static because we don't want to create
     public const string TreatmentTypeIdsMustNotBeEmpty =
     "En kampagne skal gælde for mindst én behandlingstype";
 
-
+    public static string TreatmentTypeCannotBeCombinedWith(string treatmentTypeName)
+        => $"Behandlingstype {treatmentTypeName} kan ikke blive kombineret med andre.";
 
 
 }
