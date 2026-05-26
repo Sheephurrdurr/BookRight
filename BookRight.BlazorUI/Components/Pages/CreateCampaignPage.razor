@@ -1,0 +1,89 @@
+﻿@page "/opret-kampagne"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@inject ICreateCampaignDiscountUseCase CreateCampaignDiscountUseCase
+@inject IGetAllTreatmentTypeUseCase GetAllTreatmentTypesUseCase
+
+@using BookRight.Facade.Interfaces.DiscountUseCases
+@using BookRight.Facade.Interfaces.TreatmentTypeUseCase
+@using BookRight.Facade.DTOs.CreateCampaignDTOs
+@using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
+@using BookRight.BlazorUI.Models
+
+@using BookRight.BlazorUI.Components.Campaign
+
+<PageTitle>Opret Kampagne</PageTitle>
+<h2>Opret Kampagne</h2>
+
+@if (_error is not null)
+{
+	<p class="text-danger">@_error</p>
+}
+
+else if (_loading)
+{
+	<p>Indlæser...</p>
+}
+
+else
+{
+	<CreateCampaignForm Model="@_model"
+						TreatmentTypes="@_treatmentTypes"
+						OnValidSubmit="HandleSubmit" />
+	@if (_statusMessage is not null)
+	{
+		<p>@_statusMessage</p>
+	}
+}
+
+@code {
+	private readonly CreateCampaignInputModel _model = new();
+	private IReadOnlyList<GetAllTreatmentTypesResponse> _treatmentTypes = [];
+	private string? _error;
+	private string? _statusMessage;
+	private bool _loading = true;
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			_treatmentTypes = await GetAllTreatmentTypesUseCase.ExecuteAsync();
+		}
+		catch (Exception ex)
+		{
+			_error = ex.Message;
+		}
+		finally
+		{
+			_loading = false;
+		}
+	}
+
+	private async Task HandleSubmit()
+	{
+		_statusMessage = null;
+		_error = null;
+
+		try
+		{
+			await CreateCampaignDiscountUseCase.ExecuteAsync(new CreateCampaignDiscountRequest
+			{
+				Name = _model.Name,
+				DiscountPercent = _model.DiscountPercent,
+				StartDate = _model.StartDate,
+				EndDate = _model.EndDate,
+				TreatmentTypeIds = _model.TreatmentTypeIds
+			});
+
+			_model.Name = string.Empty;
+			_model.DiscountPercent = 0;
+			_model.TreatmentTypeIds = new();
+
+			_statusMessage = "Kampagne oprettet!";
+		}
+		catch (Exception ex)
+		{
+			_error = ex.Message;
+		}
+
+	}
+}

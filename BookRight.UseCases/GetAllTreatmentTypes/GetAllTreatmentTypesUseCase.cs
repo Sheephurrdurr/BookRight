@@ -1,29 +1,34 @@
-﻿using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs;
-using BookRight.Facade.Interfaces.TreatmentTypeUseCases;
+﻿
+using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs;
+using BookRight.Facade.Interfaces.TreatmentTypeUseCase;
 using BookRight.UseCases.Interfaces;
 
 namespace BookRight.UseCases.GetAllTreatmentTypes
 {
-    public class GetAllTreatmentTypesUseCase : IGetAllTreatmentTypesUseCase
+    public class GetAllTreatmentTypesUseCase : IGetAllTreatmentTypeUseCase
     {
-        private readonly ITreatmentTypeRepository _repository;
+        private readonly ITreatmentTypeRepository _treatmentTypeRepository;
 
-        public GetAllTreatmentTypesUseCase(ITreatmentTypeRepository repository)
+        public GetAllTreatmentTypesUseCase(ITreatmentTypeRepository treatmentTypeRepository)
         {
-            _repository = repository;
+            _treatmentTypeRepository = treatmentTypeRepository;
         }
 
         public async Task<IReadOnlyList<GetAllTreatmentTypesResponse>> ExecuteAsync()
         {
-            var treatmentTypes = await _repository.GetAllAsync();
+            var treatmentTypes = await _treatmentTypeRepository.GetAllAsync();
 
-            //Create response DTOs for all treatment types
-            return treatmentTypes.Select(t => new GetAllTreatmentTypesResponse(
-                t.Id,
-                t.Name,
-                t.DurationMinutes,
-                t.Price.Value
-            )).ToList();
+            return treatmentTypes
+                .Select(t => new GetAllTreatmentTypesResponse
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    DurationMinutes = t.DurationMinutes,
+                    MaxParticipants = t.MaxParticipants,
+                    Price = t.Price.Value
+                })
+                .ToList();
+              
         }
     }
 }

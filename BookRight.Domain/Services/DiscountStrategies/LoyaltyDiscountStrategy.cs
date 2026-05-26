@@ -1,6 +1,4 @@
 ﻿
-using BookRight.Domain.Aggregates.Booking;
-using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.Enums;
 using BookRight.Domain.ValueObjects;
 
@@ -16,12 +14,9 @@ namespace BookRight.Domain.Services.DiscountStrategies
         }
 
         // Calculates the discount based on the customer's loyalty level, which is determined by their completed bookings in the last 12 months.
-        public DiscountResult CalculateDiscount(
-            Customer customer, 
-            Booking booking,
-            IEnumerable<Booking> completedBookings)
+        public DiscountResult CalculateDiscount(PricingContext context)
         {
-            var loyaltyLevel = _loyaltyService.GetLoyaltyLevel(completedBookings, DateTime.Now); // Use service method to determine loyalty level of the customer
+            var loyaltyLevel = _loyaltyService.GetLoyaltyLevel(context.CompletedBookings, DateTime.Now); // Use service method to determine loyalty level of the customer
 
             // Set discount multiplier based on loyalty level. Higher levels get a bigger discount.
             // We multiply the original price by the multiplier to get the discounted price. If the multiplier is 1.0, it means no discount is applied.
@@ -34,7 +29,7 @@ namespace BookRight.Domain.Services.DiscountStrategies
                 _                   => 1.0m // Default case for any unexpected loyalty level, ensuring no discount is applied
             };
 
-            var originalPrice = booking.GetTotalPrice(); // Get the original price of the booking before applying any discounts, via a method on the Booking aggregate
+            var originalPrice = context.BasePrice; // Get the original price of the booking before applying any discounts, via a method on the Booking aggregate
 
             if (multiplier == 1.0m) 
                 return new DiscountResult(originalPrice, originalPrice, DiscountType.None);// If no discount is applied, return the original price as both the original and discounted price,

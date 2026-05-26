@@ -4,15 +4,15 @@ using BookRight.Facade.Interfaces;
 using BookRight.Facade.Interfaces.BookingUseCases;
 using BookRight.Facade.Interfaces.ClinicsUseCases;
 using BookRight.Facade.Interfaces.CustomerUseCases;
-using BookRight.Facade.Interfaces.DiscountUseCases;
+using BookRight.Facade.Interfaces.RevenueReportUseCase;
 using BookRight.Facade.Interfaces.TherapistUseCases;
-using BookRight.Facade.Interfaces.TreatmentTypeUseCases;
+using BookRight.Facade.Interfaces.DiscountUseCases;
+using BookRight.Facade.Interfaces.TreatmentTypeUseCase;
 
 using BookRight.Infrastructure;
 using BookRight.Infrastructure.Persistence;
 using BookRight.Infrastructure.Persistence.Repositories;
 using BookRight.Infrastructure.Repositories;
-using BookRight.UseCases.CampaignDiscountUseCases;
 using BookRight.UseCases.ChangeCustomerHealthNotes;
 using BookRight.UseCases.CreateBooking;
 using BookRight.UseCases.CreateCustomer;
@@ -26,12 +26,18 @@ using BookRight.UseCases.GetCustomerById;
 using BookRight.UseCases.GetCustomerHealthNotes;
 using BookRight.UseCases.GetCustomerHistory;
 using BookRight.UseCases.GetGroupSlotAvailabilityUseCase;
+using BookRight.UseCases.GetRevenueReport;
 using BookRight.UseCases.Interfaces;
 using BookRight.UseCases.MarkBookingArrived;
 using BookRight.UseCases.MarkBookingAsNoShow;
 using BookRight.UseCases.MarkBookingCompleted;
-using BookRight.UseCases.RestoreBookingFromNoShow;
+using BookRight.UseCases.RestoreBookingFromNoShow;  
+using BookRight.UseCases.CampaignDiscountUseCases;
+using BookRight.UseCases.GetAllTreatmentTypes;
+using BookRight.UseCases.GetAllCampaignDiscounts;
+
 using Microsoft.EntityFrameworkCore;
+using BookRight.Domain.Services.DiscountStrategies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +53,12 @@ builder.Services.AddDbContext<BookRightDbContext>(options =>
 // Register Domain Services
 builder.Services.AddScoped<LoyaltyService>();
 builder.Services.AddScoped<DoubleBookingVerificationService>();
+
+// Register DI for PriceCalculatorService with its dependencies
+builder.Services.AddScoped<IDiscountStrategy, LoyaltyDiscountStrategy>();
+builder.Services.AddScoped<IDiscountStrategy, BirthdayDiscountStrategy>();
+builder.Services.AddScoped<IDiscountStrategy, CampaignDiscountStrategy>();
+builder.Services.AddScoped<PriceCalculatorService>();
 
 // Register DI for DbSeeder
 builder.Services.AddScoped<DbSeeder>();
@@ -77,7 +89,11 @@ builder.Services.AddScoped<IRestoreBookingFromNoShowUseCase, RestoreBookingFromN
 builder.Services.AddScoped<IGetCustomerHistoryUseCase, GetCustomerHistoryUseCase>();
 builder.Services.AddScoped<IGetGroupSlotAvailabilityUseCase, GetGroupSlotAvailabilityUseCase>();
 builder.Services.AddScoped<ICreateCampaignDiscountUseCase, CreateCampaignDiscountUseCase>();
-builder.Services.AddScoped<IGetAllTreatmentTypesUseCase, GetAllTreatmentTypesUseCase>();
+builder.Services.AddScoped<IGetAllTreatmentTypeUseCase, GetAllTreatmentTypesUseCase>();
+builder.Services.AddScoped<IGetRevenueReportUseCase, GetRevenueReportUseCase>();
+builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
+builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
+builder.Services.AddScoped<IGetAllCampaignDiscountsUseCase, GetAllCampaignDiscountsUseCase>();
 
 var app = builder.Build();
 
