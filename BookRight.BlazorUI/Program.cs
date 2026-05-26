@@ -36,8 +36,10 @@ using BookRight.UseCases.GetCustomerHistory;
 using BookRight.UseCases.GetGroupSlotAvailabilityUseCase;
 using BookRight.UseCases.CampaignDiscountUseCases;
 using BookRight.UseCases.GetAllTreatmentTypes;
+using BookRight.UseCases.GetAllCampaignDiscounts;
 
 using Microsoft.EntityFrameworkCore;
+using BookRight.Domain.Services.DiscountStrategies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +55,12 @@ builder.Services.AddDbContext<BookRightDbContext>(options =>
 // Register Domain Services
 builder.Services.AddScoped<LoyaltyService>();
 builder.Services.AddScoped<DoubleBookingVerificationService>();
+
+// Register DI for PriceCalculatorService with its dependencies
+builder.Services.AddScoped<IDiscountStrategy, LoyaltyDiscountStrategy>();
+builder.Services.AddScoped<IDiscountStrategy, BirthdayDiscountStrategy>();
+builder.Services.AddScoped<IDiscountStrategy, CampaignDiscountStrategy>();
+builder.Services.AddScoped<PriceCalculatorService>();
 
 // Register DI for DbSeeder
 builder.Services.AddScoped<DbSeeder>();

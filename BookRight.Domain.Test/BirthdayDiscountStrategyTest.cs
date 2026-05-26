@@ -1,6 +1,7 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.Enums;
+using BookRight.Domain.Services;
 using BookRight.Domain.Services.DiscountStrategies;
 using BookRight.Domain.ValueObjects;
 using Xunit;
@@ -16,16 +17,26 @@ namespace BookRight.Domain.Test
             var strategy = new BirthdayDiscountStrategy();
             var customer = CreateCustomer();
 
+            var birthdayMonth = customer.DateOfBirth.Month;
             // Create a booking in the future with a price of 100 kr.
             var booking = CreateBooking(
-                DateTime.Today.AddYears(1).AddMonths(1).AddHours(10),
+                new DateTime(DateTime.Today.Year + 1, birthdayMonth, 15, 10, 0, 0),
                 100m);
 
             // No previous completed bookings, so birthday discount has not been used.
             var completedBookings = new List<Booking>();
 
+            var pricingContext = new PricingContext
+            {
+                Customer = customer,
+                Booking = booking,
+                CompletedBookings = completedBookings,
+                CampaignDiscount = null,
+                BasePrice = new Money(100m)
+            };
+
             // Act: Calculate the discount.
-            var result = strategy.CalculateDiscount(customer, booking, completedBookings);
+            var result = strategy.CalculateDiscount(pricingContext);
 
             // Assert: Original price is 100 kr.
             Assert.Equal(new Money(100m), result.OriginalPrice);
@@ -70,8 +81,17 @@ namespace BookRight.Domain.Test
                 completedBooking
             };
 
+            var pricingContext = new PricingContext
+            {
+                Customer = customer,
+                Booking = booking,
+                CompletedBookings = completedBookings,
+                CampaignDiscount = null,
+                BasePrice = new Money(100m)
+            };
+
             // Act: Calculate the discount.
-            var result = strategy.CalculateDiscount(customer, booking, completedBookings);
+            var result = strategy.CalculateDiscount(pricingContext);
 
             // Assert: Original price is still 100 kr.
             Assert.Equal(new Money(100m), result.OriginalPrice);
