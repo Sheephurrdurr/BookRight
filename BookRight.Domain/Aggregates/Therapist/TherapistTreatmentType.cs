@@ -20,7 +20,7 @@ namespace BookRight.Domain.Aggregates.TherapistAggregate
             if (treatmentTypeId == Guid.Empty)
                 throw new ArgumentException(nameof(treatmentTypeId));
 
-            if (basePrice <= 0)
+            if (basePrice <= 0) 
                 throw new ArgumentException(
                     DomainErrorMessages.PriceMustBeGreaterThanZero,
                     nameof(basePrice));

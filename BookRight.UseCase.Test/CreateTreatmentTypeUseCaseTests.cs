@@ -9,7 +9,7 @@ using System.Text;
 
 namespace BookRight.UseCase.Test
 {
-  /*  public class CreateTreatmentTypeUseCaseTests
+    public class CreateTreatmentTypeUseCaseTests
     {
         private readonly Mock<ITreatmentTypeRepository> _mockRepository;
         private readonly CreateTreatmentTypeUseCase _sut;
@@ -25,7 +25,9 @@ namespace BookRight.UseCase.Test
             "Test Behandling",
             30,
             1,
-            new Money(300)
+            new Money(300),
+            true,
+            "Massør"
             );
 
         [Fact]
@@ -36,5 +38,5 @@ namespace BookRight.UseCase.Test
             _mockRepository
                 .Setup(r => r.AddAsync(It)
         }
-    }*/
+    }
 }
