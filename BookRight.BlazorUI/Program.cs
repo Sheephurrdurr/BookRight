@@ -31,9 +31,6 @@ using BookRight.UseCases.MarkBookingArrived;
 using BookRight.UseCases.MarkBookingAsNoShow;
 using BookRight.UseCases.MarkBookingCompleted;
 using BookRight.UseCases.RestoreBookingFromNoShow;  
-using BookRight.UseCases.MarkBookingCompleted;
-using BookRight.UseCases.GetCustomerHistory;
-using BookRight.UseCases.GetGroupSlotAvailabilityUseCase;
 using BookRight.UseCases.CampaignDiscountUseCases;
 using BookRight.UseCases.GetAllTreatmentTypes;
 using BookRight.UseCases.GetAllCampaignDiscounts;
@@ -98,8 +95,7 @@ builder.Services.AddScoped<IGetAllTreatmentTypeUseCase, GetAllTreatmentTypesUseC
 builder.Services.AddScoped<IGetRevenueReportUseCase, GetRevenueReportUseCase>();
 builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
 builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
-builder.Services.AddScoped<IUpdateTreatmentTypeUseCase, UpdateTreatmentTypeUseCase>();
-builder.Services.AddScoped<ICreateTreatmentTypeUseCase, CreateTreatmentTypeUseCase>();
+builder.Services.AddScoped<IGetAllCampaignDiscountsUseCase, GetAllCampaignDiscountsUseCase>();
 
 var app = builder.Build();
 

@@ -3,6 +3,7 @@ using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Services;
+using BookRight.Domain.Services.DiscountStrategies;
 using BookRight.Domain.ValueObjects;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.Facade.DTOs.ValueObjectDTOs;
@@ -18,6 +19,8 @@ namespace BookRight.UseCase.Test
         private readonly Mock<ICustomerRepository> _mockCustomerRepository;
         private readonly Mock<IClinicRepository> _mockClinicRepository;
         private readonly Mock<ITreatmentTypeRepository> _mockTreatmentTypeRepository;
+        private readonly Mock<ICampaignDiscountRepository> _mockCampaignDiscountRepository; 
+        private readonly PriceCalculatorService _priceCalculatorService;
         private readonly LoyaltyService _loyaltyService;
         private readonly DoubleBookingVerificationService _doubleBookingVerificationService;
         private readonly CreateBookingUseCase _sut;
@@ -28,7 +31,9 @@ namespace BookRight.UseCase.Test
             _mockCustomerRepository = new Mock<ICustomerRepository>();
             _mockClinicRepository = new Mock<IClinicRepository>();
             _mockTreatmentTypeRepository = new Mock<ITreatmentTypeRepository>();
-            
+            _mockCampaignDiscountRepository = new Mock<ICampaignDiscountRepository>();
+
+            _priceCalculatorService = new PriceCalculatorService(Enumerable.Empty<IDiscountStrategy>());
             _loyaltyService = new LoyaltyService();
             _doubleBookingVerificationService = new DoubleBookingVerificationService();
 
@@ -37,9 +42,12 @@ namespace BookRight.UseCase.Test
                 _mockCustomerRepository.Object,
                 _mockClinicRepository.Object,
                 _mockTreatmentTypeRepository.Object,
+                _mockCampaignDiscountRepository.Object,
                 _loyaltyService,
-                _doubleBookingVerificationService
-
+                 _doubleBookingVerificationService,
+                _priceCalculatorService
+               
+          
             );
         }
 
