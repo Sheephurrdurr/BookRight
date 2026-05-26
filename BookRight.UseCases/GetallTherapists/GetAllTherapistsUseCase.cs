@@ -37,7 +37,10 @@ namespace BookRight.UseCases.GetallTherapists
                     t.Authorization.Type,
                     t.Authorization.Number,
                     t.ClinicId,
-                    clinic.Name
+                    clinic.Name,
+                    t.Qualifications
+                    .Select(q => q.TreatmentTypeId)
+                    .ToList()
                 );
             }).ToList();
         }

@@ -80,6 +80,9 @@ public static class DomainErrorMessages //Static because we don't want to create
     public static string ClinicNotFound(Guid clinicId)
     => $"Klinik med ID '{clinicId}' findes ikke";
 
+    public static string TherapistNotFound(Guid therapistId)
+    => $"Klinik med ID '{therapistId}' findes ikke";
+
     public static string EmailAlreadyExists(string email)
         => $"'{email}' er allerede i brug";
 

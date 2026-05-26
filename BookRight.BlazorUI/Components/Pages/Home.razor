@@ -11,6 +11,7 @@
 @using BookRight.Facade.DTOs.CreateCustomerDTOs
 @using BookRight.Facade.DTOs.GetAllClinicsDTOs
 @using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
+@using BookRight.Facade.DTOs.UpdateTherapistDTOs
 
 @inject IGetAllClinicsUseCase GetAllClinicsUseCase
 @inject ICreateTherapistUseCase CreateTherapistUseCase
@@ -19,6 +20,7 @@
 @inject IGetAllCustomersUseCase GetAllCustomersUseCase
 @inject IGetCustomerHistoryUseCase GetCustomerHistoryUseCase
 @inject IGetAllTreatmentTypesUseCase GetAllTreatmentTypesUseCase
+@inject IUpdateTherapistUseCase UpdateTherapistUseCase
 
 <!--
     Siden benytter Bootstrap klasser til styling
@@ -97,6 +99,7 @@
 								<input class="form-check-input"
 									   type="checkbox"
 									   value="@treatmentType.Id"
+									   checked="@selectedTreatmentTypeIds.Contains(treatmentType.Id)"
 									   @onchange="e => ToggleTreatmentType(treatmentType.Id, e)" />
 
 								<label class="form-check-label">
@@ -117,7 +120,9 @@
 						</select>
 					</div>
 
-					<button class="btn btn-primary" @onclick="CreateTherapist">Opret Therapist</button>
+					<button class="btn btn-primary" @onclick="SaveTherapist">
+						@(editingTherapistId.HasValue ? "Gem ændringer" : "Opret")
+					</button>
 
 					@if (!string.IsNullOrEmpty(therapistMessage))
 					{
@@ -415,10 +420,10 @@
 		.ToList();
 	}
 
-    private async Task CreateTherapist()
-    {
-        try
-        {
+	private async Task CreateTherapist()
+	{
+		try
+		{
 			var request = new CreateTherapistRequest(
 			therapistFirstName,
 			therapistLastName,
@@ -426,25 +431,17 @@
 			therapistSpecialization,
 			therapistAuthorizationType,
 			therapistAuthorizationNumber,
-			selectedTreatmentTypeIds,
-			selectedClinicId
-			
-);
+			selectedClinicId,
+			selectedTreatmentTypeIds
+
+		);
 
 			var response = await CreateTherapistUseCase.ExecuteAsync(request);
 			therapistMessage = $"Terapeut oprettet med ID: {response.TherapistId}";
 			therapistAlertClass = "alert-success";
 
 			// Nulstil felter efter oprettelse
-			selectedTreatmentTypeIds.Clear();
-			therapistFirstName = "";
-			therapistLastName = "";
-			therapistEmail = "";
-			therapistSpecialization = "";
-			therapistAuthorizationType = "";
-			therapistAuthorizationNumber = "";
-			latestAuthorizationNumber = "";
-			selectedClinicId = Guid.Empty;
+			ResetTherapistForm();
 
 			await LoadData();
 		}
@@ -495,7 +492,7 @@
 			customerHistories = new List<CustomerHistoryResponse>(); 
 
 			customerHistories = await GetCustomerHistoryUseCase.ExecuteAsync(customerHistoryQuery); //Kalder UseCase
-																									
+
 			customerHistoryQuery = ""; //Clears search field after executed search
 
 			if (!customerHistories.Any())
@@ -527,16 +524,16 @@
 	}
 	private void ToggleTreatmentType(Guid treatmentTypeId, ChangeEventArgs e)
 	{
-    var isChecked = (bool?)e.Value == true;
+		var isChecked = (bool?)e.Value == true;
 
-    if (isChecked)
-    {
-        selectedTreatmentTypeIds.Add(treatmentTypeId);
-    }
-    else
-    {
-        selectedTreatmentTypeIds.Remove(treatmentTypeId);
-    }
+		if (isChecked)
+		{
+			selectedTreatmentTypeIds.Add(treatmentTypeId);
+		}
+		else
+		{
+			selectedTreatmentTypeIds.Remove(treatmentTypeId);
+		}
 
 	}
 	// Loads therapist data into the form for editing
@@ -550,6 +547,57 @@
 		therapistAuthorizationType = therapist.AuthorizationType;
 		therapistAuthorizationNumber = therapist.AuthorizationNumber;
 		selectedClinicId = therapist.ClinicId;
+		selectedTreatmentTypeIds = therapist.TreatmentTypeIds.ToList();
+	}
+	private void ResetTherapistForm()
+	{
+		editingTherapistId = null;
+		therapistFirstName = "";
+		therapistLastName = "";
+		therapistEmail = "";
+		therapistSpecialization = "";
+		therapistAuthorizationType = "";
+		therapistAuthorizationNumber = "";
+		latestAuthorizationNumber = "";
+		selectedClinicId = Guid.Empty;
+		selectedTreatmentTypeIds = []; //New list reference needed for check boxes to be cleared
+	}
+
+	private async Task UpdateTherapist()
+	{
+		if (!editingTherapistId.HasValue)
+			return;
+
+		var request = new UpdateTherapistRequest(
+			editingTherapistId.Value,
+			therapistFirstName,
+			therapistLastName,
+			therapistEmail,
+			therapistSpecialization,
+			therapistAuthorizationType,
+			therapistAuthorizationNumber,
+			selectedClinicId,
+			selectedTreatmentTypeIds
+		);
+
+		var response = await UpdateTherapistUseCase.ExecuteAsync(request);
+
+		therapistMessage = $"Terapeut opdateret med ID: {response.TherapistId}";
+		therapistAlertClass = "alert-success";
+
+		editingTherapistId = null;
+
+		ResetTherapistForm();
+
+		await LoadData();
+	}
+
+	private async Task SaveTherapist()
+	{
+		if (editingTherapistId.HasValue)
+			await UpdateTherapist();
+		else
+			await CreateTherapist();
 	}
 
 }

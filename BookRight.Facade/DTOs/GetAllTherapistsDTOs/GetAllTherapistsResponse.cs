@@ -9,6 +9,7 @@
          string AuthorizationType,
          string AuthorizationNumber,
          Guid ClinicId,
-         string ClinicName
+         string ClinicName,
+        List<Guid> TreatmentTypeIds
      );
 }
