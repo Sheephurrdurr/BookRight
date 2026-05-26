@@ -7,5 +7,6 @@
         string Specialization,
         string AuthorizationType,
         string AuthorizationNumber,
+        List<Guid> TreatmentTypeIds,
         Guid ClinicId);
 }
