@@ -12,6 +12,8 @@ namespace BookRight.Domain.Services
         public IEnumerable<Booking> CompletedBookings { get; init; } = default!;
         public CampaignDiscount? CampaignDiscount { get; init; } // Nullable, because not all bookings will have a campaign discount applied
         public Money BasePrice { get; init; } = default!;
+        public Money MostExpensiveLinePrice { get; init; } = default!;
+        public bool BirthdayDiscountAssigned { get; init; } = false;
 
     }
 }

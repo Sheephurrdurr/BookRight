@@ -12,9 +12,7 @@ namespace BookRight.Domain.Services.DiscountStrategies
             var treatmentDate = DateOnly.FromDateTime(context.Booking.TimeSlot.StartTime); 
             var originalPrice = context.BasePrice;
 
-            var bookingDate = DateOnly.FromDateTime(context.Booking.TimeSlot.StartTime);
-
-            if (bookingDate.Month != context.Customer.DateOfBirth.Month)
+            if (treatmentDate.Month != context.Customer.DateOfBirth.Month)
                 return new DiscountResult(originalPrice, originalPrice, DiscountType.None); // If the treatment date is not in the same month as the customer's birthday, return the original price with a Status of None.
 
             var alreadyUsedDiscount = context.CompletedBookings.Any(b =>
@@ -24,7 +22,16 @@ namespace BookRight.Domain.Services.DiscountStrategies
             );
 
             if (alreadyUsedDiscount)
-                return new DiscountResult(originalPrice , originalPrice, DiscountType.None); // If the customer has already used their birthday discount for this year, return the original price with a Status of None.
+                return new DiscountResult(context.BasePrice , context.BasePrice, DiscountType.None); // If the customer has already used their birthday discount for this year, return the original price with a Status of None.
+
+            // If line is not the most expensive it gets no discount
+            if (context.BasePrice != context.MostExpensiveLinePrice)
+                return new DiscountResult(context.BasePrice, context.BasePrice, DiscountType.None);
+
+            // If a line already got a discount, no other lines gets a discount
+            // For edgecases where two lines has the same price. Discount is still only applied to one. 
+            if (context.BirthdayDiscountAssigned)
+                return new DiscountResult(context.BasePrice, context.BasePrice, DiscountType.None);
 
             // Return a DiscountResult where:
             // - originalPrice is the full price before discount
