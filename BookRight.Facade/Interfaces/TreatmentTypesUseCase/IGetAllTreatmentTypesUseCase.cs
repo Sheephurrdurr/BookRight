@@ -1,6 +1,6 @@
 ﻿using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs;
 
-namespace BookRight.Facade.Interfaces.TreatmentTypeUseCases
+namespace BookRight.Facade.Interfaces.TreatmentTypeUseCase
 {
     public interface IGetAllTreatmentTypesUseCase
     {

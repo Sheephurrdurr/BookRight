@@ -5,7 +5,7 @@ using BookRight.UseCases.Interfaces;
 
 namespace BookRight.UseCases.GetAllTreatmentTypes
 {
-    public class GetAllTreatmentTypesUseCase : IGetAllTreatmentTypeUseCase
+    public class GetAllTreatmentTypesUseCase : IGetAllTreatmentTypesUseCase
     {
         private readonly ITreatmentTypeRepository _treatmentTypeRepository;
 
