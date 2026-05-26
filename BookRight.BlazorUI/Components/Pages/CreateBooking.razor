@@ -232,10 +232,18 @@
 
     private async Task HandleCreateBooking()
     {
+        if (string.IsNullOrEmpty(selectedCustomerId) ||
+            string.IsNullOrEmpty(selectedTherapistId) ||
+            string.IsNullOrEmpty(selectedClinicId))
+        {
+            bookingMessage = "Alle felter skal udfyldes før booking kan oprettes.";
+            bookingAlertClass = "alert alert-danger";
+            return;
+        }
         try
         {
-            var selectedTherapistTreatmentType = allTherapistTreatmentTypes
-                .FirstOrDefault(ttt => ttt.Id.ToString() == selectedTherapistTreatmentTypeId);  
+           // var selectedTherapistTreatmentType = allTherapistTreatmentTypes
+             //   .FirstOrDefault(ttt => ttt.Id.ToString() == selectedTherapistTreatmentTypeId);  
 
             var request = new CreateBookingRequest
 			{

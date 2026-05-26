@@ -32,7 +32,9 @@ namespace BookRight.Domain.Test
                 Booking = booking,
                 CompletedBookings = completedBookings,
                 CampaignDiscount = null,
-                BasePrice = new Money(100m)
+                BasePrice = new Money(100m),
+                MostExpensiveLinePrice = new Money(100m),
+                BirthdayDiscountAssigned = false
             };
 
             // Act: Calculate the discount.

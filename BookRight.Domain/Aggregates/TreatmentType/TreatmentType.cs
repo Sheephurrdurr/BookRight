@@ -36,7 +36,7 @@ namespace BookRight.Domain.Aggregates.TreatmentType
             DurationMinutes = durationMinutes;
             MaxParticipants = maxParticipants;
             Price = price ?? throw new ArgumentNullException(nameof(price)); //Nullcheck
-            CanBeCombined = CanBeCombined;
+            CanBeCombined = canBeCombined;
         }
 
     }

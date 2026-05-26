@@ -72,7 +72,8 @@ namespace BookRight.UseCase.Test
         "Gruppeyoga",
         durationMinutes: 60,
         maxParticipants: maxParticipants,
-        new Money(200m)
+        new Money(200m),
+        false
         );
 
         [Fact]
@@ -106,11 +107,8 @@ namespace BookRight.UseCase.Test
             {
                 CustomerId = customerId,
                 ClinicId = clinicId,
-                TimeSlot = new TimeSlotDto
-                {
-                    StartTime = DateTime.Now.AddDays(1),
-                    EndTime = DateTime.Now.AddDays(1).AddHours(1)
-                },
+                StartTime = DateTime.Now.AddDays(1),
+              
                 Lines = new List<BookingLineRequest>
                 {
                     new BookingLineRequest
