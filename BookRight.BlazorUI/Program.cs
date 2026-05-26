@@ -34,7 +34,6 @@ using BookRight.UseCases.RestoreBookingFromNoShow;
 using BookRight.UseCases.CampaignDiscountUseCases;
 using BookRight.UseCases.GetAllTreatmentTypes;
 using BookRight.UseCases.GetAllCampaignDiscounts;
-using BookRight.UseCases.UpdateTreatmentType;
 using BookRight.UseCases.CreateTreatmentType;
 
 
