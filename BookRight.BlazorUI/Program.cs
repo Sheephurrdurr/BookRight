@@ -7,7 +7,7 @@ using BookRight.Facade.Interfaces.CustomerUseCases;
 using BookRight.Facade.Interfaces.RevenueReportUseCase;
 using BookRight.Facade.Interfaces.TherapistUseCases;
 using BookRight.Facade.Interfaces.DiscountUseCases;
-using BookRight.Facade.Interfaces.TreatmentTypeUseCase;
+using BookRight.Facade.Interfaces.TreatmentTypesUseCase;
 
 using BookRight.Infrastructure;
 using BookRight.Infrastructure.Persistence;
