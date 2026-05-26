@@ -18,7 +18,7 @@ namespace BookRight.Domain.Test
         public void CalculateBasePrice_ReturnsTreatmentPrice()
         {
             // Arrange
-            var treatmentType = new TreatmentType("Massage", 60, 1, new Money(300));
+            var treatmentType = new TreatmentType("Massage", 60, 1, new Money(300), true);
             var calculator = CreateCalculator();
 
             // Act
@@ -163,8 +163,16 @@ namespace BookRight.Domain.Test
             var booking = CreateBooking();
             var completedBookings = new List<Booking>();
 
+            var pricingContext = new PricingContext
+            {
+                Customer = customer,
+                Booking = booking,
+                CompletedBookings = completedBookings,
+                CampaignDiscount = null
+            };
+
             // Act
-            var result = await calculator.CalculateBestDiscountAsync(customer, booking, completedBookings);
+            var result = await calculator.CalculateBestDiscountAsync(pricingContext);
 
             // Assert
             Assert.Equal(new Money(75), result.DiscountedPrice);
@@ -180,7 +188,7 @@ namespace BookRight.Domain.Test
                 _result = new DiscountResult(originalPrice, discountedPrice, discountType);
             }
 
-            public DiscountResult CalculateDiscount(Customer customer, Booking booking, IEnumerable<Booking> completedBookings)
+            public DiscountResult CalculateDiscount(PricingContext context)
             {
                 return _result;
             }

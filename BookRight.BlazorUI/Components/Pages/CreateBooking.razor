@@ -4,12 +4,14 @@
 @using BookRight.Facade.Interfaces.ClinicsUseCases
 @using BookRight.Facade.Interfaces.TherapistUseCases
 @using BookRight.Facade.Interfaces.BookingUseCases
+@using BookRight.Facade.Interfaces.DiscountUseCases
 @using BookRight.Facade.DTOs.GetAllCustomersDTOs
 @using BookRight.Facade.DTOs.GetAllClinicsDTOs
 @using BookRight.Facade.DTOs.GetAllTherapistsDTOs
 @using BookRight.Facade.DTOs.GetAllTherapistTreatmentTypesDTOs
 @using BookRight.Facade.DTOs.CreateBookingDTOs
 @using BookRight.Facade.DTOs.GetGroupSlotAvailabilityDTOs
+@using BookRight.Facade.DTOs.GetAllCampaignDiscountsDTOs
 @using BookRight.Facade.DTOs.ValueObjectDTOs
 @inject IGetAllCustomersUseCase GetAllCustomersUseCase
 @inject IGetAllClinicsUseCase GetAllClinicsUseCase
@@ -17,6 +19,7 @@
 @inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
 @inject IGetAllTherapistTreatmentTypesUseCase GetAllTherapistTreatmentTypesUseCase
 @inject IGetGroupSlotAvailabilityUseCase GetGroupSlotAvailabilityUseCase
+@inject IGetAllCampaignDiscountsUseCase GetAllCampaignDiscountsUseCase
 
 
 <PageTitle>Opret Booking</PageTitle>
@@ -73,6 +76,32 @@
                             }
                         </select>
                     </div>
+                    <button class="btn btn-secondary mt-2" @onclick="AddLine">Tilføj ekstra behandling</button>
+                    @if (selectedLines.Any())
+                    {
+                        <ul>
+                            @foreach(var line in selectedLines)
+                            {
+                                var name = allTherapistTreatmentTypes
+                                    .FirstOrDefault(t => t.Id == line.TherapistTreatmentTypeId)?.TreatmentTypeName;
+                                <li>@name</li>
+                            }
+                        </ul>
+                    }
+                    <div class="mt-4">
+                        <label>Kampagnerabat (valgfri)</label>
+
+                        <select class="form-select" @bind="selectedCampaignId">
+                            <option value="">-- Ingen kampagne --</option>
+                            @foreach (var campaign in campaigns)
+                            {
+                                <option value="@campaign.Id">
+                                    @campaign.Name - @campaign.DiscountPercentage%
+                                    (@campaign.StartDate.ToString("dd/MM") - @campaign.EndDate.ToString("dd/MM"))
+                                </option>
+                            }
+                        </select>
+                    </div>
 
                     <div class="mt-4">
                         <label>Dato og starttid</label>
@@ -100,6 +129,14 @@
 							@bookingMessage
 						</div>
 					}
+                    @if (lastResponse != null && lastResponse.Success) 
+                    {
+                        <div>
+                            <p>Oprindelig pris: @lastResponse.OriginalPrice.ToString("F2") kr.</p>
+                            <p>Rabattype: @lastResponse.DiscountType</p>
+                            <p>Pris efter rabat: @lastResponse.DiscountedPrice.ToString("F2") kr.</p>
+                        </div>
+                    }
                 </div>
             </section>
         </article>
@@ -114,15 +151,20 @@
     private DateTime startTime = DateTime.Now;
     private string bookingMessage = "";
     private string bookingAlertClass = "";
+    private string selectedCampaignId = "";
 
     private int? remainingSlots = null;
     private bool isFullyBooked = false;
 
+    private List<BookingLineRequest> selectedLines = new();
     private IReadOnlyList<GetAllCustomersResponse> customers = new List<GetAllCustomersResponse>();
     private IReadOnlyList<GetAllClinicsResponse> clinics = new List<GetAllClinicsResponse>();
     private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
     private IReadOnlyList<GetAllTherapistTreatmentTypesResponse> allTherapistTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
     private IReadOnlyList<GetAllTherapistTreatmentTypesResponse> filteredTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
+    private IReadOnlyList<GetAllCampaignDiscountsResponse> campaigns = new List<GetAllCampaignDiscountsResponse>();
+
+    private CreateBookingResponse? lastResponse = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -134,6 +176,7 @@
         customers = await GetAllCustomersUseCase.ExecuteAsync();
         clinics = await GetAllClinicsUseCase.ExecuteAsync();
         therapists = await GetAllTherapistsUseCase.ExecuteAsync();
+        campaigns = await GetAllCampaignDiscountsUseCase.ExecuteAsync();
         allTherapistTreatmentTypes = await GetAllTherapistTreatmentTypesUseCase.ExecuteAsync();
         filteredTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
     }
@@ -146,6 +189,7 @@
 
         var selectedTherapistTreatmentType = allTherapistTreatmentTypes
             .FirstOrDefault(ttt => ttt.Id.ToString() == selectedTherapistTreatmentTypeId);
+
         var request = new GetGroupSlotAvailabilityRequest
 		{
 
@@ -165,28 +209,57 @@
             .ToList();
     }
 
+    // Adds booking line, if customer wants a combined booking
+    private void AddLine()
+    {
+        if (string.IsNullOrEmpty(selectedTherapistTreatmentTypeId))
+            return;
+
+        var therapistTreatmentTypes = allTherapistTreatmentTypes
+            .FirstOrDefault(t => t.Id.ToString() == selectedTherapistTreatmentTypeId);
+
+        if (therapistTreatmentTypes == null)
+            return;
+
+        selectedLines.Add(new BookingLineRequest
+            {
+                TherapistTreatmentTypeId = therapistTreatmentTypes.Id,
+                BasePrice = therapistTreatmentTypes.BasePrice
+            });
+
+        selectedTherapistTreatmentTypeId = "";
+    }
+
     private async Task HandleCreateBooking()
     {
+        if (string.IsNullOrEmpty(selectedCustomerId) ||
+            string.IsNullOrEmpty(selectedTherapistId) ||
+            string.IsNullOrEmpty(selectedClinicId))
+        {
+            bookingMessage = "Alle felter skal udfyldes før booking kan oprettes.";
+            bookingAlertClass = "alert alert-danger";
+            return;
+        }
         try
         {
+           // var selectedTherapistTreatmentType = allTherapistTreatmentTypes
+             //   .FirstOrDefault(ttt => ttt.Id.ToString() == selectedTherapistTreatmentTypeId);  
+
             var request = new CreateBookingRequest
 			{
 			    CustomerId = Guid.Parse(selectedCustomerId),
 				ClinicId = Guid.Parse(selectedClinicId),
                 TherapistId = Guid.Parse(selectedTherapistId),
-				TimeSlot = new TimeSlotDto { StartTime = startTime, EndTime = startTime.AddMinutes(60) },
-				Lines = new List<BookingLineRequest>
-                {
-				    new BookingLineRequest
-                    {
-                        TherapistTreatmentTypeId = Guid.Parse(selectedTherapistTreatmentTypeId),
-                        BasePrice = 500
-                    }
-                }
+
+                CampaignDiscountId = string.IsNullOrEmpty(selectedCampaignId) 
+                ? (Guid?)null 
+                : Guid.Parse(selectedCampaignId),
+                StartTime = startTime, 
+				Lines = selectedLines
 			};
 
             var response = await CreateBookingUseCase.ExecuteAsync(request);
-            bookingMessage = $"Booking oprettet med ID: {response.Id}";
+            bookingMessage = $"Booking oprettet!";
             bookingAlertClass = "alert alert-success";
 
             if (response.Success)
@@ -196,9 +269,13 @@
                 selectedClinicId = "";
                 selectedTherapistId = "";
                 selectedTherapistTreatmentTypeId = "";
+                selectedCampaignId = "";
                 startTime = DateTime.Now;
                 remainingSlots = null;
                 isFullyBooked = false;
+                selectedLines = new();
+                lastResponse = response;
+               
             }
             else
             {

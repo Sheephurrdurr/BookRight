@@ -16,12 +16,15 @@ namespace BookRight.UseCase.Test
     public class CreateTherapistUseCaseTest
     {
         private readonly Mock<ITherapistRepository> _mockTherapistRepository = new(); //Falsk copy af vores therapist repo
+        private readonly Mock<ITreatmentTypeRepository> _mockTreatmentTypeRepository = new();
 
-        private CreateTherapistUseCase CreateSut() => new(_mockTherapistRepository.Object); //SUT = System Under Test,
-                                                                                            //sådan at man ikke behæver at endre
-                                                                                            //masse kode om det kommer flere afhengigheder                                                                                           
-                                                                                            //senere, kun denne
-        
+        private CreateTherapistUseCase CreateSut() => new(
+        _mockTherapistRepository.Object,
+        _mockTreatmentTypeRepository.Object);//SUT = System Under Test,
+                                         //sådan at man ikke behæver at endre
+                                         //masse kode om det kommer flere afhengigheder                                                                                           
+                                         //senere, kun denne
+
         [Fact]
         public async Task ExecuteAsync_ValidRequest_ReturnsTherapistId()
         {
@@ -36,17 +39,20 @@ namespace BookRight.UseCase.Test
             mockRepo.Setup(r => r.AddAsync(It.IsAny<Therapist>()))
                 .Returns(Task.CompletedTask);
 
-            var request = new CreateTherapistRequest
-            {
-                FirstName = "Test",
-                LastName = "Therapist",
-                Email = "test@therapist.dk",
-                Specialization = "Fysioterapeut",
-                ClinicId = Guid.NewGuid(),
-            };
+            var request = new CreateTherapistRequest(
+                "Test",
+                "Therapist",
+                "test@therapist.dk",
+                "Fysioterapeut",
+                "Autoriseret fysioterapeut",
+                "FYS-9999",
+                Guid.NewGuid(),
+                new List<Guid>()
+            );
 
             //SUT = System Under Test,
-            var sut = new CreateTherapistUseCase(mockRepo.Object);
+            var mockTreatmentTypeRepository = new Mock<ITreatmentTypeRepository>();
+            var sut = new CreateTherapistUseCase(mockRepo.Object, mockTreatmentTypeRepository.Object);
 
             // Act
             var response = await sut.ExecuteAsync(request);

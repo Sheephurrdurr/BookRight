@@ -61,63 +61,72 @@ namespace BookRight.Infrastructure
                 "Sportsmassage 30 min.", 
                 30, // Duration in minutes
                 1, // Max participants
-                new Money(350) // Price for the treatment
+                new Money(350),// Price for the treatment
+                true // Can be combined with other treatments?
             );
 
             var treatmentType2 = new TreatmentType(
                 "Sportsmassage 60 min.",
                 60,
                 1,
-                new Money(699)
+                new Money(699),
+                true
             );
 
             var treatmentType3 = new TreatmentType(
                 "Fysioterapi 30 min.",
                 30,
                 1,
-                new Money(395)
+                new Money(395),
+                true
             );
 
             var treatmentType4 = new TreatmentType(
                 "Fysioterapi 45 min.",
                 45,
                 1,
-                new Money(589)
+                new Money(589),
+                true
             );
 
             var treatmentType5 = new TreatmentType(
                 "Fysioterapi 60 min.",
                 60,
                 1,
-                new Money(745)
+                new Money(745),
+                true
             );
 
             var treatmentType6 = new TreatmentType(
                 "Kostvejledning 60 min. førstegangskonsultation",
                 60,
                 1,
-                new Money(799)
+                new Money(799),
+                false
             );
 
             var treatmentType7 = new TreatmentType(
                 "Kostvejledning 30 min. opfølgning",
                 30,
                 1,
-                new Money(450)
+                new Money(450),
+                false
             );
 
             var treatmentType8 = new TreatmentType(
                 "Akupunktur 45 min.",
                 45,
                 1,
-                new Money(550)
+                new Money(550),
+                false
             );
 
             var treatmentType9 = new TreatmentType(
                 "Holdtræning/genoptræning 60 min.",
                 60,
                 6, // Max participants for group training
-                new Money(150)
+                new Money(150),
+                false
             );
 
             // Add the treatment types to the database context
@@ -148,6 +157,7 @@ namespace BookRight.Infrastructure
                 new FullName("Hans", "Hansen"),
                 new Email("hansen@hans.com"),
                 "Massageterapeut",
+                new Authorization("Massage", "MAS-1001"),
                 clinic1.Id
             );
 
@@ -155,6 +165,7 @@ namespace BookRight.Infrastructure
                 new FullName("Lise", "Larsen"),
                 new Email("larsen@lise.com"),
                 "Fysioterapeut",
+                new Authorization("Autoriseret fysioterapeut", "FYS-1001"),
                 clinic1.Id
              );
 
@@ -162,6 +173,7 @@ namespace BookRight.Infrastructure
                 new FullName("Peter", "Pedersen"),
                 new Email("pedersen@peter.com"),
                 "Kostvejleder",
+                new Authorization("Kostvejledning", "KOS-1001"),
                 clinic1.Id
             );
 
@@ -169,6 +181,7 @@ namespace BookRight.Infrastructure
                 new FullName("Anna", "Andersen"),
                 new Email("andersen@anna.com"),
                 "Akupunktør",
+                new Authorization("Akupunktur", "AKU-1001"),
                 clinic1.Id
             );
 
@@ -178,6 +191,7 @@ namespace BookRight.Infrastructure
                 new FullName("Mette", "Madsen"),
                 new Email("madsen@mette.com"),
                 "Massageterapeut",
+                new Authorization("Massage", "MAS-1002"),
                 clinic2.Id
             );
 
@@ -185,6 +199,7 @@ namespace BookRight.Infrastructure
                 new FullName("Jens", "Jensen"),
                 new Email("jensen@jens.com"),
                 "Fysioterapeut",
+                new Authorization("Autoriseret fysioterapeut", "FYS-1002"),
                 clinic2.Id
             );
 
@@ -192,6 +207,7 @@ namespace BookRight.Infrastructure
                 new FullName("Sofie", "Sørensen"),
                 new Email("sørensen@sofie.com"),
                 "Kostvejleder",
+                new Authorization("Kostvejledning", "KOS-1002"),
                 clinic2.Id
             );
 
@@ -199,6 +215,7 @@ namespace BookRight.Infrastructure
                 new FullName("Lars", "Larsen"),
                 new Email("larsen@lars.com"),
                 "Akupunktør",
+                new Authorization("Akupunktur", "AKU-1003"),
                 clinic2.Id
             );
 
@@ -208,6 +225,7 @@ namespace BookRight.Infrastructure
                 new FullName("Kirsten", "Kristensen"),
                 new Email("kristensen@kirsten.com"),
                 "Massageterapeut",
+                new Authorization("Massage", "MAS-1003"),
                 clinic3.Id
             );
 
@@ -215,6 +233,7 @@ namespace BookRight.Infrastructure
                 new FullName("Ole", "Olsen"),
                 new Email("olsen@ole.com"),
                 "Fysioterapeut",
+                new Authorization("Autoriseret fysioterapeut", "FYS-1003"),
                 clinic3.Id
             );
 
@@ -222,6 +241,7 @@ namespace BookRight.Infrastructure
                 new FullName("Maria", "Møller"),
                 new Email("møller@maria.com"),
                 "Kostvejleder",
+                new Authorization("Kostvejledning", "KOS-1003"),
                 clinic3.Id
             );
 
@@ -229,36 +249,64 @@ namespace BookRight.Infrastructure
                 new FullName("Niels", "Nielsen"),
                 new Email("nielsen@niels.com"),
                 "Akupunktør",
+                new Authorization("Akupunktur", "AKU-1003"),
                 clinic3.Id
             );
 
             var sportsmassage30 = _context.TreatmentTypes.First(t => t.Name == "Sportsmassage 30 min.");
+            var sportmassage60 = _context.TreatmentTypes.First(t => t.Name == "Sportsmassage 60 min.");
+
+            var fysioterapi30 = _context.TreatmentTypes.First(t => t.Name == "Fysioterapi 30 min.");
+            var fysioterapi45 = _context.TreatmentTypes.First(t => t.Name == "Fysioterapi 45 min.");
             var fysioterapi60 = _context.TreatmentTypes.First(t => t.Name == "Fysioterapi 60 min.");
+
+            var kostvejledning30 = _context.TreatmentTypes.First(t => t.Name == "Kostvejledning 30 min. opfølgning");
             var kostvejledning60 = _context.TreatmentTypes.First(t => t.Name == "Kostvejledning 60 min. førstegangskonsultation");
+
             var akupunktur45 = _context.TreatmentTypes.First(t => t.Name == "Akupunktur 45 min.");
+
             var holdtraening60 = _context.TreatmentTypes.First(t => t.Name == "Holdtræning/genoptræning 60 min.");
 
             // Add qualifications for each therapist
             // Massageterapeut
             therapist1.AddQualification(sportsmassage30.Id, 350);
+            therapist1.AddQualification(sportmassage60.Id, 699);
+
             therapist5.AddQualification(sportsmassage30.Id, 350);
+            therapist5.AddQualification(sportmassage60.Id, 699); 
+
             therapist9.AddQualification(sportsmassage30.Id, 350);
+
 
             // Fysioterapeut - her indeholder både fysioterapi og holdtræning,
             // da det er fysioterapeuterne der varetager holdtræningen
+            therapist2.AddQualification(fysioterapi30.Id, 395);
+            therapist2.AddQualification(fysioterapi45.Id, 589);
             therapist2.AddQualification(fysioterapi60.Id, 745);
+
             therapist2.AddQualification(holdtraening60.Id, 150);
 
+            therapist6.AddQualification(fysioterapi30.Id, 395);
+            therapist6.AddQualification(fysioterapi45.Id, 589);
             therapist6.AddQualification(fysioterapi60.Id, 745);
             therapist6.AddQualification(holdtraening60.Id, 150);
 
+            therapist10.AddQualification(fysioterapi30.Id, 395);
+            therapist10.AddQualification(fysioterapi45.Id, 589);
             therapist10.AddQualification(fysioterapi60.Id, 745);
             therapist10.AddQualification(holdtraening60.Id, 150);
 
+
             // Kostvejleder
+            therapist3.AddQualification(kostvejledning30.Id, 450);
             therapist3.AddQualification(kostvejledning60.Id, 799);
+
+            therapist7.AddQualification(kostvejledning30.Id, 450);
             therapist7.AddQualification(kostvejledning60.Id, 799);
+
+            therapist11.AddQualification(kostvejledning30.Id, 450);
             therapist11.AddQualification(kostvejledning60.Id, 799);
+
 
             // Akupunktør
             therapist4.AddQualification(akupunktur45.Id, 550);
