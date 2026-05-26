@@ -1,5 +1,6 @@
 ﻿@page "/opret-booking"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using BookRight.BlazorUI.Components.Booking
 @using BookRight.Facade.Interfaces
 @using BookRight.Facade.Interfaces.ClinicsUseCases
 @using BookRight.Facade.Interfaces.TherapistUseCases
@@ -30,96 +31,37 @@
     <div class="row">
         <article class="col-md-6">
             <section class="card">
+
                 <div class="card-body">
                     <h4 class="mb-0">Ny Booking</h4>
-                </div>
-
+                
                 <div class="card-body">
-                    <div class="">
-                        <label>Kunde</label>
-                        <select class="form-select" @bind="selectedCustomerId">
-                            <option value="">-- Vælg Kunde --</option>
-                            @foreach (var customer in customers)
-                            {
-                                <option value="@customer.Id">@customer.FirstName @customer.LastName</option>
-                            }
-                        
-                        </select>
-                    </div>
 
-                    <div class="mt-4">
-                        <label>Klinik</label>
-                        <select class="form-select" @bind="selectedClinicId">
-                            <option value="">-- Vælg Klinik --</option>
-                            @foreach (var clinic in clinics)
-                            {
-                                <option value="@clinic.Id">@clinic.Name</option>
-                            }
-                        </select>
-                    </div>
+                   <CustomerSelector
+                       Customers ="customers"
+                       @bind-SelectedCustomerId="selectedCustomerId"/>
 
-                    <div class="mt-4">
-                        <label>Behandler</label>
-                        <select class="form-select" @bind="selectedTherapistId" @bind:after="OnTherapistChanged">
-                            <option value="">-- Vælg Behandler --</option>
-                            @foreach (var therapist in therapists)
-                            {
-                                <option value="@therapist.Id">@therapist.FirstName @therapist.LastName</option>
-                            }
-                        </select>
+                    <ClinicSelector
+                        Clinics="clinics"
+                        @bind-SelectedClinicId="selectedClinicId"/>
 
-                        <select class="form-select mt-4" @bind="selectedTherapistTreatmentTypeId">
-                            <option value="">-- Vælg Behandling --</option>
-                            @foreach (var ttt in filteredTreatmentTypes)
-                            {
-                                <option value="@ttt.Id">@ttt.TreatmentTypeName - @ttt.BasePrice kr.</option>
-                            }
-                        </select>
-                    </div>
-                    <button class="btn btn-secondary mt-2" @onclick="AddLine">Tilføj ekstra behandling</button>
-                    @if (selectedLines.Any())
-                    {
-                        <ul>
-                            @foreach(var line in selectedLines)
-                            {
-                                var name = allTherapistTreatmentTypes
-                                    .FirstOrDefault(t => t.Id == line.TherapistTreatmentTypeId)?.TreatmentTypeName;
-                                <li>@name</li>
-                            }
-                        </ul>
-                    }
-                    <div class="mt-4">
-                        <label>Kampagnerabat (valgfri)</label>
+                   <TherapistPanel
+                       Therapists="therapists"
+                       AllTreatmentTypes="allTherapistTreatmentTypes"
+                       FilteredTreatmentTypes="filteredTreatmentTypes"
+                       @bind-SelectedTherapistId="selectedTherapistId"
+                       OnTherapistSelected="HandleTherapistSelected"
+                       BookingLines="selectedLines"
+                       BookingLinesChanged="lines => selectedLines = lines" />
+                     
 
-                        <select class="form-select" @bind="selectedCampaignId">
-                            <option value="">-- Ingen kampagne --</option>
-                            @foreach (var campaign in campaigns)
-                            {
-                                <option value="@campaign.Id">
-                                    @campaign.Name - @campaign.DiscountPercentage%
-                                    (@campaign.StartDate.ToString("dd/MM") - @campaign.EndDate.ToString("dd/MM"))
-                                </option>
-                            }
-                        </select>
-                    </div>
+                  <CampaignSelector
+                      CampaignDiscounts="campaigns"
+                      @bind-SelectedCampaignId="selectedCampaignId"/>
 
-                    <div class="mt-4">
-                        <label>Dato og starttid</label>
-                        <input type="datetime-local" class="form-control" @bind="startTime" @bind:after="OnSlotChanged"/>
-                    </div>
-                    @if (remainingSlots.HasValue)
-                    {
-                        <div class="alrt @(isFullyBooked ? "alert-danger" : "alert-success")">
-							@if (isFullyBooked)
-							{
-								<span>Holdet er fuldt.</span>
-							}
-							else
-							{
-								<span>Ledige pladser: @remainingSlots.Value </span>
-							}
-                        </div>
-                    }
+                   <SlotPicker
+                       StartTime="startTime"
+                       StartTimeChanged="t => startTime = t" />
 
                     <button class="btn btn-primary mt-4" @onclick="HandleCreateBooking">Opret Booking</button>
 
@@ -137,6 +79,7 @@
                             <p>Pris efter rabat: @lastResponse.DiscountedPrice.ToString("F2") kr.</p>
                         </div>
                     }
+                    </div>
                 </div>
             </section>
         </article>
@@ -168,7 +111,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadData();
+        customers = await GetAllCustomersUseCase.ExecuteAsync();
+        clinics = await GetAllClinicsUseCase.ExecuteAsync();
+        therapists = await GetAllTherapistsUseCase.ExecuteAsync();
+        campaigns = await GetAllCampaignDiscountsUseCase.ExecuteAsync();
+        allTherapistTreatmentTypes = await GetAllTherapistTreatmentTypesUseCase.ExecuteAsync();
     }
 
     private async Task LoadData()
@@ -179,6 +126,17 @@
         campaigns = await GetAllCampaignDiscountsUseCase.ExecuteAsync();
         allTherapistTreatmentTypes = await GetAllTherapistTreatmentTypesUseCase.ExecuteAsync();
         filteredTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
+    }
+
+    private void HandleTherapistSelected(string therapistId)
+    {
+        filteredTreatmentTypes = string.IsNullOrEmpty(therapistId)
+            ? []
+            : allTherapistTreatmentTypes
+                .Where(ttt => ttt.TherapistId.ToString() == therapistId)
+                .ToList();
+        remainingSlots = null;
+        isFullyBooked = false;
     }
 
     // Method is run when either the time slot or the treatment type changes, to check availability for the selected slot and treatment

@@ -1,0 +1,118 @@
+﻿@using BookRight.Facade.DTOs.CreateBookingDTOs
+@using BookRight.Facade.DTOs.GetAllTherapistTreatmentTypesDTOs
+@using BookRight.Facade.DTOs.GetAllTherapistsDTOs
+
+
+<div class="mt-4">
+	<label class="form-label fw-semibold">Behandler</label>
+	<select class="form-select" value="@SelectedTherapistId" @onchange="OnTherapistChanged">
+		<option value="">-- Vælg Behandler --</option>
+		@foreach (var therapist in Therapists)
+		{
+			<option value="@therapist.Id">@therapist.FirstName @therapist.LastName</option>
+		}
+	</select>
+
+	@if (!string.IsNullOrEmpty(SelectedTherapistId))
+	{
+		<div class="mb-3">
+			<label class="form-label fw-semibold">Behandling</label>
+			<select class="form-select mt-4" value="@_currentTreatmentTypeId" @onchange="OnTherapistChanged">
+				<option value="">-- Vælg Behandling --</option>
+				@foreach (var ttt in FilteredTreatmentTypes)
+				{
+					<option value="@ttt.Id">@ttt.TreatmentTypeName - @ttt.BasePrice kr. (@ttt.DurationMinutes min.)</option>
+				}
+			</select>
+		</div>
+
+		<button class="btn btn-outline-secondary btn-sm mb-3" @onclick="AddLine" disabled="@string.IsNullOrEmpty(_currentTreatmentTypeId)">Tilføj Behandling</button>
+	}
+	@if (BookingLines.Any())
+	{
+		<div class="border rounded p-2 mb-3 bg-light">
+			<p class="small text-muted mb-2 fw-semibold">VALGTE BEHANDLINGER</p>
+			<ul class="list-unstyled mb-0">
+				@foreach (var line in BookingLines)
+				{
+					var name = AllTreatmentTypes.FirstOrDefault(t => t.Id == line.TherapistTreatmentTypeId)?.TreatmentTypeName ?? "";
+					var price = line.BasePrice; 
+					<li class="br-line-item">
+						<span>@name</span>
+						<span class="text-success fw-semibold">@price.ToString("F0") kr.</span>
+						<button class="btn btn-sm btn-link text-danger p-0" @onclick="() => RemoveLine(line)">✕</button>
+					</li>
+				}
+			</ul>
+		</div>
+	}
+
+</div>
+
+@code {
+	[Parameter, EditorRequired]
+	public IReadOnlyList<GetAllTherapistsResponse> Therapists { get; set; } = [];
+
+	[Parameter, EditorRequired]
+	public IReadOnlyList<GetAllTherapistTreatmentTypesResponse> AllTreatmentTypes { get; set; } = [];
+
+	[Parameter, EditorRequired]
+	public IReadOnlyList<GetAllTherapistTreatmentTypesResponse> FilteredTreatmentTypes { get; set; } = [];
+
+	[Parameter]
+	public string SelectedTherapistId { get; set; }
+
+	[Parameter]
+	public List<BookingLineRequest> BookingLines { get; set; } = [];
+
+	[Parameter]
+	public EventCallback<string> OnTherapistSelected { get; set; }
+
+	[Parameter]
+	public EventCallback<List<BookingLineRequest>> BookingLinesChanged { get; set; }
+
+	[Parameter]
+	public EventCallback<string> SelectedTherapistIdChanged { get; set; }
+
+	private string _currentTreatmentTypeId = "";
+
+	private async Task OnTherapistChanged(ChangeEventArgs e)
+	{
+		var newValue = e.Value?.ToString() ?? "";
+		_currentTreatmentTypeId = "";
+		await SelectedTherapistIdChanged.InvokeAsync(newValue);
+		await OnTherapistSelected.InvokeAsync(newValue);
+	}
+
+	private void OnTreatmentChanged(ChangeEventArgs e)
+	{
+		_currentTreatmentTypeId = e.Value?.ToString() ?? "";
+	}
+
+	// Add a new treatmentType to the bookingLine
+	private async Task AddLine()
+	{
+		if (string.IsNullOrEmpty(_currentTreatmentTypeId)) return;
+
+		var therapistTreatmentType = AllTreatmentTypes.FirstOrDefault(t => t.Id.ToString() == _currentTreatmentTypeId);
+		if (therapistTreatmentType == null) return;
+
+		var updatedLines = BookingLines.ToList();
+		updatedLines.Add(new BookingLineRequest
+			{
+				TherapistTreatmentTypeId = therapistTreatmentType.Id,
+				BasePrice = therapistTreatmentType.BasePrice
+			});
+
+		_currentTreatmentTypeId = "";
+
+		await BookingLinesChanged.InvokeAsync(updatedLines);
+	}
+
+	private async Task RemoveLine(BookingLineRequest line)
+	{
+		var updatedLines = BookingLines.ToList();
+		updatedLines.Remove(line);
+		await BookingLinesChanged.InvokeAsync(updatedLines);
+	}
+}

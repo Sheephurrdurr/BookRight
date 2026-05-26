@@ -1,0 +1,31 @@
+﻿@using BookRight.Facade.DTOs.GetAllCampaignDiscountsDTOs
+<div class="mt-4">
+	<label>Kampagnerabat (valgfri)</label>
+
+    <select class="form-select" @bind="SelectedCampaignDiscountId">
+        <option value="">-- Ingen kampagne --</option>
+        @foreach (var campaign in CampaignDiscounts)
+        {
+            <option value="@campaign.Id">
+                @campaign.Name - @campaign.DiscountPercentage%
+                (@campaign.StartDate.ToString("dd/MM") - @campaign.EndDate.ToString("dd/MM"))
+            </option>
+        }
+    </select>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<GetAllCampaignDiscountsResponse> CampaignDiscounts { get; set; } = [];
+
+    [Parameter]
+    public string SelectedCampaignDiscountId { get; set; }
+
+    [Parameter]
+    public EventCallback<string> SelectedCampaignDiscountChanged { get; set; }
+
+    public async Task OnChanged(ChangeEventArgs e)
+    {
+        await SelectedCampaignDiscountChanged.InvokeAsync(e.Value?.ToString() ?? "");
+    }
+}
