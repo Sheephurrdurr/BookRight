@@ -7,7 +7,7 @@ namespace BookRight.Domain.Test
     {
         //Treatmenttype oprettelse uden navn giver exception
         [Fact]
-        
+
         public void CreateTreatmentType_NoName_Exception()
         {
             //Arrange
@@ -21,10 +21,10 @@ namespace BookRight.Domain.Test
             //Act & Assert
             Assert.Throws<ArgumentException>(() =>
                 new TreatmentType(
-                    name, 
+                    name,
                     durationMin,
                     maxParticipants,
-                    money, 
+                    money,
                     combination,
                     requiredSpecialization));
         }
@@ -43,10 +43,10 @@ namespace BookRight.Domain.Test
             //Act & Assert
             Assert.Throws<ArgumentException>(() =>
                 new TreatmentType(
-                    name, 
+                    name,
                     durationMin,
                     maxParticipants,
-                    money, 
+                    money,
                     combination,
                     requiredSpecialization));
         }
@@ -70,53 +70,8 @@ namespace BookRight.Domain.Test
                     durationMin,
                     maxParticipants,
                     money,
-                    combination, 
+                    combination,
                     requiredSpecialization));
         }
-
-        //TreatmentType ændringer giver faktisk ændring
-        [Fact]
-        public void EditTreatmentTypeName_ChangesName()
-        {
-            //Arrange
-            var name = "Name";
-            int durationMin = 45;
-            int maxParticipants = 1;
-            var money = new Money(400);
-            bool combination = true;
-            var requiredSpecialization = "Massør";
-
-            var testTreatmentType = new TreatmentType(
-                name, 
-                durationMin,
-                maxParticipants,
-                money, 
-                combination, 
-                requiredSpecialization);
-            //Act
-            var newName = "NewName";
-            int newDurationMin = 45;
-            int newMaxParticipants = 1;
-            var newMoney = new Money(400);
-            bool newCombination = true;
-            var newRequiredSpecialization = "Massør";
-
-            testTreatmentType.UpdateTreatmentType(
-                newName,
-                newDurationMin,
-                newMaxParticipants,
-                newMoney,
-                newCombination, 
-                newRequiredSpecialization);
-            //Assert
-            Assert.Equal(newName, testTreatmentType.Name);
-        }
-
     }
-
-
-
-
-
-    
 }

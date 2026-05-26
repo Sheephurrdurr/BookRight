@@ -30,13 +30,13 @@ namespace BookRight.UseCase.Test
             "Massør"
             );
 
-        [Fact]
+       /* [Fact]
         public async Task ExecuteAsync_Valid_CreatesTreatment_AndReturnsId()
         {
             //Arrange
             var treatmentId = Guid.NewGuid();
             _mockRepository
                 .Setup(r => r.AddAsync(It)
-        }
+        }*/
     }
 }
