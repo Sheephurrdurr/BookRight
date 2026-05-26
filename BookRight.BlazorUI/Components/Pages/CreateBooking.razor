@@ -1,5 +1,5 @@
 ﻿@page "/opret-booking"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using BookRight.Facade.Interfaces
 @using BookRight.Facade.Interfaces.ClinicsUseCases
 @using BookRight.Facade.Interfaces.TherapistUseCases
