@@ -10,10 +10,12 @@ namespace BookRight.UseCases.CreateTherapist
     public class CreateTherapistUseCase : ICreateTherapistUseCase
     {
         private readonly ITherapistRepository _repository;
+        private readonly ITreatmentTypeRepository _treatmentTypeRepository; // add this
 
-        public CreateTherapistUseCase(ITherapistRepository repository)
+        public CreateTherapistUseCase(ITherapistRepository repository, ITreatmentTypeRepository treatmentTypeRepository )
         {
             _repository = repository;
+            _treatmentTypeRepository = treatmentTypeRepository;
         }
 
         public async Task<CreateTherapistResponse> ExecuteAsync(CreateTherapistRequest request)
@@ -22,6 +24,9 @@ namespace BookRight.UseCases.CreateTherapist
 
             if (alreadyExists)
                 throw new EmailAlreadyExistsException(request.Email); // Ved ikke lige hvorfor den samme person skulle blive oprettet som medarbejder...
+
+            var treatmentTypes = await _treatmentTypeRepository.GetAllAsync();
+            var treatmentTypeDict = treatmentTypes.ToDictionary(t => t.Id);
 
             var therapist = new Therapist(
                 new FullName(request.FirstName, request.LastName),
@@ -32,7 +37,11 @@ namespace BookRight.UseCases.CreateTherapist
                 request.AuthorizationNumber),
                 request.ClinicId
             );
-
+            foreach (var treatmentTypeId in request.TreatmentTypeIds)
+            {
+                var treatmentType = treatmentTypeDict[treatmentTypeId];
+                therapist.AddQualification(treatmentTypeId, treatmentType.Price.Value);
+            }
             await _repository.AddAsync(therapist); 
 
             return new CreateTherapistResponse
