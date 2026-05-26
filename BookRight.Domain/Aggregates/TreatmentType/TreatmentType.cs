@@ -16,7 +16,13 @@ namespace BookRight.Domain.Aggregates.TreatmentType
         private TreatmentType() { } //EF core constructor
 
 
-        public TreatmentType(string name, int durationMinutes, int maxParticipants, Money price, bool canBeCombined, string? requiredSpecialization)
+        public TreatmentType(
+            string name,
+            int durationMinutes,
+            int maxParticipants,
+            Money price,
+            bool canBeCombined,
+            string? requiredSpecialization)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException(
@@ -41,6 +47,38 @@ namespace BookRight.Domain.Aggregates.TreatmentType
             CanBeCombined = canBeCombined;
             RequiredSpecialization = requiredSpecialization;
         }
+
+        public void UpdateTreatmentType(
+            string newName,
+            int newDurationMinutes,
+            int newMaxParticipants,
+            Money newPrice,
+            bool newCanBeCombined,
+            string? newRequiredSpecialization)
+        {
+            if (string.IsNullOrWhiteSpace(newName))
+                throw new ArgumentException(
+                    DomainErrorMessages.NameCannotBeEmpty,
+                    nameof(newName));
+
+            if (newDurationMinutes <= 0)
+                throw new ArgumentException(
+                    DomainErrorMessages.DurationMustBeGreaterThanZero,
+                    nameof(newDurationMinutes));
+
+            if (newMaxParticipants <= 0)
+                throw new ArgumentException(
+                    DomainErrorMessages.MaxParticipantsMustBeGreaterThanZero,
+                    nameof(newMaxParticipants));
+
+            Name = newName;
+            DurationMinutes = newDurationMinutes;
+            MaxParticipants = newMaxParticipants;
+            Price = newPrice;
+            CanBeCombined = newCanBeCombined;
+            RequiredSpecialization = newRequiredSpecialization;
+        }
+
 
         
 
