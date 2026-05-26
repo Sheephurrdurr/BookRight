@@ -1,7 +1,8 @@
-﻿namespace BookRight.Facade.DTOs.CreateTreatmentTypeDTOs
+﻿namespace BookRight.Facade.DTOs.UpdateTreatmentTypeDTOs
 {
-    public record CreateTreatmentTypeRequest
+    public record UpdateTreatmentTypeResponse
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public int DurationMinutes { get; set; }
         public int MaxParticipants { get; set; }

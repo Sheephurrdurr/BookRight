@@ -34,6 +34,8 @@ using BookRight.UseCases.GetCustomerHistory;
 using BookRight.UseCases.GetGroupSlotAvailabilityUseCase;
 using BookRight.UseCases.CampaignDiscountUseCases;
 using BookRight.UseCases.GetAllTreatmentTypes;
+using BookRight.UseCases.UpdateTreatmentType;
+using BookRight.UseCases.CreateTreatmentType;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -82,6 +84,8 @@ builder.Services.AddScoped<IGetCustomerHistoryUseCase, GetCustomerHistoryUseCase
 builder.Services.AddScoped<IGetGroupSlotAvailabilityUseCase, GetGroupSlotAvailabilityUseCase>();
 builder.Services.AddScoped<ICreateCampaignDiscountUseCase, CreateCampaignDiscountUseCase>();
 builder.Services.AddScoped<IGetAllTreatmentTypeUseCase, GetAllTreatmentTypesUseCase>();
+builder.Services.AddScoped<IUpdateTreatmentTypeUseCase, UpdateTreatmentTypeUseCase>();
+builder.Services.AddScoped<ICreateTreatmentTypeUseCase, CreateTreatmentTypeUseCase>();
 
 var app = builder.Build();
 

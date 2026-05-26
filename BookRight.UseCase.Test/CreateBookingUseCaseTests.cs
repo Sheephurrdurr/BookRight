@@ -63,7 +63,9 @@ namespace BookRight.UseCase.Test
         "Gruppeyoga",
         durationMinutes: 60,
         maxParticipants: maxParticipants,
-        new Money(200m)
+        new Money(200m),
+        true,
+        null
         );
 
         [Fact]

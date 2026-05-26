@@ -9,8 +9,7 @@ namespace BookRight.UseCases.CreateTreatmentType
     public class CreateTreatmentTypeUseCase : ICreateTreatmentTypeUseCase
     {
         private readonly ITreatmentTypeRepository _treatmentTypeRepository;
-        public CreateTreatmentTypeUseCase(
-            ITreatmentTypeRepository treatmentTypeRepository)
+        public CreateTreatmentTypeUseCase(ITreatmentTypeRepository treatmentTypeRepository)
         {
             _treatmentTypeRepository = treatmentTypeRepository;
         }
@@ -31,6 +30,7 @@ namespace BookRight.UseCases.CreateTreatmentType
             {
                 TreatmentTypeId = treatmentType.Id
             };
+
         }
     }
 }

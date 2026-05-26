@@ -1,6 +1,6 @@
 ﻿namespace BookRight.Facade.DTOs.CreateTreatmentTypeDTOs
 {
-    public class CreateTreatmentTypeResponse
+    public record CreateTreatmentTypeResponse
     {
         public Guid TreatmentTypeId { get; set; }
     }

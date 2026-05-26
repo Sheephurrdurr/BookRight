@@ -9,5 +9,6 @@ namespace BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
         public int MaxParticipants { get; init; }
         public decimal Price { get; init; }
 
+
     }
 }
