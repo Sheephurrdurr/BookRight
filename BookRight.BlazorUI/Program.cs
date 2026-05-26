@@ -39,6 +39,7 @@ using BookRight.UseCases.GetAllTreatmentTypes;
 using BookRight.UseCases.GetAllCampaignDiscounts;
 
 using Microsoft.EntityFrameworkCore;
+using BookRight.Domain.Services.DiscountStrategies;
 
 var builder = WebApplication.CreateBuilder(args);
 
