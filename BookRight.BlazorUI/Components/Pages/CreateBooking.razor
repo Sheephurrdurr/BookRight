@@ -76,7 +76,18 @@
                             }
                         </select>
                     </div>
-
+                    <button class="btn btn-secondary mt-2" @onclick="AddLine">Tilføj ekstra behandling</button>
+                    @if (selectedLines.Any())
+                    {
+                        <ul>
+                            @foreach(var line in selectedLines)
+                            {
+                                var name = allTherapistTreatmentTypes
+                                    .FirstOrDefault(t => t.Id == line.TherapistTreatmentTypeId)?.TreatmentTypeName;
+                                <li>@name</li>
+                            }
+                        </ul>
+                    }
                     <div class="mt-4">
                         <label>Kampagnerabat (valgfri)</label>
 
@@ -145,6 +156,7 @@
     private int? remainingSlots = null;
     private bool isFullyBooked = false;
 
+    private List<BookingLineRequest> selectedLines = new();
     private IReadOnlyList<GetAllCustomersResponse> customers = new List<GetAllCustomersResponse>();
     private IReadOnlyList<GetAllClinicsResponse> clinics = new List<GetAllClinicsResponse>();
     private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
@@ -197,6 +209,27 @@
             .ToList();
     }
 
+    // Adds booking line, if customer wants a combined booking
+    private void AddLine()
+    {
+        if (string.IsNullOrEmpty(selectedTherapistTreatmentTypeId))
+            return;
+
+        var therapistTreatmentTypes = allTherapistTreatmentTypes
+            .FirstOrDefault(t => t.Id.ToString() == selectedTherapistTreatmentTypeId);
+
+        if (therapistTreatmentTypes == null)
+            return;
+
+        selectedLines.Add(new BookingLineRequest
+            {
+                TherapistTreatmentTypeId = therapistTreatmentTypes.Id,
+                BasePrice = therapistTreatmentTypes.BasePrice
+            });
+
+        selectedTherapistTreatmentTypeId = "";
+    }
+
     private async Task HandleCreateBooking()
     {
         try
@@ -213,20 +246,8 @@
                 CampaignDiscountId = string.IsNullOrEmpty(selectedCampaignId) 
                 ? (Guid?)null 
                 : Guid.Parse(selectedCampaignId),
-
-				TimeSlot = new TimeSlotDto 
-                { 
-                    StartTime = startTime, 
-                    EndTime = startTime.AddMinutes(selectedTherapistTreatmentType?.DurationMinutes ?? 60) 
-                },
-				Lines = new List<BookingLineRequest>
-                {
-				    new BookingLineRequest
-                    {
-                        TherapistTreatmentTypeId = Guid.Parse(selectedTherapistTreatmentTypeId),
-                        BasePrice = selectedTherapistTreatmentType?.BasePrice ?? 0
-                    }
-                }
+                StartTime = startTime, 
+				Lines = selectedLines
 			};
 
             var response = await CreateBookingUseCase.ExecuteAsync(request);
@@ -244,6 +265,7 @@
                 startTime = DateTime.Now;
                 remainingSlots = null;
                 isFullyBooked = false;
+                selectedLines = new();
                 lastResponse = response;
                
             }
