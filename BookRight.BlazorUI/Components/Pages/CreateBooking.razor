@@ -121,9 +121,9 @@
                     @if (lastResponse != null && lastResponse.Success) 
                     {
                         <div>
-                            <p>Oprindelig pris: @lastResponse.OriginalPrice kr.</p>
+                            <p>Oprindelig pris: @lastResponse.OriginalPrice.ToString("F2") kr.</p>
                             <p>Rabattype: @lastResponse.DiscountType</p>
-                            <p>Rabatpris: @lastResponse.DiscountedPrice kr.</p>
+                            <p>Pris efter rabat: @lastResponse.DiscountedPrice.ToString("F2") kr.</p>
                         </div>
                     }
                 </div>
@@ -230,7 +230,7 @@
 			};
 
             var response = await CreateBookingUseCase.ExecuteAsync(request);
-            bookingMessage = $"Booking oprettet med ID: {response.Id}";
+            bookingMessage = $"Booking oprettet!";
             bookingAlertClass = "alert alert-success";
 
             if (response.Success)

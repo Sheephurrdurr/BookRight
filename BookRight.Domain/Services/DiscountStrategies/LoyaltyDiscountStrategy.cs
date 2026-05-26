@@ -29,7 +29,7 @@ namespace BookRight.Domain.Services.DiscountStrategies
                 _                   => 1.0m // Default case for any unexpected loyalty level, ensuring no discount is applied
             };
 
-            var originalPrice = context.Booking.GetTotalPrice(); // Get the original price of the booking before applying any discounts, via a method on the Booking aggregate
+            var originalPrice = context.BasePrice; // Get the original price of the booking before applying any discounts, via a method on the Booking aggregate
 
             if (multiplier == 1.0m) 
                 return new DiscountResult(originalPrice, originalPrice, DiscountType.None);// If no discount is applied, return the original price as both the original and discounted price,

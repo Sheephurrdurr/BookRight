@@ -127,26 +127,31 @@ namespace BookRight.UseCases.CreateBooking
 
             var addOns = _priceCalculatorService.GetAutomaticAddOns(timeSlot);
 
-            var pricingContext = new PricingContext{
-                Customer = customer,
-                Booking = booking,
-                CompletedBookings = completedBookings,
-                CampaignDiscount = campaignDiscount
-            };
+         
 
             foreach (var lineRequest in request.Lines)
             {
+
                 var treatmentType = treatmentTypes[lineRequest.TherapistTreatmentTypeId];
                 var basePrice = _priceCalculatorService.CalculateBasePrice(treatmentType);
 
                 var priceWithAddons = _priceCalculatorService.ApplyAddOns(basePrice, addOns);
+
+                var pricingContext = new PricingContext
+                {
+                    Customer = customer,
+                    Booking = booking,
+                    CompletedBookings = completedBookings,
+                    CampaignDiscount = campaignDiscount,
+                    BasePrice = priceWithAddons
+                };
 
                 var discountResult = await _priceCalculatorService
                     .CalculateBestDiscountAsync(pricingContext);
 
                 var line = new BookingLine(
                     lineRequest.TherapistTreatmentTypeId,
-                    basePrice,
+                    priceWithAddons,
                     discountResult.DiscountPercentage,
                     discountResult.AppliedDiscount);
 
@@ -162,6 +167,7 @@ namespace BookRight.UseCases.CreateBooking
             {
                 Success = true,
                 Message = "Booking oprettet!",
+                Id = booking.Id,
                 OriginalPrice = booking.GetBasePrice().Value,
                 DiscountedPrice = booking.GetTotalPrice().Value,
                 DiscountType = booking.Lines.FirstOrDefault()?.DiscountType.ToString()

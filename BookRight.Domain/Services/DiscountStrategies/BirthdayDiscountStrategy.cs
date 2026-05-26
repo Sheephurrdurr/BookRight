@@ -10,7 +10,7 @@ namespace BookRight.Domain.Services.DiscountStrategies
         public DiscountResult CalculateDiscount(PricingContext context)
         {
             var treatmentDate = DateOnly.FromDateTime(context.Booking.TimeSlot.StartTime); 
-            var originalPrice = context.Booking.GetTotalPrice();
+            var originalPrice = context.BasePrice;
 
             var bookingDate = DateOnly.FromDateTime(context.Booking.TimeSlot.StartTime);
 

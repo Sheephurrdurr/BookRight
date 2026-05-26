@@ -8,7 +8,7 @@ namespace BookRight.Domain.Services.DiscountStrategies
     {
         public DiscountResult CalculateDiscount(PricingContext context)
         {
-            var originalPrice = context.Booking.GetBasePrice(); //Recieve base price of booking
+            var originalPrice = context.BasePrice; //Recieve base price of booking
 
             if (context.CampaignDiscount is null)
                 return new DiscountResult(originalPrice, originalPrice, DiscountType.None);
