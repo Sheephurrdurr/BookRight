@@ -11,7 +11,7 @@ namespace BookRight.UseCases.GetRevenueReport
     public class GetRevenueReportUseCase : IGetRevenueReportUseCase
     {
         private readonly IBookingRepository _bookingRepository;
-        private readonly IClinicRepository _clinicRepository;       // Tilføjes hvis nødvendigt
+        private readonly IClinicRepository _clinicRepository;    
         private readonly ITherapistRepository _therapistRepository;
 
         public GetRevenueReportUseCase(IBookingRepository bookingRepository, IClinicRepository clinicRepository, ITherapistRepository therapistRepository)
