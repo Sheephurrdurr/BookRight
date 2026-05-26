@@ -1,0 +1,273 @@
+﻿@page "/booking-overview" 
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using BookRight.Domain.Enums
+@using BookRight.Domain.Aggregates.Booking
+@using BookRight.Domain.Aggregates.Clinic
+@using BookRight.Domain.Aggregates.TherapistAggregate
+@using BookRight.Facade.DTOs.MarkBookingAsNoShowDTOs
+@using BookRight.Facade.DTOs.MarkBookingAsArrivedDTOs
+@using BookRight.Facade.DTOs.MarkBookingCompletedDTOs
+@using BookRight.Facade.Interfaces.BookingUseCases
+@using BookRight.Facade.DTOs.RestoreBookingFromNoShowDTOs
+
+
+@using BookRight.UseCases.Interfaces
+@using BookRight.Domain.Aggregates.Customer
+
+@inject IBookingRepository BookingRepository
+@inject IClinicRepository ClinicRepository
+@inject ICustomerRepository CustomerRepository
+@inject IMarkBookingAsNoShowUseCase MarkBookingAsNoShowUseCase
+@inject IMarkBookingArrivedUseCase MarkBookingArrivedUseCase
+@inject IMarkBookingCompletedUseCase MarkBookingCompletedUseCase
+@inject IRestoreBookingFromNoShowUseCase RestoreBookingFromNoShowUseCase
+@inject ITherapistRepository TherapistRepository
+
+<PageTitle>Booking Oversigt</PageTitle>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Booking Oversig</h3>
+    </div>
+
+    <div class="card-body">
+        <div class="mb-3">
+            <label class="form-label">Vælg Klinik</label>
+
+            <select class="form-select" @bind="selectedClinicId">
+                <option value="">-- Vælg Klinik --</option>
+
+                @foreach (var clinic in clinics)
+                {
+                    <option value="@clinic.Id">@clinic.Name</option>
+                }
+            </select>
+        </div>
+
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="@alertClass">
+                @message
+            </div>
+        }
+
+        @if (string.IsNullOrEmpty(selectedClinicId))
+        {
+            <p>Vælg en klinik for, at se dagens planlagte bookinger.</p>
+        }
+        else if (!FilteredBookings.Any())
+        {
+            <p>Ingen bookinger i dag...</p>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Tidspunkt</th>
+                        <th>Kundes navn</th>
+                        <th>Behandlers navn</th>
+                        <th>Status</th>
+                        <th>Handling</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var booking in FilteredBookings)
+                    {
+                        <tr>
+                            <td>@booking.TimeSlot.StartTime.ToString("HH:mm")</td>
+                            <td>@GetCustomerName(booking.CustomerId)</td>
+                            <td>@GetTherapistName(booking.TherapistId)</td>
+
+                            <td>
+                                @if (booking.Status == BookingStatus.NoShow)
+                                {
+                                    <span class="badge bg-danger">Ikke mødt</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Kommet</span>
+                                }
+                            </td>
+                            <td>
+                                @if (booking.Status == BookingStatus.Confirmed)
+                                {
+                                    <button class="btn btn-danger btn-sm"
+                                            @onclick="() => RegisterBookingAsNoShow(booking.Id)">
+                                        Ikke mødt
+                                    </button>
+                                }
+                                else if (booking.Status == BookingStatus.NoShow)
+                                {
+                                    <button class="btn btn-success btn-sm"
+                                            @onclick="() => RestoreBookingFromNoShow(booking.Id)">
+                                        Gendan
+                                    </button>
+                                }
+								@if (booking.Status == BookingStatus.Confirmed)
+								{
+									<button class="btn btn-success btn-sm ms-2"
+											@onclick="() => RegisterBookingAsArrived(booking.Id)">
+										Register Arrived
+									</button>
+								}
+								
+                                @if (booking.Status == BookingStatus.Arrived)
+                                {
+                                    <button class="btn btn-success btn-sm ms-2"
+                                            @onclick="() => RegisterBookingAsCompleted(booking.Id)">
+                                        Afslut behandling
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span>Ingen handling tilgængelig...</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@code {
+    private IReadOnlyList<Booking> bookings = new List<Booking>();
+    private IReadOnlyList<Clinic> clinics = new List<Clinic>();
+    private IReadOnlyList<Customer> customers = new List<Customer>();
+    private IReadOnlyList<Therapist> therapists = new List<Therapist>();
+
+    private string selectedClinicId = "";
+    private string message = "";
+    private string alertClass = "";
+
+    private IEnumerable<Booking> FilteredBookings =>
+        bookings
+            .Where(b =>
+                b.ClinicId.ToString() == selectedClinicId &&
+                b.TimeSlot.StartTime.Date == DateTime.Today)
+            .OrderBy(b => b.TimeSlot.StartTime);
+
+    protected override async Task OnInitializedAsync()
+    {
+        clinics = await ClinicRepository.GetAllAsync();
+        bookings = await BookingRepository.GetAllAsync();
+        customers = await CustomerRepository.GetAllAsync();
+        therapists = await TherapistRepository.GetAllAsync();
+    }
+
+    // Registers the selected booking as No-show.
+    private async Task RegisterBookingAsNoShow(Guid bookingId)
+    {
+        try
+        {
+            var request = new MarkBookingAsNoShowRequest
+            {
+                BookingId = bookingId
+            };
+
+            await MarkBookingAsNoShowUseCase.ExecuteAsync(request);
+
+            message = "Bookingen er registreret som \"Ikke mødt\".";
+            alertClass = "alert alert-success";
+
+            bookings = await BookingRepository.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+            alertClass = "alert alert-danger";
+        }
+    }
+
+    // Helper method to get the customer's name based on their ID.
+    private string GetCustomerName(Guid customerId)
+    {
+        var customer = customers.FirstOrDefault(c => c.Id == customerId);
+
+        return customer is null
+            ? "Unknown customer"
+            : customer.Name.ToString();
+    }
+    //Helper method for therapist based on ID
+    private string GetTherapistName(Guid therapistId)
+    {
+        var therapist = therapists.FirstOrDefault(t => t.Id == therapistId);
+        return therapist == null
+        ? "Unknown therapist"
+        : therapist.Name.ToString();
+    }
+
+    // Restores a NoShow booking back to Confirmed.
+    private async Task RestoreBookingFromNoShow(Guid bookingId)
+    {
+        try
+        {
+            var request = new RestoreBookingFromNoShowRequest(bookingId);
+
+            await RestoreBookingFromNoShowUseCase.ExecuteAsync(request);
+
+            message = "Booking was restored to Confirmed.";
+            alertClass = "alert alert-success";
+
+            bookings = await BookingRepository.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+            alertClass = "alert alert-danger";
+        }
+    }
+
+    // Registers the selected booking as Arrived.
+    private async Task RegisterBookingAsArrived(Guid bookingId)
+    {
+        try
+        {
+            var request = new MarkBookingArrivedRequest
+            {
+                BookingId = bookingId
+            };
+
+            await MarkBookingArrivedUseCase.ExecuteAsync(request);
+
+            message = "Kunde markeret som ankommet.";
+            alertClass = "alert alert-success";
+
+            bookings = await BookingRepository.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+            alertClass = "alert alert-danger";
+        }
+    }
+
+
+    // Registers the selected booking as Completed.
+    private async Task RegisterBookingAsCompleted(Guid bookingId)
+    {
+        try
+        {
+            var request = new MarkBookingCompletedRequest
+            {
+                BookingId = bookingId
+            };
+
+            await MarkBookingCompletedUseCase.ExecuteAsync(request);
+
+            message = "Booking er registreret som afsluttet.";
+            alertClass = "alert alert-success";
+
+            bookings = await BookingRepository.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+            alertClass = "alert alert-danger";
+        }
+    }
+}

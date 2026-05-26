@@ -29,7 +29,7 @@ namespace BookRight.Domain.Services
                 // Sums all Money objects together
                 .Aggregate(new Money(0), (total, price) => total + price);
         }
-        public LoyaltyLevel GetLoyaltyLevel( //Determines the customers loyalty lvl. It's also stateless 'cause it doesn't save data. Which means it's thread safe (no race conditions) and no setup of intern state = easy tetsing.
+        public LoyaltyLevelType GetLoyaltyLevel( //Determines the customers loyalty lvl. It's also stateless 'cause it doesn't save data. Which means it's thread safe (no race conditions) and no setup of intern state = easy tetsing.
             IEnumerable<Booking> bookings,
             DateTime CurrentDate)
         {
@@ -40,15 +40,15 @@ namespace BookRight.Domain.Services
 
 
             if (totalPurchases > new Money(25000))
-                return LoyaltyLevel.Gold;
+                return LoyaltyLevelType.Gold;
 
             if (totalPurchases > new Money(10000))
-                return LoyaltyLevel.Silver;
+                return LoyaltyLevelType.Silver;
 
             if (totalPurchases >= new Money(3000))
-                return LoyaltyLevel.Bronze;
+                return LoyaltyLevelType.Bronze;
 
-            return LoyaltyLevel.None; //No loyalty lvl if purchase is <3.000 kr.
+            return LoyaltyLevelType.None; //No loyalty lvl if purchase is <3.000 kr.
         }
     }
 }

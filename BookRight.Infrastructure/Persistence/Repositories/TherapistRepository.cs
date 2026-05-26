@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BookRight.Domain.Aggregates.Therapist;
+using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.UseCases.Interfaces;
 
 namespace BookRight.Infrastructure.Persistence.Repositories
@@ -15,7 +15,9 @@ namespace BookRight.Infrastructure.Persistence.Repositories
 
         public async Task<IReadOnlyList<Therapist>> GetAllAsync()
         {
-            return await _context.Therapists.ToListAsync();
+            return await _context.Therapists
+                .Include(t => t.Qualifications)
+                .ToListAsync();
         }
         public async Task<Therapist?> GetByIdAsync(Guid id)
         {

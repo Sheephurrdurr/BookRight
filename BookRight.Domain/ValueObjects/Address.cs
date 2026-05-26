@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using BookRight.Domain.Errors;
 
 namespace BookRight.Domain.ValueObjects
 {
-	public record Address
+	public sealed record Address
 	{
 	  public string Street { get; private set; }
 	  public string City { get; private set; }
@@ -12,16 +10,27 @@ namespace BookRight.Domain.ValueObjects
 
 	  public Address(string street, string city, string postalCode)
 	  {
-			if (string.IsNullOrWhiteSpace(street))
-			    throw new ArgumentException("Street cannot be empty,", nameof(street));
-			if (string.IsNullOrWhiteSpace(city))
-				throw new ArgumentException("City cannot be empty.", nameof(city));
-			if (string.IsNullOrWhiteSpace(PostalCode))
-				throw new ArgumentException("Postalcode cannot be empty.");
+            if (string.IsNullOrWhiteSpace(street))
+                throw new ArgumentException(
+                    DomainErrorMessages.StreetCannotBeEmpty,
+                    nameof(street));
 
-			Street = street;
+            if (string.IsNullOrWhiteSpace(city))
+                throw new ArgumentException(
+                    DomainErrorMessages.CityCannotBeEmpty,
+                    nameof(city));
+
+            if (string.IsNullOrWhiteSpace(postalCode))
+                throw new ArgumentException(
+                    DomainErrorMessages.PostalCodeCannotBeEmpty,
+                    nameof(postalCode));
+
+            Street = street;
 			City = city;
 			PostalCode = postalCode;
 		}
 	}
 }
+// public  -> Kan bruges fra andre layers/projekter.
+// sealed  -> Kan ikke nedarves.
+// record  -> Sammenlignes på værdier i stedet for reference.

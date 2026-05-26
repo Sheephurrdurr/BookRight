@@ -48,6 +48,7 @@ namespace BookRight.Infrastructure.Persistence.Configurations
 
             builder.Property(x => x.PreferredTherapistId)
                     .IsRequired(false);
+
         }
     }
 }

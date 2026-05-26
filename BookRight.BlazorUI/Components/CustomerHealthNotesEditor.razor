@@ -1,0 +1,59 @@
+﻿@using BookRight.Facade.DTOs.ChangeCustomerHealthNotesDTOs
+@using BookRight.Facade.Interfaces.CustomerUseCases
+
+@inject IGetCustomerHealthNotesUseCase GetCustomerHealthNotesUseCase
+@inject IChangeCustomerHealthNotesUseCase ChangeCustomerHealthNotesUseCase
+
+<article class="container">
+	<section class="card">
+
+		<div class="card-body">
+
+			<h3>Redigér Sundhedsnoter</h3>
+
+			<div>
+				<p>Redigér Sundhedsnoter</p>
+				<textarea @bind="healthNotes">
+				
+				</textarea>
+			</div>
+
+			<div>
+				<p>@statusMessage</p>
+			</div>
+
+			<div>
+				<button @onclick="SaveChanges">Gem Ændring</button>
+			</div>
+		</div>
+		
+	</section>
+</article>
+
+@code {
+	[Parameter]
+	public Guid CustomerId { get; set; }
+
+	private string? healthNotes;
+	private string statusMessage = "";
+
+	protected override async Task OnInitializedAsync() 
+	{
+		var response = await GetCustomerHealthNotesUseCase.ExecuteAsync(CustomerId);
+		healthNotes = response.HealthNotes;
+	}
+
+	public async Task SaveChanges()
+	{
+		try
+		{
+			var request = new ChangeCustomerHealthNotesRequest(CustomerId, healthNotes ?? "");
+			await ChangeCustomerHealthNotesUseCase.ExecuteAsync(request);
+			statusMessage = "Ændringer gemt!";
+		}
+		catch (Exception ex)
+		{
+			statusMessage = $"Fejl: {ex.Message}";
+		}
+	}
+}

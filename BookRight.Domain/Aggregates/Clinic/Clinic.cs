@@ -1,20 +1,29 @@
-﻿using BookRight.Domain.ValueObjects;
+﻿using BookRight.Domain.Aggregates.TherapistAggregate;
+using BookRight.Domain.Errors;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.Clinic
 {
     public class Clinic
     {
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public Address Address { get; private set; }
-        public PhoneNumber Phone { get; private set; }
+        public string Name { get; private set; } = null!; //Not nullable, but a promise to the constructor, that the name is set later. Fixes warning.
+        public Address Address { get; private set; } = null!; //Not nullable
+        public PhoneNumber Phone { get; private set; } = null!; //Not nullable
         public int NumTreatmentRooms { get; private set; }
 
-        // Privat dictionary, som kun Clinic-klassen selv kan ændre direkte
-        private Dictionary<DayOfWeek, OpeningHours> _openingHours = new();
+        // Privat liste, som kun Clinic-klassen selv kan ændre direkte
+        private readonly List<ClinicOpeningHour> _openingHours = new();
 
         // Andre klasser kan kun læse åbningstiderne, ikke ændre dem direkte
-        public IReadOnlyDictionary<DayOfWeek, OpeningHours> OpeningHours => _openingHours;
+        public IReadOnlyCollection<ClinicOpeningHour> OpeningHours => _openingHours.AsReadOnly();
+
+        private readonly List<TherapistSchedule> _therapistSchedules = new(); // --- DDD POLICE!! WEEWOOO -- Aggregates are only linked to other aggregates via Ids, not direct refererences. Change this at some point, or Kaj is gonna grill us. Alive.
+        public IReadOnlyCollection<TherapistSchedule> TherapistSchedules => _therapistSchedules.AsReadOnly();
+
+        private readonly List<Therapist> _therapists = new(); //--- DDD POLICE!! WEEWOOO -- 
+        public IReadOnlyCollection<Therapist> Therapists // --DDD SWAT TEAM!! WEEWOOO -- Aggregates are only linked to other aggregates via Ids, not direct refererences. 
+            => _therapists.AsReadOnly();
 
         private Clinic() { }
 
@@ -22,16 +31,24 @@ namespace BookRight.Domain.Aggregates.Clinic
         public Clinic(string name, Address address, PhoneNumber phone, int numTreatmentRooms)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Klinikkens navn må ikke være tomt.");
+                throw new ArgumentException(
+                    DomainErrorMessages.NameCannotBeEmpty,
+                    nameof(name));
 
-            if (address == null)
-                throw new ArgumentException("Klinikkens adresse må ikke være tom.");
+            if (address is null)
+                throw new ArgumentNullException(
+                    nameof(address),
+                    DomainErrorMessages.AddressCannotBeNull);
 
-            if (phone == null)
-                throw new ArgumentException("Klinikkens telefonnummer må ikke være tomt.");
+            if (phone is null)
+                throw new ArgumentNullException(
+                    nameof(phone),
+                    DomainErrorMessages.PhoneNumberCannotBeNull);
 
             if (numTreatmentRooms <= 0)
-                throw new ArgumentException("Antal behandlingsrum skal være større end 0.");
+                throw new ArgumentException(
+                    DomainErrorMessages.NumberOfTreatmentRoomsMustBeGreaterThanZero,
+                    nameof(numTreatmentRooms));
 
             Id = Guid.NewGuid();
             Name = name;
@@ -39,18 +56,5 @@ namespace BookRight.Domain.Aggregates.Clinic
             Phone = phone;
             NumTreatmentRooms = numTreatmentRooms;
         }
-
-        // Metoden til at tilføje eller ændre åbningstider for en bestemt ugedag
-        public void SetOpeningHours(DayOfWeek day, OpeningHours openingHours)
-        {
-            if (openingHours == null)
-                throw new ArgumentNullException(nameof(openingHours));
-
-            _openingHours[day] = openingHours;
-        }
-
-        public IReadOnlyDictionary<DayOfWeek, OpeningHours> GetOpeningHours()
-            => _openingHours; // Cool shorthand for at returnere
-
     }
 }

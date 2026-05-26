@@ -1,4 +1,6 @@
-﻿using BookRight.Domain.Enums;
+﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.Customer;
+using BookRight.Domain.Enums;
 using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.Booking
@@ -14,26 +16,28 @@ namespace BookRight.Domain.Aggregates.Booking
 
         // Foreign key og INGEN Navigation property
         public Guid CustomerId { get; private set; }
+        public Guid TherapistId { get; private set; }
         public Guid ClinicId { get; private set; }
         public Guid? CampaignDiscountId { get; private set; } 
 
         private Booking() { }
-        public Booking(Guid id, Guid customerId, Guid clinicId, TimeSlot timeSlot)
+        public Booking(Guid id, Guid customerId, Guid therapistId, Guid clinicId, TimeSlot timeSlot)
         {
             if (id == Guid.Empty)
-                throw new ArgumentException("Id cannot be empty.", nameof(id));
+                throw new ArgumentException(nameof(id)); //No need for errormessages, because thy'll never be displayed in the UI.
 
             if (customerId == Guid.Empty)
-                throw new ArgumentException("CustomerId cannot be empty.", nameof(customerId));
+                throw new ArgumentException(nameof(customerId));
 
             if (clinicId == Guid.Empty)
-                throw new ArgumentException("ClinicId cannot be empty.", nameof(clinicId));
+                throw new ArgumentException(nameof(clinicId));
 
             if (timeSlot is null)
                 throw new ArgumentNullException(nameof(timeSlot));
 
             Id = id;
             CustomerId = customerId;
+            TherapistId = therapistId;
             ClinicId = clinicId;
             TimeSlot = timeSlot;
             Status = BookingStatus.Confirmed;
@@ -41,7 +45,7 @@ namespace BookRight.Domain.Aggregates.Booking
 
         public void AddLine(BookingLine line)
         {
-            if (line == null)
+            if (line is null)
                 throw new ArgumentNullException(nameof(line));
 
             _lines.Add(line);
@@ -50,6 +54,14 @@ namespace BookRight.Domain.Aggregates.Booking
         {
             return _lines
                 .Select(line => line.FinalPrice)
+                .Aggregate(new Money(0), (total, price) => total + price);
+        }
+
+
+        public Money GetBasePrice() //Sum of price before discount
+        {
+            return _lines
+                .Select(line => line.BasePrice)
                 .Aggregate(new Money(0), (total, price) => total + price);
         }
 
@@ -70,8 +82,12 @@ namespace BookRight.Domain.Aggregates.Booking
             Status = BookingStatus.Completed; 
         }
 
-        // MarkAsNoshow
-        public void MarkAsNOShow()
+        public void MarkAsArrived()
+        {
+            Status = BookingStatus.Arrived;
+        }
+
+        public void MarkAsNoShow()
         {
             Status = BookingStatus.NoShow;
         }
@@ -82,6 +98,12 @@ namespace BookRight.Domain.Aggregates.Booking
                 throw new ArgumentException(nameof(campaignDiscountId));
 
             CampaignDiscountId = campaignDiscountId;
+        }
+
+        // Changes the booking status back to Confirmed fra Ikke-mødt.
+        public void RestoreFromNoShow()
+        {
+            Status = BookingStatus.Confirmed;
         }
     }
 }

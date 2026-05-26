@@ -1,4 +1,6 @@
-﻿using BookRight.Domain.ValueObjects;
+﻿using BookRight.Domain.Errors;
+using BookRight.Domain.Exceptions;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.AddOn
 {
@@ -6,7 +8,7 @@ namespace BookRight.Domain.Aggregates.AddOn
     {
         public Guid Id { get; private set; }
 
-        public string Name { get; private set; } // Ex. "Weekendtillæg"
+        public string Name { get; private set; } = null!; //Name IS NOT nullable. It's a promise to the EF constructor, that name is set later. If not it results in a warning. // Ex. "Weekendtillæg"
 
         public decimal Percentage { get; private set; } //Ex. 15 %
 
@@ -14,20 +16,16 @@ namespace BookRight.Domain.Aggregates.AddOn
 
         public AddOn(string name, decimal percentage)
         {
-            if (string.IsNullOrWhiteSpace(name)) //Guard clauses. Valid State.
+            if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException(
-                    "Name cannot be empty.",
+                    DomainErrorMessages.NameCannotBeEmpty,
                     nameof(name));
 
             if (percentage < 0 || percentage > 100)
-                throw new ArgumentException(
-                    "Percentage must be between 0 and 100.",
-                    nameof(percentage));
+                throw new InvalidPercentageException();
 
             Id = Guid.NewGuid();
-
             Name = name;
-
             Percentage = percentage;
         }
 
@@ -38,7 +36,7 @@ namespace BookRight.Domain.Aggregates.AddOn
         Result = 60 kr*/
         public Money CalculateAmount(Money basePrice) 
         {
-            decimal multiplier = Percentage / 100;
+            decimal multiplier = Percentage / 100m;
 
             return basePrice * multiplier;
         }

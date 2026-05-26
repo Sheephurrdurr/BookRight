@@ -1,49 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using BookRight.Domain.Errors;
+using BookRight.Domain.Exceptions;
+using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.CampaignDiscount
 {
-    public record CampaignDiscount
+    public class CampaignDiscount
     {
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
+        public string Name { get; private set; } = null!; //A promise to the EF constructor, that the property is set later. If not it results in a warning.
         public decimal DiscountPercent { get; private set; }
-        public DateOnly StartDate { get; private set; }
-        public DateOnly EndDate { get; private set; }
+        public DateRange DateRange { get; private set; }
 
+        private readonly List<Guid> _appliesToTreatmentTypeIds = new();
+        public IReadOnlyList<Guid> AppliesToTreatmentTypeIds =>
+            _appliesToTreatmentTypeIds.AsReadOnly();
 
         private CampaignDiscount() //EF Core constructor
         {
-            Name = string.Empty; //Name må ikke være null. 
         } 
 
 
         public CampaignDiscount( //Opret kampagne
             string name,
             decimal discountPercent,
-            DateOnly startDate,
-            DateOnly endDate)
+            DateRange dateRange,
+            IEnumerable<Guid> treatmentTypeIds)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Navn må ikke være tomt.");
+                throw new ArgumentException(
+                    DomainErrorMessages.NameCannotBeEmpty,
+                    nameof(name));
 
-            if (discountPercent <= 0 || discountPercent > 100)
-                throw new ArgumentException("Rabat skal være mellem 0 og 100.");
+            if (discountPercent <= 0 || discountPercent > 100) //CustomException
+                throw new InvalidPercentageException();
 
-            if (endDate < startDate)
-                throw new ArgumentException("Slutdato må ikke være før startdato.");
+            var ids = treatmentTypeIds?.ToList() ?? new List<Guid>();
+            if (ids.Count == 0)
+                throw new ArgumentException(
+                    DomainErrorMessages.TreatmentTypeIdsMustNotBeEmpty,
+                    nameof(treatmentTypeIds));
 
             Id = Guid.NewGuid();
             Name = name;
             DiscountPercent = discountPercent;
-            StartDate = startDate;
-            EndDate = endDate;
+            DateRange = dateRange;
+            _appliesToTreatmentTypeIds.AddRange(ids);
         }
 
         public bool IsActive(DateOnly date) //Tjek om kampagnen er aktiv
         {
-            return date >= StartDate && date <= EndDate;
+            return DateRange.Contains(date); // Tjek udføres af DateRange VO
         }
+
+        public bool AppliesTo(Guid treatmentTypeId)
+        {
+            return _appliesToTreatmentTypeIds.Contains(treatmentTypeId);
+        }
+           
     }
 }
