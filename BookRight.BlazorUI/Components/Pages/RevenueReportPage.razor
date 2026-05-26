@@ -1,0 +1,141 @@
+﻿@page "/omsætningsrapport"
+@inject IJSRuntime JSRuntime
+
+@* 1. Det flade namespace fra dit interface fjerner nu fejlen på behandleren! *@
+@using BookRight.Facade.Interfaces
+@using BookRight.Facade.Interfaces.RevenueReportUseCase
+@using BookRight.Facade.Interfaces.ClinicsUseCases
+
+@inject IGetRevenueReportUseCase GetRevenueReportUseCase
+@inject IGetAllClinicsUseCase GetAllClinicsUseCase
+@inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
+
+@using BookRight.Facade.DTOs.GetRevenueReport
+@using BookRight.Facade.DTOs.GetAllClinicsDTOs
+@using BookRight.Facade.DTOs.GetAllTherapistsDTOs
+
+<h3 class="mb-4 no-print">Omsætningsrapport</h3>
+
+<div class="card p-4 mb-4 no-print shadow-sm">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label font-weight-bold">Vælg Klinik</label>
+            <select class="form-control form-select" @bind="selectedClinicId">
+                <option value="">Alle klinikker</option>
+                @foreach (var clinic in clinics)
+                {
+                    <option value="@clinic.Id">@clinic.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label font-weight-bold">Vælg Behandler</label>
+            <select class="form-control form-select" @bind="selectedTherapistId">
+                <option value="">Alle behandlere</option>
+                @foreach (var therapist in therapists)
+                {
+                    <option value="@therapist.Id">@therapist.FirstName @therapist.LastName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-4 d-flex">
+            <button class="btn btn-primary flex-grow-1 mr-2" @onclick="GenerateReport">Generer rapport</button>
+            @if (reportResult != null)
+            {
+                <button class="btn btn-success flex-grow-1" @onclick="PrintReport">Udskriv / Gem PDF</button>
+            }
+        </div>
+    </div>
+</div>
+
+@if (reportResult != null)
+{
+    <div class="print-area">
+        <div class="card p-5 shadow-sm border-0 bg-white">
+
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+                <div>
+                    <h2 class="text-primary m-0 font-weight-bold">BookRight</h2>
+                    <h4 class="text-secondary m-0">Omsætningsrapport</h4>
+                    <p class="text-muted m-0 mt-1" style="font-size: 0.85rem;">
+                        Genereret: @reportResult.GeneratedAt.ToString("dd-MM-yyyy HH:mm")
+                    </p>
+                </div>
+                <div class="text-right no-print">
+                    <span class="badge badge-info p-2">Forhåndsvisning</span>
+                </div>
+            </div>
+
+            <div class="row mb-4 bg-light p-3 rounded mx-0 border">
+                <div class="col-6">
+                    <small class="text-muted d-block text-uppercase font-weight-bold" style="font-size: 0.75rem;">Klinik</small>
+                    <strong style="font-size: 1.1rem;">@reportResult.SelectedClinicName</strong>
+                </div>
+                <div class="col-6">
+                    <small class="text-muted d-block text-uppercase font-weight-bold" style="font-size: 0.75rem;">Behandler</small>
+                    <strong style="font-size: 1.1rem;">@reportResult.SelectedTherapistName</strong>
+                </div>
+            </div>
+
+            <div class="row text-center mt-4">
+                <div class="col-md-6 mb-3">
+                    <div class="p-4 border rounded bg-light shadow-sm" style="border-left: 5px solid #28a745 !important;">
+                        <h5 class="text-muted mb-2 text-uppercase font-weight-bold" style="font-size: 0.85rem; letter-spacing: 0.5px;">Total Omsætning</h5>
+                        <h2 class="display-4 text-success font-weight-bold m-0">@reportResult.TotalRevenue.ToString("N2") kr.</h2>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="p-4 border rounded bg-light shadow-sm" style="border-left: 5px solid #007bff !important;">
+                        <h5 class="text-muted mb-2 text-uppercase font-weight-bold" style="font-size: 0.85rem; letter-spacing: 0.5px;">Antal Aftaler</h5>
+                        <h2 class="display-4 text-dark font-weight-bold m-0">@reportResult.TotalAppointments <span style="font-size: 1.5rem; font-weight: normal;">stk.</span></h2>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info text-center p-4 shadow-sm">
+        <span class="oi oi-info mr-2"></span> Vælg eventuelle filtre i menuen ovenfor og klik på <strong>"Generer rapport"</strong> for at se forhåndsvisningen.
+    </div>
+}
+
+@code {
+    private Guid? selectedClinicId;
+    private Guid? selectedTherapistId;
+
+
+    private IReadOnlyList<GetAllClinicsResponse> clinics = new List<GetAllClinicsResponse>();
+    private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
+
+    private GetRevenueReportResponse? reportResult;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // 3. Hent de rigtige data fra databasen via jeres Use Cases
+        // Ret eventuelt .ExecuteAsync() til det jeres metoder hedder (f.eks. Handle eller Query)
+        clinics = await GetAllClinicsUseCase.ExecuteAsync();
+        therapists = await GetAllTherapistsUseCase.ExecuteAsync();
+    }
+
+    private async Task GenerateReport()
+    {
+        var request = new GetRevenueReportRequest
+        {
+            ClinicId = selectedClinicId,
+            TherapistId = selectedTherapistId
+        };
+
+        reportResult = await GetRevenueReportUseCase.ExecuteAsync(request);
+    }
+
+    private async Task PrintReport()
+    {
+        await JSRuntime.InvokeVoidAsync("window.print");
+    }
+}
