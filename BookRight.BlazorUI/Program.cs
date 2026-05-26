@@ -84,6 +84,9 @@ builder.Services.AddScoped<IGetCustomerHistoryUseCase, GetCustomerHistoryUseCase
 builder.Services.AddScoped<IGetGroupSlotAvailabilityUseCase, GetGroupSlotAvailabilityUseCase>();
 builder.Services.AddScoped<ICreateCampaignDiscountUseCase, CreateCampaignDiscountUseCase>();
 builder.Services.AddScoped<IGetAllTreatmentTypeUseCase, GetAllTreatmentTypesUseCase>();
+builder.Services.AddScoped<IGetRevenueReportUseCase, GetRevenueReportUseCase>();
+builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
+builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
 
 var app = builder.Build();
 
