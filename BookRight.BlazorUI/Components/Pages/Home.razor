@@ -4,17 +4,21 @@
 @using BookRight.Facade.Interfaces.CustomerUseCases
 @using BookRight.Facade.Interfaces
 @using BookRight.Facade.Interfaces.ClinicsUseCases
+@using BookRight.Facade.Interfaces.TreatmentTypeUseCases
 @using BookRight.Facade.DTOs.GetAllCustomersDTOs
 @using BookRight.Facade.DTOs.GetAllTherapistsDTOs
 @using BookRight.Facade.DTOs.CreateTherapistDTOs
 @using BookRight.Facade.DTOs.CreateCustomerDTOs
 @using BookRight.Facade.DTOs.GetAllClinicsDTOs
+@using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
+
 @inject IGetAllClinicsUseCase GetAllClinicsUseCase
 @inject ICreateTherapistUseCase CreateTherapistUseCase
 @inject ICreateCustomerUseCase CreateCustomerUseCase
 @inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
 @inject IGetAllCustomersUseCase GetAllCustomersUseCase
 @inject IGetCustomerHistoryUseCase GetCustomerHistoryUseCase
+@inject IGetAllTreatmentTypesUseCase GetAllTreatmentTypesUseCase
 
 <!--
     Siden benytter Bootstrap klasser til styling
@@ -350,11 +354,15 @@
 	private string customerHistoryMessage = "";
 	private string customerHistoryAlertClass = "";
 
+	//Therapist form fields
+	private List<Guid> selectedTreatmentTypeIds = [];
+
 	// Lister der holder data fra GetAll, til at vise nyligt oprettede entities
 	private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
 	private IReadOnlyList<GetAllCustomersResponse> customers = new List<GetAllCustomersResponse>();
 	private IReadOnlyList<GetAllClinicsResponse> clinics = new List<GetAllClinicsResponse>();
 	private IReadOnlyList<CustomerHistoryResponse> customerHistories = new List<CustomerHistoryResponse>();
+	private IReadOnlyList<GetAllTreatmentTypesResponse> treatmentTypes = new List<GetAllTreatmentTypesResponse>();
 
 	// HealthNotesEditor
 	private Guid? selectedCustomerId;
@@ -369,6 +377,7 @@
 		therapists = await GetAllTherapistsUseCase.ExecuteAsync();
 		customers = await GetAllCustomersUseCase.ExecuteAsync();
 		clinics = await GetAllClinicsUseCase.ExecuteAsync();
+		treatmentTypes = await GetAllTreatmentTypesUseCase.ExecuteAsync();
 		specializations = therapists //Data already fetched. This is just filtering/UI presentation (NOT BL)
 		.Select(t => t.Specialization)
 		.Distinct()
