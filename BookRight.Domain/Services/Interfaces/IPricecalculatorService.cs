@@ -12,12 +12,14 @@ namespace BookRight.Domain.Services
         Money CalculateBasePrice(TreatmentType treatmentType);
         Money ApplyAddOns(Money price, IEnumerable<AddOn> addOns);
         DiscountResult ApplyDiscount(Money basePrice, decimal percentage, DiscountType discountType);
+        IEnumerable<AddOn> GetAutomaticAddOns(TimeSlot timeSlot);
+
 
         // This method iterates through all registered discount strategies, calculates the discount for each strategy, 
 
         Task<DiscountResult> CalculateBestDiscountAsync(
-        Customer customer,
-        Booking booking,
-        IEnumerable<Booking> completedBookings);
+            Customer customer,
+            Booking booking,
+            IEnumerable<Booking> completedBookings);
     }
 }

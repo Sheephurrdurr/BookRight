@@ -6,6 +6,9 @@ using BookRight.Facade.Interfaces.ClinicsUseCases;
 using BookRight.Facade.Interfaces.CustomerUseCases;
 using BookRight.Facade.Interfaces.RevenueReportUseCase;
 using BookRight.Facade.Interfaces.TherapistUseCases;
+using BookRight.Facade.Interfaces.DiscountUseCases;
+using BookRight.Facade.Interfaces.TreatmentTypeUseCase;
+
 using BookRight.Infrastructure;
 using BookRight.Infrastructure.Persistence;
 using BookRight.Infrastructure.Persistence.Repositories;
@@ -28,6 +31,12 @@ using BookRight.UseCases.MarkBookingArrived;
 using BookRight.UseCases.MarkBookingAsNoShow;
 using BookRight.UseCases.MarkBookingCompleted;
 using BookRight.UseCases.RestoreBookingFromNoShow;  
+using BookRight.UseCases.MarkBookingCompleted;
+using BookRight.UseCases.GetCustomerHistory;
+using BookRight.UseCases.GetGroupSlotAvailabilityUseCase;
+using BookRight.UseCases.CampaignDiscountUseCases;
+using BookRight.UseCases.GetAllTreatmentTypes;
+
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,6 +63,7 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IClinicRepository, ClinicRepository>();
 builder.Services.AddScoped<ITreatmentTypeRepository, TreatmentTypeRepository>();
+builder.Services.AddScoped<ICampaignDiscountRepository, CampaignDiscountRepository>();
 
 // Register DI for use cases
 builder.Services.AddScoped<ICreateTherapistUseCase, CreateTherapistUseCase>();
@@ -72,9 +82,8 @@ builder.Services.AddScoped<IChangeCustomerHealthNotesUseCase, ChangeCustomerHeal
 builder.Services.AddScoped<IRestoreBookingFromNoShowUseCase, RestoreBookingFromNoShowUseCase>();
 builder.Services.AddScoped<IGetCustomerHistoryUseCase, GetCustomerHistoryUseCase>();
 builder.Services.AddScoped<IGetGroupSlotAvailabilityUseCase, GetGroupSlotAvailabilityUseCase>();
-builder.Services.AddScoped<IGetRevenueReportUseCase, GetRevenueReportUseCase>();
-builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
-builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
+builder.Services.AddScoped<ICreateCampaignDiscountUseCase, CreateCampaignDiscountUseCase>();
+builder.Services.AddScoped<IGetAllTreatmentTypeUseCase, GetAllTreatmentTypesUseCase>();
 
 var app = builder.Build();
 
