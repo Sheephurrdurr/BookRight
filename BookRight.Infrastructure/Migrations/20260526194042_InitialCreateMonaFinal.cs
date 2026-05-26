@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookRight.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCreateMonaFinal : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,7 +25,7 @@ namespace BookRight.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CampaignDiscount",
+                name: "CampaignDiscounts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -36,7 +36,7 @@ namespace BookRight.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CampaignDiscount", x => x.Id);
+                    table.PrimaryKey("PK_CampaignDiscounts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -47,7 +47,7 @@ namespace BookRight.Infrastructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Address_Street = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Address_City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Address_PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address_PostalCode = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Phone_Value = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     NumTreatmentRooms = table.Column<int>(type: "int", nullable: false)
                 },
@@ -75,6 +75,43 @@ namespace BookRight.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TreatmentTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DurationMinutes = table.Column<int>(type: "int", nullable: false),
+                    MaxParticipants = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CanBeCombined = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TreatmentTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClinicOpeningHour",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClinicId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DayOfWeek = table.Column<int>(type: "int", nullable: false),
+                    OpenTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    CloseTime = table.Column<TimeOnly>(type: "time", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClinicOpeningHour", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClinicOpeningHour_Clinics_ClinicId",
+                        column: x => x.ClinicId,
+                        principalTable: "Clinics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Therapists",
                 columns: table => new
                 {
@@ -82,26 +119,41 @@ namespace BookRight.Infrastructure.Migrations
                     Name_FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Name_LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email_Value = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Specialization = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                    Specialization = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Authorization_Type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Authorization_Number = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    ClinicId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Therapists", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Therapists_Clinics_ClinicId",
+                        column: x => x.ClinicId,
+                        principalTable: "Clinics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "TreatmentType",
+                name: "TherapistSchedule",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DurationMinutes = table.Column<int>(type: "int", nullable: false),
-                    MaxParticipants = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    TherapistId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClinicId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    IsWorking = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TreatmentType", x => x.Id);
+                    table.PrimaryKey("PK_TherapistSchedule", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TherapistSchedule_Clinics_ClinicId",
+                        column: x => x.ClinicId,
+                        principalTable: "Clinics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -113,6 +165,7 @@ namespace BookRight.Infrastructure.Migrations
                     TimeSlot_EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TherapistId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ClinicId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CampaignDiscountId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
@@ -120,14 +173,61 @@ namespace BookRight.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Bookings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Bookings_CampaignDiscount_CampaignDiscountId",
+                        name: "FK_Bookings_CampaignDiscounts_CampaignDiscountId",
                         column: x => x.CampaignDiscountId,
-                        principalTable: "CampaignDiscount",
+                        principalTable: "CampaignDiscounts",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Bookings_Customers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Therapists_TherapistId",
+                        column: x => x.TherapistId,
+                        principalTable: "Therapists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TherapistTreatmentType",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TherapistId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TreatmentTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TherapistTreatmentType", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TherapistTreatmentType_Therapists_TherapistId",
+                        column: x => x.TherapistId,
+                        principalTable: "Therapists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TherapistSchedule_BlockedSlots",
+                columns: table => new
+                {
+                    TherapistScheduleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TherapistSchedule_BlockedSlots", x => new { x.TherapistScheduleId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_TherapistSchedule_BlockedSlots_TherapistSchedule_TherapistScheduleId",
+                        column: x => x.TherapistScheduleId,
+                        principalTable: "TherapistSchedule",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -180,6 +280,31 @@ namespace BookRight.Infrastructure.Migrations
                 name: "IX_Bookings_CustomerId",
                 table: "Bookings",
                 column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_TherapistId",
+                table: "Bookings",
+                column: "TherapistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClinicOpeningHour_ClinicId",
+                table: "ClinicOpeningHour",
+                column: "ClinicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Therapists_ClinicId",
+                table: "Therapists",
+                column: "ClinicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TherapistSchedule_ClinicId",
+                table: "TherapistSchedule",
+                column: "ClinicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TherapistTreatmentType_TherapistId",
+                table: "TherapistTreatmentType",
+                column: "TherapistId");
         }
 
         /// <inheritdoc />
@@ -189,13 +314,16 @@ namespace BookRight.Infrastructure.Migrations
                 name: "BookingLines");
 
             migrationBuilder.DropTable(
-                name: "Clinics");
+                name: "ClinicOpeningHour");
 
             migrationBuilder.DropTable(
-                name: "Therapists");
+                name: "TherapistSchedule_BlockedSlots");
 
             migrationBuilder.DropTable(
-                name: "TreatmentType");
+                name: "TherapistTreatmentType");
+
+            migrationBuilder.DropTable(
+                name: "TreatmentTypes");
 
             migrationBuilder.DropTable(
                 name: "AddOn");
@@ -204,10 +332,19 @@ namespace BookRight.Infrastructure.Migrations
                 name: "Bookings");
 
             migrationBuilder.DropTable(
-                name: "CampaignDiscount");
+                name: "TherapistSchedule");
+
+            migrationBuilder.DropTable(
+                name: "CampaignDiscounts");
 
             migrationBuilder.DropTable(
                 name: "Customers");
+
+            migrationBuilder.DropTable(
+                name: "Therapists");
+
+            migrationBuilder.DropTable(
+                name: "Clinics");
         }
     }
 }

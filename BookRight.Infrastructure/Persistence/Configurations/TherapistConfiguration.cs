@@ -39,6 +39,17 @@ namespace BookRight.Infrastructure.Persistence.Configurations
                 .WithOne()
                 .HasForeignKey(q => q.TherapistId) // Shadow property for FK
                 .OnDelete(DeleteBehavior.Cascade); // Sletter kvalifikationer hvis terapeut slettes
+
+            builder.OwnsOne(t => t.Authorization, authorization =>
+            {
+                authorization.Property(a => a.Type)
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                authorization.Property(a => a.Number)
+                    .HasMaxLength(50)
+                    .IsRequired();
+            });
         }
     }
 }

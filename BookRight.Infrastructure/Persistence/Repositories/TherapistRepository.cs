@@ -21,7 +21,9 @@ namespace BookRight.Infrastructure.Persistence.Repositories
         }
         public async Task<Therapist?> GetByIdAsync(Guid id)
         {
-            return await _context.Therapists.FindAsync(id);
+            return await _context.Therapists
+            .Include(t => t.Qualifications)
+            .FirstOrDefaultAsync(t => t.Id == id); //Include QUlifications to ease edit
         }
 
         public async Task<bool> ExistsByEmailAsync(string email)

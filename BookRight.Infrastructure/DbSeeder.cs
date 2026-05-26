@@ -157,6 +157,7 @@ namespace BookRight.Infrastructure
                 new FullName("Hans", "Hansen"),
                 new Email("hansen@hans.com"),
                 "Massageterapeut",
+                new Authorization("Massage", "MAS-1001"),
                 clinic1.Id
             );
 
@@ -164,6 +165,7 @@ namespace BookRight.Infrastructure
                 new FullName("Lise", "Larsen"),
                 new Email("larsen@lise.com"),
                 "Fysioterapeut",
+                new Authorization("Autoriseret fysioterapeut", "FYS-1001"),
                 clinic1.Id
              );
 
@@ -171,6 +173,7 @@ namespace BookRight.Infrastructure
                 new FullName("Peter", "Pedersen"),
                 new Email("pedersen@peter.com"),
                 "Kostvejleder",
+                new Authorization("Kostvejledning", "KOS-1001"),
                 clinic1.Id
             );
 
@@ -178,6 +181,7 @@ namespace BookRight.Infrastructure
                 new FullName("Anna", "Andersen"),
                 new Email("andersen@anna.com"),
                 "Akupunktør",
+                new Authorization("Akupunktur", "AKU-1001"),
                 clinic1.Id
             );
 
@@ -187,6 +191,7 @@ namespace BookRight.Infrastructure
                 new FullName("Mette", "Madsen"),
                 new Email("madsen@mette.com"),
                 "Massageterapeut",
+                new Authorization("Massage", "MAS-1002"),
                 clinic2.Id
             );
 
@@ -194,6 +199,7 @@ namespace BookRight.Infrastructure
                 new FullName("Jens", "Jensen"),
                 new Email("jensen@jens.com"),
                 "Fysioterapeut",
+                new Authorization("Autoriseret fysioterapeut", "FYS-1002"),
                 clinic2.Id
             );
 
@@ -201,6 +207,7 @@ namespace BookRight.Infrastructure
                 new FullName("Sofie", "Sørensen"),
                 new Email("sørensen@sofie.com"),
                 "Kostvejleder",
+                new Authorization("Kostvejledning", "KOS-1002"),
                 clinic2.Id
             );
 
@@ -208,6 +215,7 @@ namespace BookRight.Infrastructure
                 new FullName("Lars", "Larsen"),
                 new Email("larsen@lars.com"),
                 "Akupunktør",
+                new Authorization("Akupunktur", "AKU-1003"),
                 clinic2.Id
             );
 
@@ -217,6 +225,7 @@ namespace BookRight.Infrastructure
                 new FullName("Kirsten", "Kristensen"),
                 new Email("kristensen@kirsten.com"),
                 "Massageterapeut",
+                new Authorization("Massage", "MAS-1003"),
                 clinic3.Id
             );
 
@@ -224,6 +233,7 @@ namespace BookRight.Infrastructure
                 new FullName("Ole", "Olsen"),
                 new Email("olsen@ole.com"),
                 "Fysioterapeut",
+                new Authorization("Autoriseret fysioterapeut", "FYS-1003"),
                 clinic3.Id
             );
 
@@ -231,6 +241,7 @@ namespace BookRight.Infrastructure
                 new FullName("Maria", "Møller"),
                 new Email("møller@maria.com"),
                 "Kostvejleder",
+                new Authorization("Kostvejledning", "KOS-1003"),
                 clinic3.Id
             );
 
@@ -238,6 +249,7 @@ namespace BookRight.Infrastructure
                 new FullName("Niels", "Nielsen"),
                 new Email("nielsen@niels.com"),
                 "Akupunktør",
+                new Authorization("Akupunktur", "AKU-1003"),
                 clinic3.Id
             );
 

@@ -1,8 +1,8 @@
 ﻿using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs;
 
-namespace BookRight.Facade.Interfaces.TreatmentTypeUseCase
+namespace BookRight.Facade.Interfaces.TreatmentTypesUseCase
 {
-    public interface IGetAllTreatmentTypeUseCase
+    public interface IGetAllTreatmentTypesUseCase
     {
         Task<IReadOnlyList<GetAllTreatmentTypesResponse>> ExecuteAsync();
     }

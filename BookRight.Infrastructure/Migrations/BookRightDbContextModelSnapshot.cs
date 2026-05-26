@@ -17,7 +17,7 @@ namespace BookRight.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -59,11 +59,16 @@ namespace BookRight.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<Guid>("TherapistId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CampaignDiscountId");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("TherapistId");
 
                     b.ToTable("Bookings", (string)null);
                 });
@@ -71,25 +76,18 @@ namespace BookRight.Infrastructure.Migrations
             modelBuilder.Entity("BookRight.Domain.Aggregates.CampaignDiscount.CampaignDiscount", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("DiscountPercent")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateOnly>("EndDate")
-                        .HasColumnType("date");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
-
                     b.HasKey("Id");
 
-                    b.ToTable("CampaignDiscount");
+                    b.ToTable("CampaignDiscounts");
                 });
 
             modelBuilder.Entity("BookRight.Domain.Aggregates.Clinic.Clinic", b =>
@@ -109,6 +107,31 @@ namespace BookRight.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Clinics");
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Aggregates.Clinic.ClinicOpeningHour", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<TimeOnly>("CloseTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("OpenTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.ToTable("ClinicOpeningHour");
                 });
 
             modelBuilder.Entity("BookRight.Domain.Aggregates.Customer.Customer", b =>
@@ -131,9 +154,12 @@ namespace BookRight.Infrastructure.Migrations
                     b.ToTable("Customers", (string)null);
                 });
 
-            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.Therapist", b =>
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.Therapist", b =>
                 {
                     b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClinicId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Specialization")
@@ -143,7 +169,54 @@ namespace BookRight.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClinicId");
+
                     b.ToTable("Therapists", (string)null);
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.TherapistSchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClinicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsWorking")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("TherapistId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
+
+                    b.ToTable("TherapistSchedule");
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.TherapistTreatmentType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("TherapistId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TreatmentTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TherapistId");
+
+                    b.ToTable("TherapistTreatmentType", (string)null);
                 });
 
             modelBuilder.Entity("BookRight.Domain.Aggregates.TreatmentType.TreatmentType", b =>
@@ -151,6 +224,9 @@ namespace BookRight.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("CanBeCombined")
+                        .HasColumnType("bit");
 
                     b.Property<int>("DurationMinutes")
                         .HasColumnType("int");
@@ -167,7 +243,7 @@ namespace BookRight.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TreatmentType");
+                    b.ToTable("TreatmentTypes");
                 });
 
             modelBuilder.Entity("BookRight.Domain.Aggregates.Booking.Booking", b =>
@@ -181,6 +257,31 @@ namespace BookRight.Infrastructure.Migrations
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("BookRight.Domain.Aggregates.TherapistAggregate.Therapist", null)
+                        .WithMany()
+                        .HasForeignKey("TherapistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("BookRight.Domain.ValueObjects.TimeSlot", "TimeSlot", b1 =>
+                        {
+                            b1.Property<Guid>("BookingId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime>("EndTime")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime>("StartTime")
+                                .HasColumnType("datetime2");
+
+                            b1.HasKey("BookingId");
+
+                            b1.ToTable("Bookings");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BookingId");
+                        });
 
                     b.OwnsMany("BookRight.Domain.Aggregates.Booking.BookingLine", "Lines", b1 =>
                         {
@@ -229,28 +330,36 @@ namespace BookRight.Infrastructure.Migrations
                             b1.Navigation("AddOn");
                         });
 
-                    b.OwnsOne("BookRight.Domain.ValueObjects.TimeSlot", "TimeSlot", b1 =>
-                        {
-                            b1.Property<Guid>("BookingId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<DateTime>("EndTime")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<DateTime>("StartTime")
-                                .HasColumnType("datetime2");
-
-                            b1.HasKey("BookingId");
-
-                            b1.ToTable("Bookings");
-
-                            b1.WithOwner()
-                                .HasForeignKey("BookingId");
-                        });
-
                     b.Navigation("Lines");
 
                     b.Navigation("TimeSlot")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Aggregates.CampaignDiscount.CampaignDiscount", b =>
+                {
+                    b.OwnsOne("BookRight.Domain.ValueObjects.DateRange", "DateRange", b1 =>
+                        {
+                            b1.Property<Guid>("CampaignDiscountId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateOnly>("EndDate")
+                                .HasColumnType("date")
+                                .HasColumnName("EndDate");
+
+                            b1.Property<DateOnly>("StartDate")
+                                .HasColumnType("date")
+                                .HasColumnName("StartDate");
+
+                            b1.HasKey("CampaignDiscountId");
+
+                            b1.ToTable("CampaignDiscounts");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CampaignDiscountId");
+                        });
+
+                    b.Navigation("DateRange")
                         .IsRequired();
                 });
 
@@ -286,7 +395,8 @@ namespace BookRight.Infrastructure.Migrations
 
                             b1.Property<string>("PostalCode")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(100)
+                                .HasColumnType("nvarchar(100)");
 
                             b1.Property<string>("Street")
                                 .IsRequired()
@@ -305,6 +415,15 @@ namespace BookRight.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Phone")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Aggregates.Clinic.ClinicOpeningHour", b =>
+                {
+                    b.HasOne("BookRight.Domain.Aggregates.Clinic.Clinic", null)
+                        .WithMany("OpeningHours")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -379,8 +498,14 @@ namespace BookRight.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BookRight.Domain.Aggregates.Therapist.Therapist", b =>
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.Therapist", b =>
                 {
+                    b.HasOne("BookRight.Domain.Aggregates.Clinic.Clinic", null)
+                        .WithMany("Therapists")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsOne("BookRight.Domain.ValueObjects.Email", "Email", b1 =>
                         {
                             b1.Property<Guid>("TherapistId")
@@ -422,11 +547,96 @@ namespace BookRight.Infrastructure.Migrations
                                 .HasForeignKey("TherapistId");
                         });
 
+                    b.OwnsOne("BookRight.Domain.ValueObjects.Authorization", "Authorization", b1 =>
+                        {
+                            b1.Property<Guid>("TherapistId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Number")
+                                .IsRequired()
+                                .HasMaxLength(50)
+                                .HasColumnType("nvarchar(50)");
+
+                            b1.Property<string>("Type")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("nvarchar(100)");
+
+                            b1.HasKey("TherapistId");
+
+                            b1.ToTable("Therapists");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TherapistId");
+                        });
+
+                    b.Navigation("Authorization")
+                        .IsRequired();
+
                     b.Navigation("Email")
                         .IsRequired();
 
                     b.Navigation("Name")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.TherapistSchedule", b =>
+                {
+                    b.HasOne("BookRight.Domain.Aggregates.Clinic.Clinic", null)
+                        .WithMany("TherapistSchedules")
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("BookRight.Domain.ValueObjects.TimeSlot", "BlockedSlots", b1 =>
+                        {
+                            b1.Property<Guid>("TherapistScheduleId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<DateTime>("EndTime")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime>("StartTime")
+                                .HasColumnType("datetime2");
+
+                            b1.HasKey("TherapistScheduleId", "Id");
+
+                            b1.ToTable("TherapistSchedule_BlockedSlots");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TherapistScheduleId");
+                        });
+
+                    b.Navigation("BlockedSlots");
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.TherapistTreatmentType", b =>
+                {
+                    b.HasOne("BookRight.Domain.Aggregates.TherapistAggregate.Therapist", null)
+                        .WithMany("Qualifications")
+                        .HasForeignKey("TherapistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Aggregates.Clinic.Clinic", b =>
+                {
+                    b.Navigation("OpeningHours");
+
+                    b.Navigation("TherapistSchedules");
+
+                    b.Navigation("Therapists");
+                });
+
+            modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.Therapist", b =>
+                {
+                    b.Navigation("Qualifications");
                 });
 #pragma warning restore 612, 618
         }
