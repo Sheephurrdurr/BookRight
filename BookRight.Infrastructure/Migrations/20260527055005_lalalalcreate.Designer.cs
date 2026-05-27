@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookRight.Infrastructure.Migrations
 {
     [DbContext(typeof(BookRightDbContext))]
-    [Migration("20260526194042_InitialCreateMonaFinal")]
-    partial class InitialCreateMonaFinal
+    [Migration("20260527055005_lalalalcreate")]
+    partial class lalalalcreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -243,6 +243,9 @@ namespace BookRight.Infrastructure.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("RequiredSpecialization")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

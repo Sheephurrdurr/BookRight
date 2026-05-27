@@ -34,12 +34,15 @@ using BookRight.UseCases.MarkBookingArrived;
 using BookRight.UseCases.MarkBookingAsNoShow;
 using BookRight.UseCases.MarkBookingCompleted;
 using BookRight.UseCases.RestoreBookingFromNoShow;
+using BookRight.UseCases.DeleteTreatmentType;
 using BookRight.UseCases.CampaignDiscountUseCases;
 using BookRight.UseCases.GetAllTreatmentTypes;
 using BookRight.UseCases.GetAllCampaignDiscounts;
 using BookRight.UseCases.CreateTreatmentType;
 using BookRight.UseCases.UpdateTherapist;
 using Microsoft.EntityFrameworkCore;
+using BookRight.Facade.Interfaces.TreatmentTypeUseCase;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,6 +100,8 @@ builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
 builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
 builder.Services.AddScoped<IGetAllCampaignDiscountsUseCase, GetAllCampaignDiscountsUseCase>();
 builder.Services.AddScoped<IUpdateTherapistUseCase, UpdateTherapistUseCase>();
+builder.Services.AddScoped<ICreateTreatmentTypeUseCase, CreateTreatmentTypeUseCase>();
+builder.Services.AddScoped<IDeleteTreatmentTypeUseCase, DeleteTreatmentTypeUseCase>();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

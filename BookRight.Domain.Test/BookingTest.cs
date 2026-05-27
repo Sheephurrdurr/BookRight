@@ -1,9 +1,10 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
-using BookRight.Domain.ValueObjects;
-using BookRight.Domain.Enums;
-using BookRight.Domain.Aggregates.Customer;
-using BookRight.Domain.Services.DiscountStrategies;
 using BookRight.Domain.Aggregates.CampaignDiscount;
+using BookRight.Domain.Aggregates.Customer;
+using BookRight.Domain.Enums;
+using BookRight.Domain.Services;
+using BookRight.Domain.Services.DiscountStrategies;
+using BookRight.Domain.ValueObjects;
 namespace BookRight.Domain.Test
 {
 	public class BookingTest

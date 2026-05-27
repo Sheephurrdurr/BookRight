@@ -71,7 +71,7 @@ namespace BookRight.Infrastructure
                 60,
                 1,
                 new Money(699),
-                true
+                true,
                 null
             );
 
