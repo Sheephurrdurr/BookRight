@@ -1,0 +1,30 @@
+﻿.br-line-item {
+    display: flex;
+    align-items:center;
+    padding:.4rem 0;
+    border-bottom:1px solid #fff;
+    font-size:.8rem;
+}
+
+.br-summary-row{
+    display:flex;
+    justify-content:space-between;
+    padding:.5rem;
+    border-bottom:1px solid #fff;
+    font-size:.8rem;
+}
+
+.br-line-item:last-child {
+    border-bottom:none;
+}
+.br-line-item span:first-child {
+    flex:1;
+}
+
+.br-slot-status{
+    padding: .4rem .75rem;
+    border-radius:5px;
+    font-size:.8rem;
+    margin-top:.5rem;
+}
+

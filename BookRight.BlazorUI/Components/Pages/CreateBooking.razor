@@ -71,14 +71,7 @@
 							@bookingMessage
 						</div>
 					}
-                    @if (lastResponse != null && lastResponse.Success) 
-                    {
-                        <div>
-                            <p>Oprindelig pris: @lastResponse.OriginalPrice.ToString("F2") kr.</p>
-                            <p>Rabattype: @lastResponse.DiscountType</p>
-                            <p>Pris efter rabat: @lastResponse.DiscountedPrice.ToString("F2") kr.</p>
-                        </div>
-                    }
+                 
                     </div>
                 </div>
             </section>
@@ -190,6 +183,7 @@
 
     private async Task HandleCreateBooking()
     {
+
         if (string.IsNullOrEmpty(selectedCustomerId) ||
             string.IsNullOrEmpty(selectedTherapistId) ||
             string.IsNullOrEmpty(selectedClinicId))
