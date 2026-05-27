@@ -41,6 +41,7 @@ using BookRight.UseCases.GetAllTreatmentTypes;
 using BookRight.UseCases.GetAllCampaignDiscounts;
 using BookRight.UseCases.CreateTreatmentType;
 using BookRight.UseCases.UpdateTherapist;
+using BookRight.UseCases.GetClinicById;
 using Microsoft.EntityFrameworkCore;
 using BookRight.Facade.Interfaces.TreatmentTypeUseCase;
 
@@ -103,6 +104,7 @@ builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
 builder.Services.AddScoped<ICreateClinicUseCase, CreateClinicUseCase>();
 builder.Services.AddScoped<IGetAllCampaignDiscountsUseCase, GetAllCampaignDiscountsUseCase>();
 builder.Services.AddScoped<IUpdateTherapistUseCase, UpdateTherapistUseCase>();
+builder.Services.AddScoped<IGetClinicByIdUseCase, GetClinicByIdUseCase>();
 builder.Services.AddScoped<ICreateTreatmentTypeUseCase, CreateTreatmentTypeUseCase>();
 builder.Services.AddScoped<IDeleteTreatmentTypeUseCase, DeleteTreatmentTypeUseCase>();
 var app = builder.Build();
