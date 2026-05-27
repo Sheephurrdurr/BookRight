@@ -1,0 +1,33 @@
+﻿@using BookRight.Facade.DTOs.GetAllTherapistTreatmentTypesDTOs
+<div class="mt-4">
+	<label class="form-label fw-semibold">Behandlingstype</label>
+	<select class="form-select" value="@SelectedTreatmentTypeId" @onchange="OnChanged">
+		<option value="">-- Vælg Behandling --</option>
+		@foreach (var ttt in FilteredTreatmentTypes)
+		{
+			<option value="@ttt.Id">@ttt.TreatmentTypeName - @ttt.BasePrice kr. (@ttt.DurationMinutes min.)</option>
+		}
+	</select>
+</div>
+
+@code {
+	[Parameter, EditorRequired]
+	public IReadOnlyList<GetAllTherapistTreatmentTypesResponse> FilteredTreatmentTypes { get; set; } = [];
+
+	[Parameter]
+	public string SelectedTreatmentTypeId { get; set; } = "";
+
+	[Parameter]
+	public EventCallback<string> SelectedTreatmentTypeIdChanged { get; set; }
+
+	[Parameter]
+	public EventCallback<string> OnTreatmentTypeSelected { get; set; }
+
+
+	private async Task OnChanged(ChangeEventArgs e)
+	{
+		var newValue = e.Value?.ToString() ?? "";
+		await SelectedTreatmentTypeIdChanged.InvokeAsync(newValue);
+		await OnTreatmentTypeSelected.InvokeAsync(newValue);
+	}
+}

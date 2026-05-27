@@ -1,0 +1,39 @@
+﻿@using BookRight.Facade.DTOs.CreateBookingDTOs
+
+@if (Response is not null)
+{
+    @if (Response.Success)
+    {
+        <div class="card border-success">
+            <div class="card-header bg-success text-white fw-semibold">
+                Booking er oprettet!
+            </div>
+       
+            <div class="card-body p-3">
+                <div class="br-summary-row">
+                    <span class="text-muted">Oprindelig pris: @Response.OriginalPrice.ToString("F2") kr.</span>
+                </div>
+
+                <div class="br-summary-row">
+                    <span class="text-muted">Rabattype:</span>
+                    <span>@(string.IsNullOrEmpty(Response.DiscountType) ? "Ingen" : Response.DiscountType)</span>
+                </div>
+
+                <div class="br-summary-row">
+                    <span>Pris efter rabat</span>
+                    <span class="text-success">@Response.DiscountedPrice.ToString("F2") kr.</span>
+                </div>
+                
+            </div>
+        </div>
+    }
+    else
+    {
+        <div>@Response.Message</div>
+    }
+}
+
+@code {
+    [Parameter]
+    public CreateBookingResponse? Response { get; set; }
+}
