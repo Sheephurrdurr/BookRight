@@ -54,8 +54,26 @@
                         Therapists="filteredTherapists"
                         @bind-SelectedTherapistId="selectedTherapistId" />
 
+                    <button class="btn btn-outline-secondary text-dark btn-sm mt-2 mb-3" 
+                            @onclick="AddLine" disabled="@(string.IsNullOrEmpty(selectedTreatmentTypeId) || string.IsNullOrEmpty(selectedTherapistId))">Tilføj Behandling</button>
 
-         
+                    @if (selectedLines.Any()) {
+                          <div class="border rounded p-2 mb-3 bg-light">
+                              <p class="small text-muted mb-2 fw-semibold">Valgte behandlinger</p>
+                              <ul class="list-unstyled mb-0">
+                                  @foreach (var line in selectedLines) 
+                                  {
+                                      var name = uniqueTreatmentTypes
+                                        .FirstOrDefault(t => t.Id == line.TherapistTreatmentTypeId)?.TreatmentTypeName ?? "";
+                                    <li class="br-line-item">
+                                        <span>@name</span>
+                                        <span class="text-success fw-semibold">@line.BasePrice.ToString("F0") kr.</span>
+                                        <button class="btn btn-sm btn-link text-danger p-0" @onclick="() => RemoveLine(line)">✕</button>
+                                    </li>
+                                  }
+                              </ul>
+                          </div>
+                        }
 
                   <CampaignSelector 
                       CampaignDiscounts="campaignDiscounts"
@@ -69,7 +87,7 @@
                        OnSlotChanged="HandleSlotChanged"/>
 
                     <button class="btn btn-primary mt-4" @onclick="HandleCreateBooking">Opret Booking</button>
-
+                  
 					@if (!string.IsNullOrEmpty(bookingMessage))
 					{
 						<div class="@bookingAlertClass mt-3">
@@ -92,6 +110,7 @@
 </div>
 
 @code {
+    private List<BookingLineRequest> selectedLines = [];
     private string selectedCustomerId = "";
     private string selectedClinicId = "";
     private string selectedTreatmentTypeId = "";
@@ -173,6 +192,30 @@
         var response = await GetGroupSlotAvailabilityUseCase.ExecuteAsync(request);
         remainingSlots = response.RemainingSlots;
         isFullyBooked = response.IsFullyBooked;
+    }
+
+    	private void AddLine()
+	{
+		if (string.IsNullOrEmpty(selectedTreatmentTypeId) ||
+			string.IsNullOrEmpty(selectedTherapistId)) return;
+
+        var ttt = allTherapistTreatmentTypes
+            .FirstOrDefault(t => t.Id.ToString() == selectedTreatmentTypeId);
+        if (ttt is null) return;
+
+        selectedLines.Add(new BookingLineRequest{
+            TherapistTreatmentTypeId = ttt.Id,
+            BasePrice = ttt.BasePrice
+        });
+
+        selectedTreatmentTypeId = "";
+        selectedTherapistId = "";
+        filteredTherapists = [];
+		
+	}
+
+    private void RemoveLine(BookingLineRequest line) {
+        selectedLines.Remove(line);
     }
 
     private async Task HandleCreateBooking()
