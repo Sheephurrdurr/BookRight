@@ -1,8 +1,8 @@
 ﻿@using BookRight.Facade.DTOs.GetAllCampaignDiscountsDTOs
 <div class="mt-4">
-	<label>Kampagnerabat (valgfri)</label>
+    <label class="form-label fw-semibold">Kampagnerabat (valgfri)</label>
 
-    <select class="form-select" @bind="SelectedCampaignDiscountId">
+    <select class="form-select" value="@SelectedCampaignDiscountId" @onchange="OnChanged">
         <option value="">-- Ingen kampagne --</option>
         @foreach (var campaign in CampaignDiscounts)
         {
@@ -22,10 +22,10 @@
     public string SelectedCampaignDiscountId { get; set; }
 
     [Parameter]
-    public EventCallback<string> SelectedCampaignDiscountChanged { get; set; }
+    public EventCallback<string> SelectedCampaignDiscountIdChanged { get; set; }
 
     public async Task OnChanged(ChangeEventArgs e)
     {
-        await SelectedCampaignDiscountChanged.InvokeAsync(e.Value?.ToString() ?? "");
+        await SelectedCampaignDiscountIdChanged.InvokeAsync(e.Value?.ToString() ?? "");
     }
 }

@@ -2,7 +2,7 @@
 
 
 <div class="mt-4">
-	<label>Klinik</label>
+    <label class="form-label fw-semibold">Klinik</label>
     <select class="form-select" value="@SelectedClinicId" @onchange="OnChanged">
         <option value="">-- Vælg Klinik --</option>
         @foreach (var clinic in Clinics)
@@ -20,10 +20,10 @@
     public string SelectedClinicId { get; set; }
 
     [Parameter]
-    public EventCallback<string> SelectedClinicChanged { get; set; }
+    public EventCallback<string> SelectedClinicIdChanged { get; set; }
 
     public async Task OnChanged(ChangeEventArgs e)
     {
-        await SelectedClinicChanged.InvokeAsync(e.Value?.ToString() ?? "");
+        await SelectedClinicIdChanged.InvokeAsync(e.Value?.ToString() ?? "");
     }
 }

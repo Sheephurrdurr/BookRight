@@ -1,8 +1,8 @@
 ﻿@using BookRight.Facade.DTOs.GetAllCustomersDTOs
 
 
-<div class="mb-3">
-	<label>Kunde</label>
+<div class="mt-4">
+    <label class="form-label fw-semibold">Kunde</label>
     <select class="form-select" value="@SelectedCustomerId" @onchange="OnChanged">
         <option value="">-- Vælg Kunde --</option>
         @foreach (var customer in Customers)
@@ -21,10 +21,10 @@
     public string SelectedCustomerId { get; set; } = "";
 
     [Parameter]
-    public EventCallback<string> selectedCustomerIdChanged { get; set; }
+    public EventCallback<string> SelectedCustomerIdChanged { get; set; }
 
     private async Task OnChanged(ChangeEventArgs e)
     {
-        await selectedCustomerIdChanged.InvokeAsync(e.Value?.ToString() ?? "");
+        await SelectedCustomerIdChanged.InvokeAsync(e.Value?.ToString() ?? "");
     }
 }

@@ -1,0 +1,29 @@
+﻿@using BookRight.Facade.DTOs.GetAllTherapistsDTOs
+
+
+<div class="mt-4">
+	<label class="form-label fw-semibold">Behandler</label>
+	<select class="form-select" value="@SelectedTherapistId" @onchange="OnChanged">
+		<option value="">-- Vælg Behandler --</option>
+		@foreach (var therapist in Therapists)
+		{
+			<option value="@therapist.Id">@therapist.FirstName @therapist.LastName</option>
+		}
+	</select>
+</div>
+
+@code {
+	[Parameter, EditorRequired]
+	public IReadOnlyList<GetAllTherapistsResponse> Therapists { get; set; } = [];
+
+	[Parameter]
+	public string SelectedTherapistId { get; set; }
+
+	[Parameter]
+	public EventCallback<string> SelectedTherapistIdChanged { get; set; }
+
+	private async Task OnChanged(ChangeEventArgs e)
+	{
+		await SelectedTherapistIdChanged.InvokeAsync(e.Value?.ToString() ?? "");
+	}
+}

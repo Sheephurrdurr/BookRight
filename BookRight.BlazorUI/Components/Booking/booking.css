@@ -1,16 +1,9 @@
 ﻿.br-line-item {
     display: flex;
     align-items:center;
+    gap: .75rem;
     padding:.4rem 0;
-    border-bottom:1px solid #fff;
-    font-size:.8rem;
-}
-
-.br-summary-row{
-    display:flex;
-    justify-content:space-between;
-    padding:.5rem;
-    border-bottom:1px solid #fff;
+    border-bottom:1px solid #dee2e6;
     font-size:.8rem;
 }
 
@@ -23,8 +16,29 @@
 
 .br-slot-status{
     padding: .4rem .75rem;
-    border-radius:5px;
+    border-radius:.375rem;
     font-size:.8rem;
     margin-top:.5rem;
+}
+
+@media (min-width: 768px) {
+    .br-summary-aside {
+        position:sticky;
+        top:1.5rem;
+    }
+}
+
+.br-summary-row{
+    display:flex;
+    justify-content:space-between;
+    padding: .5rem 0;
+    border-bottom: 1px solid #fff;
+    font-size: 1rem;
+}
+
+.br-summary-row:last-child{
+    border-bottom:none;
+    font-weight:700;
+    font-size:1rem;
 }
 
