@@ -56,5 +56,11 @@ namespace BookRight.Domain.Aggregates.Clinic
             Phone = phone;
             NumTreatmentRooms = numTreatmentRooms;
         }
+
+        // Metode: bruges til at tilføje en åbningstid for klinikken i UI
+        public void AddOpeningHour(DayOfWeek dayOfWeek, TimeOnly openTime, TimeOnly closeTime)
+        {
+            _openingHours.Add(new ClinicOpeningHour(Id, dayOfWeek, openTime, closeTime));
+        }
     }
 }

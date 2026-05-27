@@ -23,6 +23,14 @@ namespace BookRight.UseCases.CreateClinic
                 new PhoneNumber(request.Phone),
                 request.NumTreatmentRooms);
 
+            foreach (var openingHour in request.OpeningHours) 
+            {
+                clinic.AddOpeningHour(
+                    openingHour.DayOfWeek,
+                    openingHour.OpenTime,
+                    openingHour.CloseTime);
+            }
+
             await _repository.CreateAsync(clinic);
 
             return new CreateClinicResponse(clinic.Id);

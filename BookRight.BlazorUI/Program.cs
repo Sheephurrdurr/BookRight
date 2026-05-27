@@ -36,6 +36,7 @@ using BookRight.UseCases.MarkBookingAsNoShow;
 using BookRight.UseCases.MarkBookingCompleted;
 using BookRight.UseCases.RestoreBookingFromNoShow;  
 using BookRight.UseCases.UpdateTherapist;
+using BookRight.UseCases.GetClinicById;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -96,6 +97,7 @@ builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
 builder.Services.AddScoped<ICreateClinicUseCase, CreateClinicUseCase>();
 builder.Services.AddScoped<IGetAllCampaignDiscountsUseCase, GetAllCampaignDiscountsUseCase>();
 builder.Services.AddScoped<IUpdateTherapistUseCase, UpdateTherapistUseCase>();
+builder.Services.AddScoped<IGetClinicByIdUseCase, GetClinicByIdUseCase>();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
