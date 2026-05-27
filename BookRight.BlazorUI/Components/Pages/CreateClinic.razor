@@ -1,5 +1,5 @@
 ﻿@page "/opret-klinik"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @using BookRight.Facade.DTOs.CreateClinicDTOs
 @using BookRight.Facade.Interfaces.ClinicsUseCases
