@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BookRight.Facade.DTOs.RestoreBookingFromNoShowDTOs
+﻿namespace BookRight.Facade.DTOs.RestoreBookingFromNoShowDTOs
 {
     // Request DTO used to restore a NoShow booking.
     public record RestoreBookingFromNoShowRequest(Guid BookingId);
