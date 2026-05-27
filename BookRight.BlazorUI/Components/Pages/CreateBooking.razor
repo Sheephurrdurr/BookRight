@@ -222,8 +222,8 @@
     {
 
         if (string.IsNullOrEmpty(selectedCustomerId) ||
-            string.IsNullOrEmpty(selectedTherapistId) ||
-            string.IsNullOrEmpty(selectedClinicId))
+            string.IsNullOrEmpty(selectedClinicId) ||
+            !selectedLines.Any())
         {
             bookingMessage = "Alle felter skal udfyldes før booking kan oprettes.";
             bookingAlertClass = "alert alert-danger";
