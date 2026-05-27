@@ -62,7 +62,8 @@ namespace BookRight.Infrastructure
                 30, // Duration in minutes
                 1, // Max participants
                 new Money(350),// Price for the treatment
-                true // Can be combined with other treatments?
+                true, // Can be combined with other treatments?
+                null //Required specialization, can be null, which is what we'll use for the prototype due to "canbecombined"
             );
 
             var treatmentType2 = new TreatmentType(
@@ -70,7 +71,8 @@ namespace BookRight.Infrastructure
                 60,
                 1,
                 new Money(699),
-                true
+                true,
+                null
             );
 
             var treatmentType3 = new TreatmentType(
@@ -78,7 +80,8 @@ namespace BookRight.Infrastructure
                 30,
                 1,
                 new Money(395),
-                true
+                true,
+                null
             );
 
             var treatmentType4 = new TreatmentType(
@@ -86,7 +89,8 @@ namespace BookRight.Infrastructure
                 45,
                 1,
                 new Money(589),
-                true
+                true,
+                null
             );
 
             var treatmentType5 = new TreatmentType(
@@ -94,7 +98,8 @@ namespace BookRight.Infrastructure
                 60,
                 1,
                 new Money(745),
-                true
+                true,
+                null
             );
 
             var treatmentType6 = new TreatmentType(
@@ -102,7 +107,8 @@ namespace BookRight.Infrastructure
                 60,
                 1,
                 new Money(799),
-                false
+                false,
+                null
             );
 
             var treatmentType7 = new TreatmentType(
@@ -110,7 +116,8 @@ namespace BookRight.Infrastructure
                 30,
                 1,
                 new Money(450),
-                false
+                false,
+                null
             );
 
             var treatmentType8 = new TreatmentType(
@@ -118,7 +125,8 @@ namespace BookRight.Infrastructure
                 45,
                 1,
                 new Money(550),
-                false
+                false,
+                null
             );
 
             var treatmentType9 = new TreatmentType(
@@ -126,7 +134,8 @@ namespace BookRight.Infrastructure
                 60,
                 6, // Max participants for group training
                 new Money(150),
-                false
+                false,
+                null
             );
 
             // Add the treatment types to the database context
