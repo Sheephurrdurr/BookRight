@@ -3,6 +3,7 @@ using BookRight.Domain.Aggregates.Booking;
 using BookRight.UseCases.Interfaces;
 using BookRight.Domain.Enums;
 using BookRight.Domain.ValueObjects;
+using System.Reflection.Metadata.Ecma335;
 
 namespace BookRight.Infrastructure.Persistence.Repositories
 {
@@ -26,6 +27,18 @@ namespace BookRight.Infrastructure.Persistence.Repositories
         {
             return await _context.Bookings
                 .Include(b => b.Lines)
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<Booking>> GetByWeekAsync(DateOnly weekStart)
+        {
+            var start = weekStart.ToDateTime(TimeOnly.MinValue);
+            var end = start.AddDays(7);
+
+            return await _context.Bookings
+                .Include(b => b.Lines)
+                .Where(b => b.TimeSlot.StartTime >= start &&
+                       b.TimeSlot.StartTime < end)
                 .ToListAsync();
         }
 
