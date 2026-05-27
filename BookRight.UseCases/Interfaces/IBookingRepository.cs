@@ -7,6 +7,7 @@ namespace BookRight.UseCases.Interfaces
     {
         Task<Booking?> GetByIdAsync(Guid bookingId);
         Task<IReadOnlyList<Booking>> GetAllAsync();
+        Task<IReadOnlyList<Booking>> GetByWeekAsync(DateOnly weekStart);
         Task<IReadOnlyList<Booking>> GetByCustomerIdAsync(Guid customerId);
         Task<IReadOnlyList<Booking>> GetAllBookingsByCustomerIdAsync(Guid customerId);
         Task<IReadOnlyList<Booking>> GetByTherapistIdAsync(Guid therapistId);

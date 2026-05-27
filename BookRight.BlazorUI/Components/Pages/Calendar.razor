@@ -1,0 +1,171 @@
+﻿@page "/kalender"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using BookRight.Facade.DTOs.GetBookingsByWeekDTOs;
+@using BookRight.Facade.Interfaces.BookingUseCases;
+
+@inject IGetByWeekUseCase GetByWeekUseCase;
+
+<PageTitle>Kalender</PageTitle>
+
+<div class="container-fluid mt-3">
+	<div class="d-flex align-items-center justify-content-between mb-3">
+		<h1 class="mb-0">Kalender</h1>
+		<div class="d-flex gap-2 align-items-center">
+			<button class="btn btn-outline-secondary btn-sm" @onclick="PreviousWeek">Forrige Uge</button>
+			<span class="fw-semibold">@WeekStart.ToString("dd. MMM") - @WeekStart.AddDays(6).ToString("dd. MMM yyyy")</span>
+			<button class="btn btn-outline-secondary btn-sm" @onclick="NextWeek">Næste Uge</button>
+			<button class="btn btn-outline-secondary btn-sm" @onclick="GoToToday">I dag</button>
+		</div>
+	</div>
+
+	<div class="calendar-shell">
+		@*Time*@
+		<div class="calendar-time-col">
+			<div class="calendar-time-header"></div>
+			@for (int h = StartHour; h <= EndHour; h++)
+			{
+				<div class="calendar-time-label">@h.ToString("00"):00</div>
+			}
+		</div>
+
+		@*Day*@
+		<div class="calendar-days-col">
+			<div class="calendar-day-headers">
+				@for (int i = 0; i < 7; i++)
+				{
+					var day = WeekStart.AddDays(i);
+					var isToday = day == DateOnly.FromDateTime(DateTime.Today);
+					<div class="calendar-day-header @(isToday ? "calendar-today" : "")">
+						<div class="calendar-day-name">@DayName(i)</div>
+						<div class="cal-day-date @(isToday ? "calendar-today-badge" : "")">@day.ToString("dd/MM")</div>
+					</div>
+				}
+			</div>
+
+			@*Grid*@
+			@{
+				var totalHeight = $"{TotalHeight}px";
+			}
+			<div class="calendar-grid-wrapper" style="height: @(TotalHeight)px;">
+				@*Create the lines to mark hours*@
+				@for (int h = StartHour; h <= EndHour; h++)
+				{
+					<div class="calendar-hour-line" style="top: @Px(HourToTop(h));"></div>
+				}
+				<div class="calendar-grid" style="height: @(TotalHeight)px;">
+					@*"day-track"*@
+					@for (int d = 0; d < 7; d++)
+					{
+						var day = WeekStart.AddDays(d);
+						var dayBookings = bookings
+							.Where(b => DateOnly.FromDateTime(b.StartTime) == day)
+							.ToList();
+						<div class="calendar-day-track @(day == DateOnly.FromDateTime(DateTime.Today) ? "today" : "")" style="height: @(TotalHeight)px;">
+							@foreach (var booking in dayBookings)
+							{
+								var top = TimeToTop(booking.StartTime);
+								var height = Math.Max(DurationToHeight(booking.StartTime, booking.EndTime), 28);
+								var color = StatusToColor(booking.Status);
+
+								<div class="calendar-booking" style="top: @Px(top); height: @Px(height); background: @color;">
+									<div class="calendar-booking-time">
+										@booking.StartTime.ToString("HH:mm") - @booking.EndTime.ToString("HH:mm")
+									</div>
+									<div class="calendar-booking-status">@booking.Status</div>
+								</div>
+							}
+						</div>
+					}
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+	private const int StartHour = 8;
+	private const int EndHour = 18;
+	private const int HourHeight = 80;
+	private int TotalHeight => (EndHour - StartHour + 1) * HourHeight;
+
+	private DateOnly WeekStart = GetCurrentWeekMonday();
+	private IReadOnlyList<GetByWeekResponse> bookings = [];
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadBookings();
+	}
+
+	private async Task LoadBookings()
+	{
+		bookings = await GetByWeekUseCase.ExecuteAsync(WeekStart);
+	}
+
+	private async Task PreviousWeek()
+	{
+		WeekStart = WeekStart.AddDays(-7);
+		await LoadBookings();
+	}
+
+	private async Task NextWeek()
+	{
+		WeekStart = WeekStart.AddDays(7);
+		await LoadBookings();
+	}
+
+	private async Task GoToToday()
+	{
+		WeekStart = GetCurrentWeekMonday();
+		await LoadBookings();
+	}
+
+	private double TimeToTop(DateTime time)
+	{
+		return (time.Hour - StartHour + time.Minute / 60.0) * HourHeight;
+	}
+
+	private double DurationToHeight(DateTime start, DateTime end)
+	{
+		return (end - start).TotalMinutes / 60.0 * HourHeight;
+	}
+
+	private double HourToTop(int hour)
+	{
+		return (hour - StartHour) * HourHeight;
+	}
+
+	private static DateOnly GetCurrentWeekMonday()
+	{
+		var today = DateOnly.FromDateTime(DateTime.Today);
+		int diff = (7 + (int)today.DayOfWeek - (int)DayOfWeek.Monday) % 7;
+		return today.AddDays(-diff);
+	}
+
+	private static string DayName(int dayIndex) => dayIndex switch
+	{
+		0 => "Mandag",
+		1 => "Tirsdag",
+		2 => "Onsdag",
+		3 => "Torsdag",
+		4 => "Fredag",
+		5 => "Lørdag",
+		6 => "Søndag",
+		_ => ""
+	};
+
+	private static string StatusToColor(string status) => status switch
+	{
+		"Confirmed" => "#378ADD",
+		"Arrived" => "#4caf50",
+		"Completed" => "#639922",
+		"NoShow" => "#9ca3af",
+		"Cancelled" => "#e53e3e",
+		_ => "#4378ADD"
+	};
+
+	private static string Px(double value)
+	{
+		return $"{value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px";
+	}
+}
