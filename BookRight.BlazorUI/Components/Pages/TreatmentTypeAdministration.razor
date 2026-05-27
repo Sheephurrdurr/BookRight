@@ -1,0 +1,47 @@
+﻿@page "/behandlingstype"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using BookRight.Facade.Interfaces.TreatmentTypeUseCase
+@using BookRight.Facade.Interfaces.TreatmentTypesUseCase
+@using BookRight.Facade.DTOs.CreateTreatmentTypeDTOs
+@using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
+@inject ICreateTreatmentTypeUseCase CreateTreatmentTypeUseCase
+@inject IGetAllTreatmentTypesUseCase GetAllTreatmentTypesUseCase
+
+<PageTitle>Behandlingstype</PageTitle>
+
+<main class="container mt-4">
+    <h3 class="ms-3">Administrer behandlingstyper</h3>
+    <article class="card mb-4">
+            <h4 class ="ms-3 mt-3">Opret ny behandlingstype</h4>
+        <div class="card-body p-4">
+            <div class="mb-3">
+                <label class="form-label">Navn</label>
+                <input class="form-control" @bind="_treatmentTypeName" placeholder="Skriv ind navn her..." />
+                <label class="form-label">Varighed</label>
+                <input class="form-control" type="number" @bind="_treatmentTypeDuration" min="1" placeholder="Skriv ind varighed her..." />
+                <label class="form-label">Varighed</label>
+                <input class="form-control" type="number" @bind="_maxParticipants" min="1" placeholder="Skriv ind max andtal personer her..." />
+                <label class="form-label">Pris</label>
+                <input class="form-control" type="number" @bind="_price" min="1" placeholder="Skriv ind pris her..." />
+
+            
+            </div>
+        </div>
+    </article>
+</main>
+
+
+
+
+
+
+
+
+@code {
+
+    private string _treatmentTypeName = "";
+    private int _treatmentTypeDuration;
+    private int _maxParticipants;
+    private decimal _price;
+    private bool _canBeCombined;
+}

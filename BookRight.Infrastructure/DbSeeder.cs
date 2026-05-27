@@ -62,7 +62,8 @@ namespace BookRight.Infrastructure
                 30, // Duration in minutes
                 1, // Max participants
                 new Money(350),// Price for the treatment
-                true // Can be combined with other treatments?
+                true, // Can be combined with other treatments?
+                null //Required specialization, can be null, which is what we'll use for the prototype due to "canbecombined"
             );
 
             var treatmentType2 = new TreatmentType(
@@ -70,7 +71,8 @@ namespace BookRight.Infrastructure
                 60,
                 1,
                 new Money(699),
-                true
+                true,
+                null
             );
 
             var treatmentType3 = new TreatmentType(
@@ -78,7 +80,8 @@ namespace BookRight.Infrastructure
                 30,
                 1,
                 new Money(395),
-                true
+                true,
+                null
             );
 
             var treatmentType4 = new TreatmentType(
@@ -86,7 +89,8 @@ namespace BookRight.Infrastructure
                 45,
                 1,
                 new Money(589),
-                true
+                true,
+                null
             );
 
             var treatmentType5 = new TreatmentType(
@@ -94,7 +98,8 @@ namespace BookRight.Infrastructure
                 60,
                 1,
                 new Money(745),
-                true
+                true,
+                null
             );
 
             var treatmentType6 = new TreatmentType(
@@ -102,7 +107,8 @@ namespace BookRight.Infrastructure
                 60,
                 1,
                 new Money(799),
-                false
+                false,
+                null
             );
 
             var treatmentType7 = new TreatmentType(
@@ -110,7 +116,8 @@ namespace BookRight.Infrastructure
                 30,
                 1,
                 new Money(450),
-                false
+                false,
+                null
             );
 
             var treatmentType8 = new TreatmentType(
@@ -118,7 +125,8 @@ namespace BookRight.Infrastructure
                 45,
                 1,
                 new Money(550),
-                false
+                false,
+                null
             );
 
             var treatmentType9 = new TreatmentType(
@@ -126,7 +134,8 @@ namespace BookRight.Infrastructure
                 60,
                 6, // Max participants for group training
                 new Money(150),
-                false
+                false,
+                null
             );
 
             // Add the treatment types to the database context
@@ -157,6 +166,7 @@ namespace BookRight.Infrastructure
                 new FullName("Hans", "Hansen"),
                 new Email("hansen@hans.com"),
                 "Massageterapeut",
+                new Authorization("Massage", "MAS-1001"),
                 clinic1.Id
             );
 
@@ -164,6 +174,7 @@ namespace BookRight.Infrastructure
                 new FullName("Lise", "Larsen"),
                 new Email("larsen@lise.com"),
                 "Fysioterapeut",
+                new Authorization("Autoriseret fysioterapeut", "FYS-1001"),
                 clinic1.Id
              );
 
@@ -171,6 +182,7 @@ namespace BookRight.Infrastructure
                 new FullName("Peter", "Pedersen"),
                 new Email("pedersen@peter.com"),
                 "Kostvejleder",
+                new Authorization("Kostvejledning", "KOS-1001"),
                 clinic1.Id
             );
 
@@ -178,6 +190,7 @@ namespace BookRight.Infrastructure
                 new FullName("Anna", "Andersen"),
                 new Email("andersen@anna.com"),
                 "Akupunktør",
+                new Authorization("Akupunktur", "AKU-1001"),
                 clinic1.Id
             );
 
@@ -187,6 +200,7 @@ namespace BookRight.Infrastructure
                 new FullName("Mette", "Madsen"),
                 new Email("madsen@mette.com"),
                 "Massageterapeut",
+                new Authorization("Massage", "MAS-1002"),
                 clinic2.Id
             );
 
@@ -194,6 +208,7 @@ namespace BookRight.Infrastructure
                 new FullName("Jens", "Jensen"),
                 new Email("jensen@jens.com"),
                 "Fysioterapeut",
+                new Authorization("Autoriseret fysioterapeut", "FYS-1002"),
                 clinic2.Id
             );
 
@@ -201,6 +216,7 @@ namespace BookRight.Infrastructure
                 new FullName("Sofie", "Sørensen"),
                 new Email("sørensen@sofie.com"),
                 "Kostvejleder",
+                new Authorization("Kostvejledning", "KOS-1002"),
                 clinic2.Id
             );
 
@@ -208,6 +224,7 @@ namespace BookRight.Infrastructure
                 new FullName("Lars", "Larsen"),
                 new Email("larsen@lars.com"),
                 "Akupunktør",
+                new Authorization("Akupunktur", "AKU-1003"),
                 clinic2.Id
             );
 
@@ -217,6 +234,7 @@ namespace BookRight.Infrastructure
                 new FullName("Kirsten", "Kristensen"),
                 new Email("kristensen@kirsten.com"),
                 "Massageterapeut",
+                new Authorization("Massage", "MAS-1003"),
                 clinic3.Id
             );
 
@@ -224,6 +242,7 @@ namespace BookRight.Infrastructure
                 new FullName("Ole", "Olsen"),
                 new Email("olsen@ole.com"),
                 "Fysioterapeut",
+                new Authorization("Autoriseret fysioterapeut", "FYS-1003"),
                 clinic3.Id
             );
 
@@ -231,6 +250,7 @@ namespace BookRight.Infrastructure
                 new FullName("Maria", "Møller"),
                 new Email("møller@maria.com"),
                 "Kostvejleder",
+                new Authorization("Kostvejledning", "KOS-1003"),
                 clinic3.Id
             );
 
@@ -238,6 +258,7 @@ namespace BookRight.Infrastructure
                 new FullName("Niels", "Nielsen"),
                 new Email("nielsen@niels.com"),
                 "Akupunktør",
+                new Authorization("Akupunktur", "AKU-1003"),
                 clinic3.Id
             );
 

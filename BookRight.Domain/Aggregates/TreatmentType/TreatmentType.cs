@@ -11,10 +11,18 @@ namespace BookRight.Domain.Aggregates.TreatmentType
         public int MaxParticipants { get; private set; }
         public Money Price { get; private set; } = null!; //Not nullable
         public bool CanBeCombined { get; private set; }
+        public string? RequiredSpecialization { get; private set; }
 
         private TreatmentType() { } //EF core constructor
 
-        public TreatmentType(string name, int durationMinutes, int maxParticipants, Money price, bool canBeCombined)
+
+        public TreatmentType(
+            string name,
+            int durationMinutes,
+            int maxParticipants,
+            Money price,
+            bool canBeCombined,
+            string? requiredSpecialization)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException(
@@ -37,7 +45,7 @@ namespace BookRight.Domain.Aggregates.TreatmentType
             MaxParticipants = maxParticipants;
             Price = price ?? throw new ArgumentNullException(nameof(price)); //Nullcheck
             CanBeCombined = canBeCombined;
+            RequiredSpecialization = requiredSpecialization;
         }
-
     }
 }

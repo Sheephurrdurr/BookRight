@@ -1,6 +1,7 @@
-﻿namespace BookRight.Facade.DTOs.CreateTherapistDTOs
+﻿namespace BookRight.Facade.DTOs.UpdateTherapistDTOs
 {
-    public record CreateTherapistRequest(
+    public record UpdateTherapistRequest(
+        Guid TherapistId,
         string FirstName,
         string LastName,
         string Email,
@@ -8,5 +9,6 @@
         string AuthorizationType,
         string AuthorizationNumber,
         Guid ClinicId,
-        List<Guid> TreatmentTypeIds);
+        List<Guid> TreatmentTypeIds
+    );
 }
