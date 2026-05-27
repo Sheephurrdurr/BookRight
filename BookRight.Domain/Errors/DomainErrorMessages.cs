@@ -81,7 +81,11 @@ public static class DomainErrorMessages //Static because we don't want to create
     => $"Klinik med ID '{clinicId}' findes ikke";
 
     public static string TreatmentTypeNotFound(Guid treatmentTypeId)
-    => $"Behandlingstype med ID '{treatmentTypeId}' findes ikke";
+   => $"Behandlingstype med ID '{treatmentTypeId}' findes ikke";
+
+
+    public static string TherapistNotFound(Guid therapistId)
+    => $"Klinik med ID '{therapistId}' findes ikke";
 
     public static string EmailAlreadyExists(string email)
         => $"'{email}' er allerede i brug";
@@ -94,7 +98,8 @@ public static class DomainErrorMessages //Static because we don't want to create
     public const string TreatmentTypeIdsMustNotBeEmpty =
     "En kampagne skal gælde for mindst én behandlingstype";
 
-
+    public static string TreatmentTypeCannotBeCombinedWith(string treatmentTypeName)
+        => $"Behandlingstype {treatmentTypeName} kan ikke blive kombineret med andre.";
 
 
 }

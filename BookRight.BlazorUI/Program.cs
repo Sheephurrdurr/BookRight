@@ -1,26 +1,29 @@
 using BookRight.BlazorUI.Components;
 using BookRight.Domain.Services;
+using BookRight.Domain.Services.DiscountStrategies;
 using BookRight.Facade.Interfaces;
 using BookRight.Facade.Interfaces.BookingUseCases;
 using BookRight.Facade.Interfaces.ClinicsUseCases;
 using BookRight.Facade.Interfaces.CustomerUseCases;
+using BookRight.Facade.Interfaces.DiscountUseCases;
 using BookRight.Facade.Interfaces.RevenueReportUseCase;
 using BookRight.Facade.Interfaces.TherapistUseCases;
-using BookRight.Facade.Interfaces.DiscountUseCases;
-using BookRight.Facade.Interfaces.TreatmentTypeUseCase;
-
+using BookRight.Facade.Interfaces.TreatmentTypesUseCase;
 using BookRight.Infrastructure;
 using BookRight.Infrastructure.Persistence;
 using BookRight.Infrastructure.Persistence.Repositories;
 using BookRight.Infrastructure.Repositories;
+using BookRight.UseCases.CampaignDiscountUseCases;
 using BookRight.UseCases.ChangeCustomerHealthNotes;
 using BookRight.UseCases.CreateBooking;
 using BookRight.UseCases.CreateCustomer;
 using BookRight.UseCases.CreateTherapist;
+using BookRight.UseCases.GetAllCampaignDiscounts;
 using BookRight.UseCases.GetAllClinics;
 using BookRight.UseCases.GetAllCustomers;
 using BookRight.UseCases.GetallTherapists;
 using BookRight.UseCases.GetAllTherapistTreatmentType;
+using BookRight.UseCases.GetAllTreatmentTypes;
 using BookRight.UseCases.GetCustomerById;
 using BookRight.UseCases.GetCustomerHealthNotes;
 using BookRight.UseCases.GetCustomerHistory;
@@ -30,15 +33,13 @@ using BookRight.UseCases.Interfaces;
 using BookRight.UseCases.MarkBookingArrived;
 using BookRight.UseCases.MarkBookingAsNoShow;
 using BookRight.UseCases.MarkBookingCompleted;
-using BookRight.UseCases.RestoreBookingFromNoShow;  
+using BookRight.UseCases.RestoreBookingFromNoShow;
 using BookRight.UseCases.CampaignDiscountUseCases;
 using BookRight.UseCases.GetAllTreatmentTypes;
 using BookRight.UseCases.GetAllCampaignDiscounts;
 using BookRight.UseCases.CreateTreatmentType;
-
-
+using BookRight.UseCases.UpdateTherapist;
 using Microsoft.EntityFrameworkCore;
-using BookRight.Domain.Services.DiscountStrategies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,12 +91,12 @@ builder.Services.AddScoped<IRestoreBookingFromNoShowUseCase, RestoreBookingFromN
 builder.Services.AddScoped<IGetCustomerHistoryUseCase, GetCustomerHistoryUseCase>();
 builder.Services.AddScoped<IGetGroupSlotAvailabilityUseCase, GetGroupSlotAvailabilityUseCase>();
 builder.Services.AddScoped<ICreateCampaignDiscountUseCase, CreateCampaignDiscountUseCase>();
-builder.Services.AddScoped<IGetAllTreatmentTypeUseCase, GetAllTreatmentTypesUseCase>();
+builder.Services.AddScoped<IGetAllTreatmentTypesUseCase, GetAllTreatmentTypesUseCase>();
 builder.Services.AddScoped<IGetRevenueReportUseCase, GetRevenueReportUseCase>();
 builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
 builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
 builder.Services.AddScoped<IGetAllCampaignDiscountsUseCase, GetAllCampaignDiscountsUseCase>();
-
+builder.Services.AddScoped<IUpdateTherapistUseCase, UpdateTherapistUseCase>();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

@@ -4,17 +4,23 @@
 @using BookRight.Facade.Interfaces.CustomerUseCases
 @using BookRight.Facade.Interfaces
 @using BookRight.Facade.Interfaces.ClinicsUseCases
+@using BookRight.Facade.Interfaces.TreatmentTypesUseCase
 @using BookRight.Facade.DTOs.GetAllCustomersDTOs
 @using BookRight.Facade.DTOs.GetAllTherapistsDTOs
 @using BookRight.Facade.DTOs.CreateTherapistDTOs
 @using BookRight.Facade.DTOs.CreateCustomerDTOs
 @using BookRight.Facade.DTOs.GetAllClinicsDTOs
+@using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
+@using BookRight.Facade.DTOs.UpdateTherapistDTOs
+
 @inject IGetAllClinicsUseCase GetAllClinicsUseCase
 @inject ICreateTherapistUseCase CreateTherapistUseCase
 @inject ICreateCustomerUseCase CreateCustomerUseCase
 @inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
 @inject IGetAllCustomersUseCase GetAllCustomersUseCase
 @inject IGetCustomerHistoryUseCase GetCustomerHistoryUseCase
+@inject IGetAllTreatmentTypesUseCase GetAllTreatmentTypesUseCase
+@inject IUpdateTherapistUseCase UpdateTherapistUseCase
 
 <!--
     Siden benytter Bootstrap klasser til styling
@@ -46,9 +52,61 @@
 						<label class="form-label">Email</label>
 						<input class="form-control" @bind="therapistEmail" placeholder="Skriv email her..." />
 					</div>
+
+					<select class="form-control" @bind="therapistSpecialization">
+						<option value="">Vælg speciale</option>
+
+						@foreach (var specialization in specializations) //DropDown list of all the already created specializations
+						{
+							<option value="@specialization">
+								@specialization
+							</option>
+						}
+					</select>
 					<div class="mb-3">
-						<label class="form-label">Speciale</label>
-						<input class="form-control" @bind="therapistSpecialization" placeholder="Skriv speciale her..." />
+						<label class="form-label">Autorisation</label>
+
+						<select class="form-control" @onchange="OnAuthorizationTypeChanged">
+							<option value="">Vælg autorisation</option>
+
+							@foreach (var authorizationType in authorizationTypes)
+							{
+								<option value="@authorizationType">
+									@authorizationType
+								</option>
+							}
+						</select>
+						
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Autorisationsnummer</label>
+
+						<input class="form-control"
+							   @bind="therapistAuthorizationNumber"
+							   placeholder="Skriv autorisationsnummer her..." />
+
+						<small class="text-muted">
+							Fortsæt med næste nummer i rækken.
+							Seneste registrerede nummer: @latestAuthorizationNumber
+						</small>
+					</div>
+					<div class="mb-3">
+					<label class="form-label">Behandlingstyper / Qualifications</label>
+
+						@foreach (var treatmentType in treatmentTypes)
+						{
+							<div class="form-check">
+								<input class="form-check-input"
+									   type="checkbox"
+									   value="@treatmentType.Id"
+									   checked="@selectedTreatmentTypeIds.Contains(treatmentType.Id)"
+									   @onchange="e => ToggleTreatmentType(treatmentType.Id, e)" />
+
+								<label class="form-check-label">
+									@treatmentType.Name
+								</label>
+							</div>
+						}
 					</div>
 					<div class="mb-3">
 						<label class="form-label">Klinik</label>
@@ -62,7 +120,9 @@
 						</select>
 					</div>
 
-					<button class="btn btn-primary" @onclick="CreateTherapist">Opret Therapist</button>
+					<button class="btn btn-primary" @onclick="SaveTherapist">
+						@(editingTherapistId.HasValue ? "Gem ændringer" : "Opret")
+					</button>
 
 					@if (!string.IsNullOrEmpty(therapistMessage))
 					{
@@ -131,6 +191,10 @@
 									<th>Navn</th>
 									<th>Email</th>
 									<th>Speciale</th>
+									<th>Autorisation</th>
+									<th>Autorisationsnummer</th>
+									<th>Klinik</th>
+									<th></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -140,6 +204,15 @@
 										<td>@therapist.FirstName @therapist.LastName</td>
 										<td>@therapist.Email</td>
 										<td>@therapist.Specialization</td>
+										<td>@therapist.AuthorizationType</td>
+										<td>@therapist.AuthorizationNumber</td>
+										<td>@therapist.ClinicName</td>
+										<td>
+											<button class="btn btn-sm btn-outline-primary"
+													@onclick="() => StartEditTherapist(therapist)">
+												Rediger
+											</button>
+										</td>
 									</tr>
 								}
 							</tbody>
@@ -284,9 +357,15 @@
 	private string therapistLastName = "";
 	private string therapistEmail = "";
 	private string therapistSpecialization = "";
+	private string therapistAuthorizationType = "";
+	private string therapistAuthorizationNumber = "";
 	private string therapistMessage = "";
 	private string therapistAlertClass = "";
+	private List<string> specializations = [];
+	private string latestAuthorizationNumber = "";
+	private List<string> authorizationTypes = [];
 	private Guid selectedClinicId = Guid.Empty;
+	private Guid? editingTherapistId;
 
 	// Customer form fields.
 	private string customerFirstName = "";
@@ -304,11 +383,15 @@
 	private string customerHistoryMessage = "";
 	private string customerHistoryAlertClass = "";
 
+	//Therapist form fields
+	private List<Guid> selectedTreatmentTypeIds = [];
+
 	// Lister der holder data fra GetAll, til at vise nyligt oprettede entities
 	private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
 	private IReadOnlyList<GetAllCustomersResponse> customers = new List<GetAllCustomersResponse>();
 	private IReadOnlyList<GetAllClinicsResponse> clinics = new List<GetAllClinicsResponse>();
 	private IReadOnlyList<CustomerHistoryResponse> customerHistories = new List<CustomerHistoryResponse>();
+	private IReadOnlyList<GetAllTreatmentTypesResponse> treatmentTypes = new List<GetAllTreatmentTypesResponse>();
 
 	// HealthNotesEditor
 	private Guid? selectedCustomerId;
@@ -323,30 +406,42 @@
 		therapists = await GetAllTherapistsUseCase.ExecuteAsync();
 		customers = await GetAllCustomersUseCase.ExecuteAsync();
 		clinics = await GetAllClinicsUseCase.ExecuteAsync();
+		treatmentTypes = await GetAllTreatmentTypesUseCase.ExecuteAsync();
+		specializations = therapists //Data already fetched. This is just filtering/UI presentation (NOT BL)
+		.Select(t => t.Specialization)
+		.Distinct()
+		.OrderBy(s => s)
+		.ToList();
+		authorizationTypes = therapists
+		.Select(t => t.AuthorizationType)
+		.Where(a => !string.IsNullOrWhiteSpace(a))
+		.Distinct()
+		.OrderBy(a => a)
+		.ToList();
 	}
 
-    private async Task CreateTherapist()
-    {
-        try
-        {
-            var request = new CreateTherapistRequest
-                {
-                    FirstName = therapistFirstName,
-                    LastName = therapistLastName,
-                    Email = therapistEmail,
-                    Specialization = therapistSpecialization,
-                    ClinicId = selectedClinicId
-                };
+	private async Task CreateTherapist()
+	{
+		try
+		{
+			var request = new CreateTherapistRequest(
+			therapistFirstName,
+			therapistLastName,
+			therapistEmail,
+			therapistSpecialization,
+			therapistAuthorizationType,
+			therapistAuthorizationNumber,
+			selectedClinicId,
+			selectedTreatmentTypeIds
+
+		);
 
 			var response = await CreateTherapistUseCase.ExecuteAsync(request);
 			therapistMessage = $"Terapeut oprettet med ID: {response.TherapistId}";
 			therapistAlertClass = "alert-success";
 
 			// Nulstil felter efter oprettelse
-			therapistFirstName = "";
-			therapistLastName = "";
-			therapistEmail = "";
-			therapistSpecialization = "";
+			ResetTherapistForm();
 
 			await LoadData();
 		}
@@ -397,7 +492,7 @@
 			customerHistories = new List<CustomerHistoryResponse>(); 
 
 			customerHistories = await GetCustomerHistoryUseCase.ExecuteAsync(customerHistoryQuery); //Kalder UseCase
-																									
+
 			customerHistoryQuery = ""; //Clears search field after executed search
 
 			if (!customerHistories.Any())
@@ -412,6 +507,97 @@
 			customerHistoryAlertClass = "alert-danger";
 		}
 
+	}
+
+	//Finds the latest authorization number based on selected authorization type
+	private void UpdateLatestAuthorizationNumber()
+	{
+		latestAuthorizationNumber = therapists
+			.Where(t => t.AuthorizationType == therapistAuthorizationType)
+			.Select(t => t.AuthorizationNumber)
+			.LastOrDefault() ?? "Ingen tidligere autorisation fundet";
+	}
+	private void OnAuthorizationTypeChanged(ChangeEventArgs e) //Uses in-memory LINQ filtering on already loaded therapist data from LoadData(). No database/repository calls are made here, so async/await would be unnecessary fake async
+	{
+		therapistAuthorizationType = e.Value?.ToString() ?? "";
+		UpdateLatestAuthorizationNumber();
+	}
+	private void ToggleTreatmentType(Guid treatmentTypeId, ChangeEventArgs e)
+	{
+		var isChecked = (bool?)e.Value == true;
+
+		if (isChecked)
+		{
+			selectedTreatmentTypeIds.Add(treatmentTypeId);
+		}
+		else
+		{
+			selectedTreatmentTypeIds.Remove(treatmentTypeId);
+		}
+
+	}
+	// Loads therapist data into the form for editing
+	private void StartEditTherapist(GetAllTherapistsResponse therapist)
+	{
+		editingTherapistId = therapist.Id;
+		therapistFirstName = therapist.FirstName;
+		therapistLastName = therapist.LastName;
+		therapistEmail = therapist.Email;
+		therapistSpecialization = therapist.Specialization;
+		therapistAuthorizationType = therapist.AuthorizationType;
+		therapistAuthorizationNumber = therapist.AuthorizationNumber;
+		selectedClinicId = therapist.ClinicId;
+		selectedTreatmentTypeIds = therapist.TreatmentTypeIds.ToList();
+	}
+	private void ResetTherapistForm()
+	{
+		editingTherapistId = null;
+		therapistFirstName = "";
+		therapistLastName = "";
+		therapistEmail = "";
+		therapistSpecialization = "";
+		therapistAuthorizationType = "";
+		therapistAuthorizationNumber = "";
+		latestAuthorizationNumber = "";
+		selectedClinicId = Guid.Empty;
+		selectedTreatmentTypeIds = []; //New list reference needed for check boxes to be cleared
+	}
+
+	private async Task UpdateTherapist()
+	{
+		if (!editingTherapistId.HasValue)
+			return;
+
+		var request = new UpdateTherapistRequest(
+			editingTherapistId.Value,
+			therapistFirstName,
+			therapistLastName,
+			therapistEmail,
+			therapistSpecialization,
+			therapistAuthorizationType,
+			therapistAuthorizationNumber,
+			selectedClinicId,
+			selectedTreatmentTypeIds
+		);
+
+		var response = await UpdateTherapistUseCase.ExecuteAsync(request);
+
+		therapistMessage = $"Terapeut opdateret med ID: {response.TherapistId}";
+		therapistAlertClass = "alert-success";
+
+		editingTherapistId = null;
+
+		ResetTherapistForm();
+
+		await LoadData();
+	}
+
+	private async Task SaveTherapist()
+	{
+		if (editingTherapistId.HasValue)
+			await UpdateTherapist();
+		else
+			await CreateTherapist();
 	}
 
 }

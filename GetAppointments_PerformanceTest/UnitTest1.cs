@@ -68,6 +68,7 @@ namespace GetAppointments_PerformanceTest
                        name: new FullName(f.Name.FirstName(), f.Name.LastName()),
                        email: new Email(f.Internet.Email()),
                        specialization: f.PickRandom("Massør", "Fysioterapeut", "Akupunktør"),
+                       authorization: new Authorization("Autoriseret fysioterapeut", "FYS-1001"),
                        clinicId: f.PickRandom(clinics).Id
                        ));
 

@@ -18,7 +18,7 @@ namespace BookRight.Domain.Test
         public void CalculateBasePrice_ReturnsTreatmentPrice()
         {
             // Arrange
-            var treatmentType = new TreatmentType("Massage", 60, 1, new Money(300), true, "Massør");
+            var treatmentType = new TreatmentType("Massage", 60, 1, new Money(300), true, null);
             var calculator = CreateCalculator();
 
             // Act
