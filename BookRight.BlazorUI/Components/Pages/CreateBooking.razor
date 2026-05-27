@@ -110,7 +110,7 @@
 </div>
 
 @code {
-    private List<BookingLineRequest> selectedLines = [];
+    private string firstTherapistId = ""; // First as in the bookingline. If a booking is created with two treatments, it's the first therapist
     private string selectedCustomerId = "";
     private string selectedClinicId = "";
     private string selectedTreatmentTypeId = "";
@@ -124,6 +124,7 @@
     private int? remainingSlots = null;
     private bool isFullyBooked = false;
 
+    private List<BookingLineRequest> selectedLines = [];
     private IReadOnlyList<GetAllCustomersResponse> customers = new List<GetAllCustomersResponse>();
     private IReadOnlyList<GetAllClinicsResponse> clinics = new List<GetAllClinicsResponse>();
     private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
@@ -153,15 +154,17 @@
 
     private void HandleTreatmentTypeSelected(string treatmentTypeId)
     {
-        // Only keep therapists, that has a related TherapistTreatmentType(null or empty)
-        // It also has to fulfill the two requirements (.any()): 
-        // TherapistTreatmentType belongs to the selected therapist
-        // && TherapistTreatmentType is the selected treatmentType
-        filteredTherapists = string.IsNullOrEmpty(treatmentTypeId)
+        var selectedName = uniqueTreatmentTypes
+            .FirstOrDefault(t => t.Id.ToString() == treatmentTypeId)?.TreatmentTypeName;
+
+        // If no treatmentTypes are selected, show no therapists
+        // Filter therapists with a related TherapistTreatmentType which is both:
+        // Belonging to the therapist (therapistId == t.Id) and ttt matches the selected treatmentType in name too.
+        filteredTherapists = string.IsNullOrEmpty(selectedName)
             ? []
             : therapists
                 .Where(t => allTherapistTreatmentTypes
-                .Any(ttt => ttt.TherapistId == t.Id && ttt.Id.ToString() == treatmentTypeId))
+                .Any(ttt => ttt.TherapistId == t.Id && ttt.TreatmentTypeName == selectedName))
                 .OrderBy(t => t.LastName)
                 .ThenBy(t => t.FirstName)
                 .ToList();
@@ -199,9 +202,19 @@
 		if (string.IsNullOrEmpty(selectedTreatmentTypeId) ||
 			string.IsNullOrEmpty(selectedTherapistId)) return;
 
+        var selectedName = uniqueTreatmentTypes
+            .FirstOrDefault(t => t.Id.ToString() == selectedTreatmentTypeId)?.TreatmentTypeName;
+        if (selectedName is null)
+            return;
+
         var ttt = allTherapistTreatmentTypes
-            .FirstOrDefault(t => t.Id.ToString() == selectedTreatmentTypeId);
+            .FirstOrDefault(t => t.TherapistId.ToString() == selectedTherapistId &&
+                                    t.TreatmentTypeName == selectedName);
         if (ttt is null) return;
+
+        // Save the therapist from the first bookingline
+        if (string.IsNullOrEmpty(firstTherapistId))
+            firstTherapistId = selectedTherapistId;
 
         selectedLines.Add(new BookingLineRequest{
             TherapistTreatmentTypeId = ttt.Id,
@@ -238,19 +251,13 @@
 			{
 			    CustomerId = Guid.Parse(selectedCustomerId),
 				ClinicId = Guid.Parse(selectedClinicId),
-                TherapistId = Guid.Parse(selectedTherapistId),
+                TherapistId = Guid.Parse(firstTherapistId),
 
                 CampaignDiscountId = string.IsNullOrEmpty(selectedCampaignDiscountId) 
                 ? (Guid?)null 
                 : Guid.Parse(selectedCampaignDiscountId),
                 StartTime = startTime, 
-                Lines = therapistTreatmentTypes is not null
-                    ? [new BookingLineRequest
-                    {
-                        TherapistTreatmentTypeId = therapistTreatmentTypes.Id,
-                        BasePrice = therapistTreatmentTypes.BasePrice
-                    }]
-                    : []
+                Lines = selectedLines
 			};
 
             var response = await CreateBookingUseCase.ExecuteAsync(request);
@@ -264,6 +271,7 @@
                 selectedClinicId = "";
                 selectedTherapistId = "";
                 selectedCampaignDiscountId = "";
+                firstTherapistId = "";
                 startTime = DateTime.Now;
                 remainingSlots = null;
                 isFullyBooked = false;
