@@ -16,6 +16,7 @@ using BookRight.Infrastructure.Repositories;
 using BookRight.UseCases.CampaignDiscountUseCases;
 using BookRight.UseCases.ChangeCustomerHealthNotes;
 using BookRight.UseCases.CreateBooking;
+using BookRight.UseCases.CreateClinic;
 using BookRight.UseCases.CreateCustomer;
 using BookRight.UseCases.CreateTherapist;
 using BookRight.UseCases.GetAllCampaignDiscounts;
@@ -36,6 +37,7 @@ using BookRight.UseCases.MarkBookingCompleted;
 using BookRight.UseCases.RestoreBookingFromNoShow;  
 using BookRight.UseCases.UpdateTherapist;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,6 +93,7 @@ builder.Services.AddScoped<IGetAllTreatmentTypesUseCase, GetAllTreatmentTypesUse
 builder.Services.AddScoped<IGetRevenueReportUseCase, GetRevenueReportUseCase>();
 builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
 builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
+builder.Services.AddScoped<ICreateClinicUseCase, CreateClinicUseCase>();
 builder.Services.AddScoped<IGetAllCampaignDiscountsUseCase, GetAllCampaignDiscountsUseCase>();
 builder.Services.AddScoped<IUpdateTherapistUseCase, UpdateTherapistUseCase>();
 var app = builder.Build();
