@@ -11,7 +11,6 @@ using BookRight.Facade.Interfaces.TherapistUseCases;
 using BookRight.Facade.Interfaces.TreatmentTypesUseCase;
 using BookRight.Infrastructure;
 using BookRight.Infrastructure.Persistence;
-using BookRight.Infrastructure.Persistence.Repositories;
 using BookRight.Infrastructure.Repositories;
 using BookRight.UseCases.CampaignDiscountUseCases;
 using BookRight.UseCases.ChangeCustomerHealthNotes;

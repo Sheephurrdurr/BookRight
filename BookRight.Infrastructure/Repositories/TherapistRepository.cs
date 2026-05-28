@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.UseCases.Interfaces;
+using BookRight.Infrastructure.Persistence;
 
-namespace BookRight.Infrastructure.Persistence.Repositories
+namespace BookRight.Infrastructure.Repositories
 {
     public class TherapistRepository : ITherapistRepository
     {

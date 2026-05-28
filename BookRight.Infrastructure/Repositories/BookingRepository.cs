@@ -4,8 +4,9 @@ using BookRight.UseCases.Interfaces;
 using BookRight.Domain.Enums;
 using BookRight.Domain.ValueObjects;
 using System.Reflection.Metadata.Ecma335;
+using BookRight.Infrastructure.Persistence;
 
-namespace BookRight.Infrastructure.Persistence.Repositories
+namespace BookRight.Infrastructure.Repositories
 {
     public class BookingRepository : IBookingRepository
     {
