@@ -6,7 +6,6 @@ using BookRight.Domain.Services;
 using BookRight.Domain.Services.DiscountStrategies;
 using BookRight.Domain.ValueObjects;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
-using BookRight.Facade.DTOs.ValueObjectDTOs;
 using BookRight.UseCases.CreateBooking;
 using BookRight.UseCases.Interfaces;
 using Moq;

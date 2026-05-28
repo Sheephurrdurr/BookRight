@@ -63,7 +63,7 @@ namespace BookRight.Infrastructure
                 1, // Max participants
                 new Money(350),// Price for the treatment
                 true, // Can be combined with other treatments?
-                null //Required specialization, can be null, which is what we'll use for the prototype due to "canbecombined"
+                "Massage"
             );
 
             var treatmentType2 = new TreatmentType(
@@ -72,7 +72,7 @@ namespace BookRight.Infrastructure
                 1,
                 new Money(699),
                 true,
-                null
+                "Autoriseret fysioterapeut"
             );
 
             var treatmentType3 = new TreatmentType(
@@ -81,7 +81,7 @@ namespace BookRight.Infrastructure
                 1,
                 new Money(395),
                 true,
-                null
+                "Autoriseret fysioterapeut"
             );
 
             var treatmentType4 = new TreatmentType(
@@ -90,7 +90,7 @@ namespace BookRight.Infrastructure
                 1,
                 new Money(589),
                 true,
-                null
+                "Autoriseret fysioterapeut"
             );
 
             var treatmentType5 = new TreatmentType(
@@ -99,7 +99,7 @@ namespace BookRight.Infrastructure
                 1,
                 new Money(745),
                 true,
-                null
+                "Autoriseret fysioterapeut"
             );
 
             var treatmentType6 = new TreatmentType(
@@ -108,7 +108,7 @@ namespace BookRight.Infrastructure
                 1,
                 new Money(799),
                 false,
-                null
+                "Kostvejledning"
             );
 
             var treatmentType7 = new TreatmentType(
@@ -117,7 +117,7 @@ namespace BookRight.Infrastructure
                 1,
                 new Money(450),
                 false,
-                null
+                "Kostvejledning"
             );
 
             var treatmentType8 = new TreatmentType(
@@ -126,7 +126,7 @@ namespace BookRight.Infrastructure
                 1,
                 new Money(550),
                 false,
-                null
+                "Akupunktur"
             );
 
             var treatmentType9 = new TreatmentType(
@@ -135,7 +135,7 @@ namespace BookRight.Infrastructure
                 6, // Max participants for group training
                 new Money(150),
                 false,
-                null
+                "Autoriseret fysioterapeut"
             );
 
             // Add the treatment types to the database context

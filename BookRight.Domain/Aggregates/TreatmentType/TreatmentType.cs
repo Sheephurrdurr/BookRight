@@ -11,7 +11,9 @@ namespace BookRight.Domain.Aggregates.TreatmentType
         public int MaxParticipants { get; private set; }
         public Money Price { get; private set; } = null!; //Not nullable
         public bool CanBeCombined { get; private set; }
-        public string? RequiredSpecialization { get; private set; }
+        public string? RequiredSpecialization { get; private set; } //Nullable sådan at man i teorien kunne lave treatmenttype
+                                                                    //som alle behandlere kunne udføre
+
 
         private TreatmentType() { } //EF core constructor
 
@@ -38,6 +40,10 @@ namespace BookRight.Domain.Aggregates.TreatmentType
                 throw new ArgumentException(
                     DomainErrorMessages.MaxParticipantsMustBeGreaterThanZero,
                     nameof(maxParticipants));
+            if (price.Value <= 0)
+                throw new ArgumentException(
+                    DomainErrorMessages.PriceMustBeGreaterThanZero,
+                    nameof(price));
 
             Id = Guid.NewGuid();
             Name = name;

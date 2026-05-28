@@ -68,6 +68,8 @@ namespace BookRight.Domain.Aggregates.TherapistAggregate //Rename because of nam
             _qualifications.Add(qualification);
         }
 
+
+
         // Fjern en kvalifikation for en behandlingstype
         public void RemoveQualification(Guid treatmentTypeId)
         {
