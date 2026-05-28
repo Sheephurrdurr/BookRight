@@ -9,7 +9,7 @@
 @inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
 
 
-<PageTitle>Behandlingstype</PageTitle>
+<PageTitle>Opret Behandlingstype</PageTitle>
 
 <main class="container mt-4">
     <h3 class="ms-3">Administrer behandlinger</h3>
@@ -26,10 +26,7 @@
                 <label class="form-label">Pris</label>
                 <input class="form-control" type="number" @bind="_price" min="0" placeholder="Skriv ind pris her..." />
                 <label class="form-label" >Kan kombineres</label>
-                <select class ="form-select" @bind="_canBeCombinedString">
-                    <option value="false" >Nej</option>
-                    <option value="true" >Ja</option>
-                </select>
+
 
                 <label class="form-label">Autorisation</label>
 
@@ -40,22 +37,24 @@
                     <option value="@authorization">
                         @authorization
                     </option>
-                        @if (!string.IsNullOrEmpty(treatmentCreateMessage))
-                        {
-                            <div class="alert alert-danger mt-3">
-                                @treatmentCreateMessage
-                            </div>
-                        }
+                       
                 }
                 </select>
-
-                <button class="button btn-primary mt-4 rounded-1" @onclick="HandleCreateTreatmentType">Opret Behandlingstype</button>
-                    @if (!string.IsNullOrEmpty(treatmentCreateMessage))
+                @if (!string.IsNullOrEmpty(_failedTreatmentCreateMessage))
                 {
                     <div class="alert alert-danger mt-3">
-                        @treatmentCreateMessage
+                        @_failedTreatmentCreateMessage
                     </div>
                 }
+                @if (!string.IsNullOrEmpty(_successtreatmentCreateMessage))
+                {
+                    <div class="alert alert-success mt-3">
+                        @_successtreatmentCreateMessage
+                    </div>
+                }
+                <button class="button btn-primary mt-4 rounded-1" @onclick="HandleCreateTreatmentType">Opret Behandlingstype</button>
+
+
             
             </div>
         </fieldset>
@@ -71,9 +70,11 @@
     private string _canBeCombinedString = "false"; //gemmer input som text, siden select arbejder med string
     private bool _canBeCombined => _canBeCombinedString == "true"; //convertere string til bool for usecase
     private string? _RequiredSpecialization;
-    private string treatmentCreateMessage = "";
     private List<string> _authorizationTypes = [];
     private string _therapistSpecialization = "";
+    private string _successtreatmentCreateMessage = "";
+    private string _failedTreatmentCreateMessage = "";
+
 
 
 
@@ -81,7 +82,12 @@
     {
         if (string.IsNullOrEmpty(_treatmentTypeName))
         {
-            treatmentCreateMessage = "Navn skal være udfyldt";
+            _failedTreatmentCreateMessage = "Navn skal være udfyldt";
+            return;
+        }
+        if (string.IsNullOrEmpty(_RequiredSpecialization))
+        {
+            _failedTreatmentCreateMessage = "Du skal vælge en autorisation.";
             return;
         }
         try
@@ -94,14 +100,25 @@
                 Price = _price,
                 CanBeCombined = _canBeCombined,
                 RequiredSpecialization = _RequiredSpecialization
-                
+
             };
             var response = await CreateTreatmentTypeUseCase.ExecuteAsync(request);
-            treatmentCreateMessage = "Behandlingstype oprettet!";
+            _successtreatmentCreateMessage = "Behandlingstype oprettet!";
+
+            _treatmentTypeName = "";
+            _treatmentTypeDuration = 0;
+            _maxParticipants = 0;
+            _price = 0;
+            _RequiredSpecialization = "";
+            _failedTreatmentCreateMessage = "";
+
+
+
+
         }
         catch(ArgumentException ex)
         {
-            treatmentCreateMessage = ex.Message;
+            _failedTreatmentCreateMessage = ex.Message;
         }
     }
     protected override async Task OnInitializedAsync()
