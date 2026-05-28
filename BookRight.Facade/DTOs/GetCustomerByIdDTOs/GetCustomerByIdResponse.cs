@@ -5,6 +5,9 @@
         string FirstName,
         string LastName,
         string Email,
+        string Street,
+        string City,
+        string PostalCode,
         string Phone,
         DateOnly DateOfBirth,
         Guid? PreferredTherapistId

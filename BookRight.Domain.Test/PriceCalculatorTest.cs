@@ -273,6 +273,7 @@ namespace BookRight.Domain.Test
             return new Customer(
                 new FullName("Test", "Customer"),
                 new Email("test@test.dk"),
+                new Address("TestVej", "TestBy", "1111"),
                 new PhoneNumber("12345678"),
                 new DateOnly(1990, 5, 1),
                 string.Empty,

@@ -32,6 +32,18 @@ namespace BookRight.Infrastructure.Persistence.Configurations
                     .IsRequired();
             });
 
+            builder.OwnsOne(c => c.Address, address =>
+            {
+                address.Property(a => a.Street)
+                    .HasMaxLength(150);
+
+                address.Property(a => a.City)
+                    .HasMaxLength(150);
+
+                address.Property(a => a.PostalCode)
+                    .HasMaxLength(25);
+            }); 
+
             builder.OwnsOne(c => c.Phone, phone =>
             {
                 phone.Property(p => p.Value)

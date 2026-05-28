@@ -9,18 +9,20 @@ public class Customer
     public Guid Id { get; private set; }
     public FullName Name { get; private set; } = null!; //Not nullable. It's a promise to the constructor, that Name is set later. Fixes warning. 
     public Email Email { get; private set; } = null!; //Not nullable
+    public Address Address { get; private set; } = null!; // Not nullable
     public PhoneNumber Phone { get; private set; } = null!; //Not nullable
     public DateOnly DateOfBirth { get; private set; }
     public string? HealthNotes { get; private set; } //Nullable
     public Guid? PreferredTherapistId { get; private set; } //Nullable
     private Customer() { }
 
-    public Customer(FullName name, Email email, PhoneNumber phone, DateOnly dateOfBirth, string? healthNotes, Guid? preferredTherapistId)
+    public Customer(FullName name, Email email, Address address, PhoneNumber phone, DateOnly dateOfBirth, string? healthNotes, Guid? preferredTherapistId)
     {
         Id = Guid.NewGuid();
 
         Name = name ?? throw new ArgumentNullException(nameof(name)); //Nullchecks
         Email = email ?? throw new ArgumentNullException(nameof(email));
+        Address = address ?? throw new ArgumentNullException(nameof(address));
         Phone = phone ?? throw new ArgumentNullException(nameof(phone));
 
         if (dateOfBirth == default) //ErrorMessage
