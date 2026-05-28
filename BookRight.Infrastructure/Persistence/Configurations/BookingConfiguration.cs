@@ -12,7 +12,6 @@ namespace BookRight.Infrastructure.Persistence.Configurations
         {
             public void Configure(EntityTypeBuilder<Booking> builder)
             {
-            builder.ToTable("Bookings");
 
                 // PK konfiguration
                 builder.Property(x => x.Id)

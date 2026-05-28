@@ -8,7 +8,6 @@ namespace BookRight.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Customer> builder)
         {
-            builder.ToTable("Customers");
             // PK konfiguration
             builder.HasKey(t => t.Id);
 
