@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookRight.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class eejwdwjekd : Migration
+    public partial class jdelsesfesf : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -64,6 +64,9 @@ namespace BookRight.Infrastructure.Migrations
                     Name_FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Name_LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email_Value = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Address_Street = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Address_City = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Address_PostalCode = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     Phone_Value = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
                     HealthNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),

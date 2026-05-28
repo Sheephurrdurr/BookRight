@@ -70,7 +70,7 @@ namespace BookRight.Infrastructure.Migrations
 
                     b.HasIndex("TherapistId");
 
-                    b.ToTable("Bookings", (string)null);
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("BookRight.Domain.Aggregates.CampaignDiscount.CampaignDiscount", b =>
@@ -151,7 +151,7 @@ namespace BookRight.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.Therapist", b =>
@@ -171,7 +171,7 @@ namespace BookRight.Infrastructure.Migrations
 
                     b.HasIndex("ClinicId");
 
-                    b.ToTable("Therapists", (string)null);
+                    b.ToTable("Therapists");
                 });
 
             modelBuilder.Entity("BookRight.Domain.Aggregates.TherapistAggregate.TherapistSchedule", b =>
@@ -216,7 +216,7 @@ namespace BookRight.Infrastructure.Migrations
 
                     b.HasIndex("TherapistId");
 
-                    b.ToTable("TherapistTreatmentType", (string)null);
+                    b.ToTable("TherapistTreatmentType");
                 });
 
             modelBuilder.Entity("BookRight.Domain.Aggregates.TreatmentType.TreatmentType", b =>
@@ -368,24 +368,6 @@ namespace BookRight.Infrastructure.Migrations
 
             modelBuilder.Entity("BookRight.Domain.Aggregates.Clinic.Clinic", b =>
                 {
-                    b.OwnsOne("BookRight.Domain.ValueObjects.PhoneNumber", "Phone", b1 =>
-                        {
-                            b1.Property<Guid>("ClinicId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(20)
-                                .HasColumnType("nvarchar(20)");
-
-                            b1.HasKey("ClinicId");
-
-                            b1.ToTable("Clinics");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ClinicId");
-                        });
-
                     b.OwnsOne("BookRight.Domain.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<Guid>("ClinicId")
@@ -414,6 +396,24 @@ namespace BookRight.Infrastructure.Migrations
                                 .HasForeignKey("ClinicId");
                         });
 
+                    b.OwnsOne("BookRight.Domain.ValueObjects.PhoneNumber", "Phone", b1 =>
+                        {
+                            b1.Property<Guid>("ClinicId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("nvarchar(20)");
+
+                            b1.HasKey("ClinicId");
+
+                            b1.ToTable("Clinics");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ClinicId");
+                        });
+
                     b.Navigation("Address")
                         .IsRequired();
 
@@ -432,6 +432,34 @@ namespace BookRight.Infrastructure.Migrations
 
             modelBuilder.Entity("BookRight.Domain.Aggregates.Customer.Customer", b =>
                 {
+                    b.OwnsOne("BookRight.Domain.ValueObjects.Address", "Address", b1 =>
+                        {
+                            b1.Property<Guid>("CustomerId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("nvarchar(150)");
+
+                            b1.Property<string>("PostalCode")
+                                .IsRequired()
+                                .HasMaxLength(25)
+                                .HasColumnType("nvarchar(25)");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("nvarchar(150)");
+
+                            b1.HasKey("CustomerId");
+
+                            b1.ToTable("Customers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CustomerId");
+                        });
+
                     b.OwnsOne("BookRight.Domain.ValueObjects.Email", "Email", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
@@ -490,6 +518,9 @@ namespace BookRight.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("CustomerId");
                         });
+
+                    b.Navigation("Address")
+                        .IsRequired();
 
                     b.Navigation("Email")
                         .IsRequired();
