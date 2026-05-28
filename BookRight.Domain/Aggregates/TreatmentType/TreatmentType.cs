@@ -11,7 +11,7 @@ namespace BookRight.Domain.Aggregates.TreatmentType
         public int MaxParticipants { get; private set; }
         public Money Price { get; private set; } = null!; //Not nullable
         public bool CanBeCombined { get; private set; }
-        public Authorization Authorization { get; private set; } = null!;
+        public string? RequiredSpecialization { get; private set; }
 
         private TreatmentType() { } //EF core constructor
 
@@ -22,7 +22,7 @@ namespace BookRight.Domain.Aggregates.TreatmentType
             int maxParticipants,
             Money price,
             bool canBeCombined,
-            Authorization? authorization)
+            string? requiredSpecialization)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException(
@@ -49,7 +49,7 @@ namespace BookRight.Domain.Aggregates.TreatmentType
             MaxParticipants = maxParticipants;
             Price = price ?? throw new ArgumentNullException(nameof(price)); //Nullcheck
             CanBeCombined = canBeCombined;
-            Authorization = authorization ?? throw new ArgumentException(nameof(authorization));
+            RequiredSpecialization = requiredSpecialization;
         }
     }
 }

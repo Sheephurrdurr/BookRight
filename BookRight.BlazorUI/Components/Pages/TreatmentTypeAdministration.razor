@@ -31,12 +31,12 @@
                     <option value="true" >Ja</option>
                 </select>
 
-                    <select class="form-select" @bind="_therapistAuthorization">
+                    <select class="form-select" @bind="_therapistSpecialization">
                     <option value="">Vælg speciale</option>
-                    @foreach (var authorazation in _therapistAuthorization)
+                    @foreach (var specialization in _therapistSpecialization)
                 {
-                    <option value="@_therapistAuthorization">
-                        @_therapistAuthorization
+                    <option value="@_therapistSpecialization">
+                        @_therapistSpecialization
                     </option>
                 }
                 </select>
@@ -65,31 +65,10 @@
     private bool _canBeCombined => _canBeCombinedString == "true"; //convertere string til bool for usecase
     private string? _RequiredSpecialization;
     private string treatmentCreateMessage = "";
-    private List<string> _therapistAuthorization = [];
+    private List<string> authorizationTypes = [];
+    private string _therapistSpecialization = "";
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadData();
-    }
 
-    private async Task LoadData()
-    {
-        therapists = await GetAllTherapistsUseCase.ExecuteAsync();
-        customers = await GetAllCustomersUseCase.ExecuteAsync();
-        clinics = await GetAllClinicsUseCase.ExecuteAsync();
-        treatmentTypes = await GetAllTreatmentTypesUseCase.ExecuteAsync();
-        specializations = therapists //Data already fetched. This is just filtering/UI presentation (NOT BL)
-        .Select(t => t.Specialization)
-        .Distinct()
-        .OrderBy(s => s)
-        .ToList();
-        authorizationTypes = therapists
-        .Select(t => t.AuthorizationType)
-        .Where(a => !string.IsNullOrWhiteSpace(a))
-        .Distinct()
-        .OrderBy(a => a)
-        .ToList();
-    }
 
     private async Task HandleCreateTreatmentType()
     {

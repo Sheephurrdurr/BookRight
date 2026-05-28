@@ -17,7 +17,6 @@ namespace BookRight.UseCases.CreateTreatmentType
         public async Task<CreateTreatmentTypeResponse> ExecuteAsync(CreateTreatmentTypeRequest request)
         {
             var price = new Money(request.Price);
-            var authorization = new Authorization(request)
             var treatmentType = new TreatmentType(
                 request.Name,
                 request.DurationMinutes,
