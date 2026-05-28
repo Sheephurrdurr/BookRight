@@ -10,21 +10,21 @@ Systemet er bygget med **C# / .NET 10** med **Blazor Server** som brugergrænsef
 
 - [Teknologier](#teknologier)
 - [Opsætning og kørsel](#opsætning-og-kørsel)
+- [Seed Data](#seed-data)
 - [Tests](#tests)
-- [Arkitektur – kort overblik](#arkitektur--kort-overblik)
 
 ---
 
 ## Teknologier
 
-| Teknologi
+Teknologi
 
 - .NET , 10.0 |
-- Blazor , Server-side (Interactive Server) |
-- EntityFramework Core , 10.0.8 |
-- SQL Server , LocalDB |
-- xUnit , Seneste stabile |
-- Moq , Seneste stabile |
+- Blazor , Server-side (Interactive Server)
+- EntityFramework Core , 10.0.8 
+- SQL Server , LocalDB 
+- xUnit , Seneste stabile 
+- Moq , Seneste stabile 
 
 ---
 
@@ -49,19 +49,7 @@ cd BookRight
 }
 ```
 
-### 4. Kør applikationen
-
-Via Visual Studio: Sæt `BookRight.BlazorUI` som startup-projekt og tryk **F5**.
-
-Via terminalen:
-
-```
-cd BookRight.BlazorUI
-dotnet run
-```
----
-
-## Database og migrationer
+## Database opsætning og migrationer
 
 Projektet bruger **EF Core Code First**. Databaseskemaet genereres ud fra domænemodellen.
 
@@ -73,6 +61,20 @@ Migrationen `InitialCreate` er allerede inkluderet i repositoriet. Kør følgend
 cd BookRight.Infrastructure
 dotnet ef database update
 ```
+
+### 4. Kør applikationen
+
+Via Visual Studio: Sæt `BookRight.BlazorUI` som startup-projekt (hvis ikke den er valgt) og tryk **F5**.
+
+Via terminalen:
+
+```
+cd BookRight.BlazorUI
+dotnet run
+```
+Copy/Paste url fra CLI i browser og gå til localhost.
+---
+
 
 ### Seed-data
 
