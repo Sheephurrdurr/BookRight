@@ -1,7 +1,7 @@
 ﻿using Bogus;
 using BookRight.Domain.ValueObjects;
 using BookRight.Infrastructure.Persistence;
-using BookRight.Infrastructure.Persistence.Repositories;
+using BookRight.Infrastructure.Repositories;
 using BookRight.UseCases.GetAllCustomers;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
