@@ -2,7 +2,7 @@
 
 namespace BookRight.UseCases.Interfaces
 {
-    public interface IClinicRepository
+    public interface IClinicRepository 
     {
         Task<Clinic?> GetByIdAsync(Guid clinicId); //Destinctive clinic by id
 
@@ -13,5 +13,6 @@ namespace BookRight.UseCases.Interfaces
         Task UpdateAsync(Clinic clinic); //Update
 
         Task DeleteAsync(Guid clinicId); //Delete
+
     }
 }

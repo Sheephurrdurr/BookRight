@@ -2,7 +2,11 @@
 @rendermode InteractiveServer
 
 @using BookRight.Facade.Interfaces.ClinicsUseCases
+@using BookRight.Facade.DTOs.UpdateClinicDTOs
+
 @inject IGetClinicByIdUseCase GetClinicByIdUseCase
+@inject IUpdateClinicUseCase UpdateClinicUseCase
+@inject NavigationManager NavigationManager
 
 <h3>Rediger klinik</h3>
 
@@ -12,40 +16,46 @@
 }
 else
 {
-    <div class="mb-3">
-        <label>Navn</label>
-        <InputText class="form-control" @bind-Value="model.Name" />
-    </div>
+ <EditForm Model="model" OnValidSubmit="UpdateClinicAsync">
+        <div class="mb-3">
+            <label>Navn</label>
+            <InputText class="form-control" @bind-Value="model.Name" />
+        </div>
 
-    <div class="mb-3">
-        <label>Vejnavn</label>
-        <InputText class="form-control" @bind-Value="model.Street" />
-    </div>
+        <div class="mb-3">
+            <label>Vejnavn</label>
+            <InputText class="form-control" @bind-Value="model.Street" />
+        </div>
 
-    <div class="mb-3">
-        <label>By</label>
-        <InputText class="form-control" @bind-Value="model.City" />
-    </div>
+        <div class="mb-3">
+            <label>By</label>
+            <InputText class="form-control" @bind-Value="model.City" />
+        </div>
 
-    <div class="mb-3">
-        <label>Postnummer</label>
-        <InputText class="form-control" @bind-Value="model.PostalCode" />
-    </div>
+        <div class="mb-3">
+            <label>Postnummer</label>
+            <InputText class="form-control" @bind-Value="model.PostalCode" />
+        </div>
 
-    <div class="mb-3">
-        <label>Telefon</label>
-        <InputText class="form-control" @bind-Value="model.Phone" />
-    </div>
+        <div class="mb-3">
+            <label>Telefon</label>
+            <InputText class="form-control" @bind-Value="model.Phone" />
+        </div>
 
-    <div class="mb-3">
-        <label>Antal behandlingsrum</label>
-        <InputNumber class="form-control" @bind-Value="model.NumTreatmentRooms" />
-    </div>
+        <div class="mb-3">
+            <label>Antal behandlingsrum</label>
+            <InputNumber class="form-control" @bind-Value="model.NumTreatmentRooms" />
+        </div>
+
+        <button class="btn btn-primary" type="submit">Gem ændringer</button>
+    </EditForm>
+
+    <a class="btn btn-secondary" href="/administrer-klinikker">
+        Tilbage
+    </a>
 }
 
-<a class="btn btn-secondary" href="/administrer-klinikker">
-    Tilbage
-</a>
+
 
 @code {
     [Parameter]
@@ -79,5 +89,21 @@ else
         public string PostalCode { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
         public int NumTreatmentRooms { get; set; }
+    }
+
+    private async Task UpdateClinicAsync()
+    {
+        var request = new UpdateClinicRequest(
+            ClinicId,
+            model.Name,
+            model.Street,
+            model.City,
+            model.PostalCode,
+            model.Phone,
+            model.NumTreatmentRooms);
+
+        await UpdateClinicUseCase.ExecuteAsync(request);
+
+        NavigationManager.NavigateTo("/administrer-klinikker");
     }
 }
