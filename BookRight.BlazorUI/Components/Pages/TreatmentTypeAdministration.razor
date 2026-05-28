@@ -7,6 +7,7 @@
 @inject ICreateTreatmentTypeUseCase CreateTreatmentTypeUseCase
 @inject IGetAllTreatmentTypesUseCase GetAllTreatmentTypesUseCase
 @inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
+@inject IAddQualificationUseCase AddQualificationUseCase
 
 
 <PageTitle>Opret Behandlingstype</PageTitle>
@@ -103,6 +104,10 @@
 
             };
             var response = await CreateTreatmentTypeUseCase.ExecuteAsync(request);
+
+            await AddQualificationUseCase.ExecuteAsync(response.TreatmentTypeId, _RequiredSpecialization, _price);
+
+
             _successtreatmentCreateMessage = "Behandlingstype oprettet!";
 
             _treatmentTypeName = "";
