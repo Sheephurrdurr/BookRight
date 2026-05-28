@@ -8,5 +8,6 @@
         public decimal Price { get; set; }
         public bool CanBeCombined { get; set; }
         public string? RequiredSpecialization { get; set; }
+        public Guid TherapistId { get; set; }
     }
 }

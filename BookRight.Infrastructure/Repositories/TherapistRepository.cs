@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.UseCases.Interfaces;
 using BookRight.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace BookRight.Infrastructure.Repositories
 {
@@ -31,6 +33,11 @@ namespace BookRight.Infrastructure.Repositories
         {
             return await _context.Therapists
                 .AnyAsync(t => t.Email.Value == email.ToLowerInvariant());
+        }
+        public async Task UpdateAsync(Therapist therapist) 
+        {
+            _context.Therapists.Update(therapist);
+            await _context.SaveChangesAsync();
         }
 
         public async Task AddAsync(Therapist therapist)

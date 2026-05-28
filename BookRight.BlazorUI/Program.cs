@@ -42,6 +42,7 @@ using BookRight.UseCases.GetClinicById;
 using Microsoft.EntityFrameworkCore;
 using BookRight.Facade.Interfaces.TreatmentTypeUseCase;
 using BookRight.UseCases.GetBookingByWeek;
+using BookRight.UseCases.AddQualification;
 
 
 
@@ -107,6 +108,7 @@ builder.Services.AddScoped<IGetClinicByIdUseCase, GetClinicByIdUseCase>();
 builder.Services.AddScoped<ICreateTreatmentTypeUseCase, CreateTreatmentTypeUseCase>();
 builder.Services.AddScoped<IDeleteTreatmentTypeUseCase, DeleteTreatmentTypeUseCase>();
 builder.Services.AddScoped<IGetByWeekUseCase, GetByWeekUseCase>();
+builder.Services.AddScoped<IAddQualificationUseCase, AddQualificationUseCase>();
 
 var app = builder.Build();
 

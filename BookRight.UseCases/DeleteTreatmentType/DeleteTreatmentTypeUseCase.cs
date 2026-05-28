@@ -1,10 +1,6 @@
 ﻿using BookRight.Facade.DTOs.DeleteTreatmentTypeDTOs;
 using BookRight.Facade.Interfaces.TreatmentTypesUseCase;
 using BookRight.UseCases.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace BookRight.UseCases.DeleteTreatmentType
 {
