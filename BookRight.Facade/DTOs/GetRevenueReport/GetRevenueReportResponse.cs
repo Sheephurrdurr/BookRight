@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BookRight.Facade.DTOs.GetRevenueReport
 {
-    public class GetRevenueReportResponse
+    public sealed record GetRevenueReportResponse
     {
         public decimal TotalRevenue { get; set; }
         public int TotalAppointments { get; set; }

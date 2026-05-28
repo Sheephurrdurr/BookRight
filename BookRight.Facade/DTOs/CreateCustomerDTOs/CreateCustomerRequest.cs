@@ -1,6 +1,6 @@
 ﻿namespace BookRight.Facade.DTOs.CreateCustomerDTOs
 {
-    public record CreateCustomerRequest(
+    public sealed record CreateCustomerRequest(
     string FirstName,
     string LastName,
     string Email,

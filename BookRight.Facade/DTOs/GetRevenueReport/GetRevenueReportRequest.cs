@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BookRight.Facade.DTOs.GetRevenueReport
 {
-    public class GetRevenueReportRequest
+    public sealed record GetRevenueReportRequest
     {
         public Guid? ClinicId { get; set; }
         public Guid? TherapistId { get; set; }

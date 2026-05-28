@@ -1,6 +1,6 @@
 ﻿namespace BookRight.Facade.DTOs.UpdateClinicDTOs
 {
-    public record UpdateClinicRequest(
+    public sealed record UpdateClinicRequest(
         Guid ClinicId,
         string Name,
         string Street,

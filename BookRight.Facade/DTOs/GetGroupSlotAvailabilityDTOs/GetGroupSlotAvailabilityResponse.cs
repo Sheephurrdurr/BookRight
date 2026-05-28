@@ -1,7 +1,7 @@
 ﻿
 namespace BookRight.Facade.DTOs.GetGroupSlotAvailabilityDTOs
 {
-    public record GetGroupSlotAvailabilityResponse
+    public sealed record GetGroupSlotAvailabilityResponse
     {
         public int MaxParticipants { get; set; }
         public int CurrentParticipants { get; set; }

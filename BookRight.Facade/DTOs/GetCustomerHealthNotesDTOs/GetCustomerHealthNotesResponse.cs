@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BookRight.Facade.DTOs.GetCustomerHealthNotesDTOs
 {
-    public record CustomerHealthNotesResponse(
+    public sealed record CustomerHealthNotesResponse(
        Guid CustomerId,
        string? HealthNotes
     );

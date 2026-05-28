@@ -1,7 +1,7 @@
 ﻿
 namespace BookRight.Facade.DTOs.GetAllCampaignDiscountsDTOs
 {
-    public record GetAllCampaignDiscountsResponse
+    public sealed record GetAllCampaignDiscountsResponse
     {
         public Guid Id { get; init; }
         public string Name { get; init; } = default!;

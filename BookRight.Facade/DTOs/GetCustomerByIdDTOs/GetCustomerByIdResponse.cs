@@ -1,6 +1,6 @@
 ﻿namespace BookRight.Facade.DTOs.GetCustomerByIdDTOs
 {
-    public record GetCustomerByIdResponse(
+    public sealed record GetCustomerByIdResponse(
         Guid Id,
         string FirstName,
         string LastName,

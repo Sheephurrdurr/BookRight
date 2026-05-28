@@ -1,6 +1,6 @@
 ﻿namespace BookRight.Facade.DTOs.UpdateTherapistDTOs
 {
-    public record UpdateTherapistRequest(
+    public sealed record UpdateTherapistRequest(
         Guid TherapistId,
         string FirstName,
         string LastName,

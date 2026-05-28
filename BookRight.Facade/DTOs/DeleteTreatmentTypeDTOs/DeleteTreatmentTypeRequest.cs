@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BookRight.Facade.DTOs.DeleteTreatmentTypeDTOs
 {
-    public record DeleteTreatmentTypeRequest
+    public sealed record DeleteTreatmentTypeRequest
     {
         public Guid Id { get; init; }
     }

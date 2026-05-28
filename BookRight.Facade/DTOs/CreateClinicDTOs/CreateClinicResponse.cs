@@ -1,4 +1,4 @@
 ﻿namespace BookRight.Facade.DTOs.CreateClinicDTOs
 {
-    public record CreateClinicResponse(Guid ClinicId);
+    public sealed record CreateClinicResponse(Guid ClinicId);
 }
