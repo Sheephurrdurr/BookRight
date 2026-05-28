@@ -1,0 +1,54 @@
+﻿@using BookRight.Facade.DTOs.GetAllCustomersDTOs
+<!-- CUSTOMER -->
+<article class="col-md-6">
+	<section class="card">
+		<div class="card-header">
+			<h4 class="mb-0">Opret Kunde</h4>
+		</div>
+		<div class="card-body">
+			<div class="mb-3">
+				<label class="form-label">Fornavn</label>
+				<input class="form-control" @bind="firstName" placeholder="Skriv fornavn her..." />
+			</div>
+			<div class="mb-3">
+				<label class="form-label">Efternavn</label>
+				<input class="form-control" @bind="lastName" placeholder="Skriv efternavn her..." />
+			</div>
+			<div class="mb-3">
+				<label class="form-label">Email</label>
+				<input class="form-control" @bind="email" placeholder="Skriv email her..." />
+			</div>
+			<div class="mb-3">
+				<label class="form-label">Telefon</label>
+				<input class="form-control" @bind="phone" placeholder="Skriv telefon-nummer her..." />
+			</div>
+
+			<button class="btn btn-primary" @onclick="HandleSave">Opret Kunde</button>
+
+			@if (!string.IsNullOrEmpty(message))
+			{
+				<div class="alert @alertClass mt-3">@message</div>
+			}
+		</div>
+
+
+	</section>
+</article>
+
+@code {
+	[Parameter]
+	public IReadOnlyList<GetAllCustomersResponse> Customers { get; set; } = [];
+
+	private string firstName = "";
+	private string lastName = "";
+	private string email = "";
+	private string address = "";
+	private string phone = "";
+	private string message = "";
+	private string alertClass = "";
+
+	public async Task HandleSave()
+	{
+		throw new NotImplementedException();
+	}
+}
