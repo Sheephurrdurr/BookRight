@@ -2,7 +2,6 @@
 using BookRight.Domain.Enums;
 using BookRight.Domain.Errors;
 using BookRight.Domain.ValueObjects;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookRight.Domain.Aggregates.Customer;
 public class Customer
