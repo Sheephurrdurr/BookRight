@@ -1,7 +1,7 @@
 ﻿using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.Facade.DTOs.CreateTherapistDTOs;
-using BookRight.UseCases.CreateTherapist;
 using BookRight.UseCases.Interfaces;
+using BookRight.UseCases.TherapistUC.CreateTherapist;
 using Moq;
 using System;
 using System.Collections.Generic;
