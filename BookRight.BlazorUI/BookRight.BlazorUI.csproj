@@ -12,4 +12,8 @@
 		<ProjectReference Include="..\BookRight.Infrastructure\BookRight.Infrastructure.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Include="wwwroot\images\bookright_logo.png" />
+	</ItemGroup>
+
 </Project>
