@@ -1,6 +1,4 @@
-﻿@page "/kalender"
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
-@using BookRight.Facade.DTOs.GetBookingsByWeekDTOs;
+﻿@using BookRight.Facade.DTOs.GetBookingsByWeekDTOs;
 @using BookRight.Facade.Interfaces.BookingUseCases;
 
 @inject IGetByWeekUseCase GetByWeekUseCase;
@@ -77,7 +75,7 @@
 						</div>
 					}
 				</div>
-				
+
 			</div>
 		</div>
 	</div>
@@ -169,3 +167,4 @@
 		return $"{value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px";
 	}
 }
+

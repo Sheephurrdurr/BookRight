@@ -1,4 +1,4 @@
-﻿namespace BookRight.BlazorUI.Models
+﻿namespace BookRight.BlazorUI.Components.Campaign
 {
     public class CreateCampaignInputModel
     {
