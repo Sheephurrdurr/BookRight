@@ -53,6 +53,7 @@ namespace BookRight.UseCase.Test
         private Customer CreateTestCustomer() => new Customer(
             new FullName("Test", "Customer"),
             new Email("test@test.dk"),
+            new Address("TestVej", "TestBy", "0000"),
             new PhoneNumber("12345667"),
             new DateOnly(2000, 1, 1),
             healthNotes: null,

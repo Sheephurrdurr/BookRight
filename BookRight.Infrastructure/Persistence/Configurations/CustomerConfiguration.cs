@@ -8,7 +8,6 @@ namespace BookRight.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Customer> builder)
         {
-            builder.ToTable("Customers");
             // PK konfiguration
             builder.HasKey(t => t.Id);
 
@@ -32,6 +31,18 @@ namespace BookRight.Infrastructure.Persistence.Configurations
                     .HasMaxLength(255)
                     .IsRequired();
             });
+
+            builder.OwnsOne(c => c.Address, address =>
+            {
+                address.Property(a => a.Street)
+                    .HasMaxLength(150);
+
+                address.Property(a => a.City)
+                    .HasMaxLength(150);
+
+                address.Property(a => a.PostalCode)
+                    .HasMaxLength(25);
+            }); 
 
             builder.OwnsOne(c => c.Phone, phone =>
             {

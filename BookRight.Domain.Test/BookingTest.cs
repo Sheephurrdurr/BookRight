@@ -138,6 +138,7 @@ namespace BookRight.Domain.Test
             var customer = new Customer(
                 new FullName("Test", "Tester"),
                 new Email("test@dk"),
+                new Address("TestVej", "TestBy", "1111"),
                 new PhoneNumber("10101010"),
                 new DateOnly(2003, 10, 10),
                 healthNotes: string.Empty,

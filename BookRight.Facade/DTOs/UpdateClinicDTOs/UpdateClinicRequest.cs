@@ -1,7 +1,7 @@
-﻿namespace BookRight.Facade.DTOs.GetClinicByIdDTOs
+﻿namespace BookRight.Facade.DTOs.UpdateClinicDTOs
 {
-    public sealed record GetClinicByIdResponse(
-        Guid Id,
+    public sealed record UpdateClinicRequest(
+        Guid ClinicId,
         string Name,
         string Street,
         string City,

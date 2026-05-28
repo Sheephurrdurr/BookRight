@@ -25,7 +25,9 @@ namespace BookRight.Domain.Aggregates.Clinic
         public IReadOnlyCollection<Therapist> Therapists // --DDD SWAT TEAM!! WEEWOOO -- Aggregates are only linked to other aggregates via Ids, not direct refererences. 
             => _therapists.AsReadOnly();
 
+
         private Clinic() { }
+
 
         // Constructor: bruges til at oprette en ny Clinic og give den startværdier
         public Clinic(string name, Address address, PhoneNumber phone, int numTreatmentRooms)
@@ -56,6 +58,45 @@ namespace BookRight.Domain.Aggregates.Clinic
             Phone = phone;
             NumTreatmentRooms = numTreatmentRooms;
         }
+
+        // Updates the clinic with new values.
+        public void UpdateClinic(
+            string name,
+            Address address,
+            PhoneNumber phone,
+            int numTreatmentRooms)
+        {
+            // Validate clinic name.
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException(
+                    DomainErrorMessages.NameCannotBeEmpty,
+                    nameof(name));
+
+            // Validate address.
+            if (address is null)
+                throw new ArgumentNullException(
+                    nameof(address),
+                    DomainErrorMessages.AddressCannotBeNull);
+
+            // Validate phone number.
+            if (phone is null)
+                throw new ArgumentNullException(
+                    nameof(phone),
+                    DomainErrorMessages.PhoneNumberCannotBeNull);
+
+            // Validate number of treatment rooms.
+            if (numTreatmentRooms <= 0)
+                throw new ArgumentException(
+                    DomainErrorMessages.NumberOfTreatmentRoomsMustBeGreaterThanZero,
+                    nameof(numTreatmentRooms));
+
+            // Update clinic values.
+            Name = name;
+            Address = address;
+            Phone = phone;
+            NumTreatmentRooms = numTreatmentRooms;
+        }
+
 
         // Metode: bruges til at tilføje en åbningstid for klinikken i UI
         public void AddOpeningHour(DayOfWeek dayOfWeek, TimeOnly openTime, TimeOnly closeTime)

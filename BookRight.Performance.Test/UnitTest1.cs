@@ -1,7 +1,7 @@
 ﻿using Bogus;
 using BookRight.Domain.ValueObjects;
 using BookRight.Infrastructure.Persistence;
-using BookRight.Infrastructure.Persistence.Repositories;
+using BookRight.Infrastructure.Repositories;
 using BookRight.UseCases.GetAllCustomers;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -81,6 +81,7 @@ namespace GetAppointments_PerformanceTest
                 .CustomInstantiator(f => new CustomerEntity(
                    name: new FullName(f.Name.FirstName(), f.Name.LastName()),
                     email: new Email(f.Internet.Email()),
+                    address: new Address("TestVej", "TestBy", "0000"),
                     phone: new PhoneNumber(f.Phone.PhoneNumber("#########")),
                     dateOfBirth: DateOnly.FromDateTime(
                         f.Date.Between(DateTime.Now.AddYears(-70), DateTime.Now.AddYears(-18))

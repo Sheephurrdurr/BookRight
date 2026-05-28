@@ -8,7 +8,6 @@ namespace BookRight.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<TherapistTreatmentType> builder)
         {
-            builder.ToTable("TherapistTreatmentType");
 
             builder.Property(t => t.Id)
                 .ValueGeneratedNever();

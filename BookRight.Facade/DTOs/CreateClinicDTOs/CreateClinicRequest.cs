@@ -1,6 +1,6 @@
 ﻿namespace BookRight.Facade.DTOs.CreateClinicDTOs
 {
-    public record CreateClinicRequest(
+    public sealed record CreateClinicRequest(
         string Name,
         string Street,
         string City,

@@ -1,6 +1,6 @@
 ﻿namespace BookRight.Facade.DTOs.ChangeCustomerHealthNotesDTOs
 {
-    public record ChangeCustomerHealthNotesRequest(
+    public sealed record ChangeCustomerHealthNotesRequest(
         Guid CustomerId,
         string? HealthNotes
     );

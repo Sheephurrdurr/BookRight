@@ -1,6 +1,6 @@
 ﻿namespace BookRight.Facade.DTOs.CreateTreatmentTypeDTOs
 {
-    public record CreateTreatmentTypeRequest
+    public sealed record CreateTreatmentTypeRequest
     {
         public string Name { get; set; }
         public int DurationMinutes { get; set; }

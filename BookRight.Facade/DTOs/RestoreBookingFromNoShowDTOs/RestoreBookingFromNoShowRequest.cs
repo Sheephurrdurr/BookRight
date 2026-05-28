@@ -1,5 +1,5 @@
 ﻿namespace BookRight.Facade.DTOs.RestoreBookingFromNoShowDTOs
 {
     // Request DTO used to restore a NoShow booking.
-    public record RestoreBookingFromNoShowRequest(Guid BookingId);
+    public sealed record RestoreBookingFromNoShowRequest(Guid BookingId);
 }

@@ -1,0 +1,56 @@
+﻿@using BookRight.Facade.DTOs.GetAllTherapistsDTOs
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h4 class="mb-0">Terapeuter</h4>
+    </div>
+    <div class="card-body">
+        @if (!Therapists.Any())
+        {
+            <p class="text-muted">Ingen terapeuter oprettet endnu.</p>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Navn</th>
+                        <th>Email</th>
+                        <th>Speciale</th>
+                        <th>Autorisation</th>
+                        <th>Autorisationsnummer</th>
+                        <th>Klinik</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Therapists)
+                    {
+                        <tr>
+                            <td>@t.FirstName @t.LastName</td>
+                            <td>@t.Email</td>
+                            <td>@t.Specialization</td>
+                            <td>@t.AuthorizationType</td>
+                            <td>@t.AuthorizationNumber</td>
+                            <td>@t.ClinicName</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary"
+                                        @onclick="() => OnEdit.InvokeAsync(t)">
+                                    Rediger
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] 
+    public IReadOnlyList<GetAllTherapistsResponse> Therapists { get; set; } = [];
+
+    [Parameter] 
+    public EventCallback<GetAllTherapistsResponse> OnEdit { get; set; }
+}
