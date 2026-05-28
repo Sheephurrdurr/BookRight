@@ -1,8 +1,9 @@
 ﻿using BookRight.Domain.Aggregates.CampaignDiscount;
+using BookRight.Infrastructure.Persistence;
 using BookRight.UseCases.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace BookRight.Infrastructure.Persistence.Repositories
+namespace BookRight.Infrastructure.Repositories
 {
     public class CampaignDiscountRepository : ICampaignDiscountRepository
     {

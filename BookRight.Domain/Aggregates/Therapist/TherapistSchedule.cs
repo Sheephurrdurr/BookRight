@@ -1,7 +1,6 @@
 ﻿using BookRight.Domain.Errors;
 using BookRight.Domain.Exceptions;
 using BookRight.Domain.ValueObjects;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Text;
