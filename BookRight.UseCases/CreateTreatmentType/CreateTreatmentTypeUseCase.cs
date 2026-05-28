@@ -26,6 +26,7 @@ namespace BookRight.UseCases.CreateTreatmentType
                 request.RequiredSpecialization);
 
             await _treatmentTypeRepository.AddAsync(treatmentType);
+            await _treatmentTypeRepository.SaveChangesAsync();
             return new CreateTreatmentTypeResponse
             {
                 TreatmentTypeId = treatmentType.Id

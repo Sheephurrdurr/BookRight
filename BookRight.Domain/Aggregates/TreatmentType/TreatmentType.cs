@@ -38,6 +38,10 @@ namespace BookRight.Domain.Aggregates.TreatmentType
                 throw new ArgumentException(
                     DomainErrorMessages.MaxParticipantsMustBeGreaterThanZero,
                     nameof(maxParticipants));
+            if (price.Value <= 0)
+                throw new ArgumentException(
+                    DomainErrorMessages.PriceMustBeGreaterThanZero,
+                    nameof(price));
 
             Id = Guid.NewGuid();
             Name = name;
