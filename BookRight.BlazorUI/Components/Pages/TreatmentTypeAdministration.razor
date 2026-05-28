@@ -15,7 +15,7 @@
     <h3 class="ms-3">Administrer behandlinger</h3>
     <article class="card mb-4">
         <fieldset class="card-body p-4">
-            <legend><h4 class="ms-3 mt-3">Opret ny behandlingstype</h4></legend>
+            <h4 class="ms-3 mt-3">Opret ny behandlingstype</h4>
             <div class="mb-3">
                 <label class="form-label">Behandling</label>
                 <input class="form-control" @bind="_treatmentTypeName" placeholder="Skriv ind navn på behandling her..." />
@@ -31,16 +31,23 @@
                     <option value="true" >Ja</option>
                 </select>
 
-                    <select class="form-select" @bind="_therapistSpecialization">
-                    <option value="">Vælg speciale</option>
-                    @foreach (var specialization in _therapistSpecialization)
+                <label class="form-label">Autorisation</label>
+
+                    <select class="form-select" @bind="_RequiredSpecialization">
+                    <option value="">Vælg påkrevd autorisation</option>
+                    @foreach (var authorization in _authorizationTypes)
                 {
-                    <option value="@_therapistSpecialization">
-                        @_therapistSpecialization
+                    <option value="@authorization">
+                        @authorization
                     </option>
+                        @if (!string.IsNullOrEmpty(treatmentCreateMessage))
+                        {
+                            <div class="alert alert-danger mt-3">
+                                @treatmentCreateMessage
+                            </div>
+                        }
                 }
                 </select>
-
 
                 <button class="button btn-primary mt-4 rounded-1" @onclick="HandleCreateTreatmentType">Opret Behandlingstype</button>
                     @if (!string.IsNullOrEmpty(treatmentCreateMessage))
@@ -65,7 +72,7 @@
     private bool _canBeCombined => _canBeCombinedString == "true"; //convertere string til bool for usecase
     private string? _RequiredSpecialization;
     private string treatmentCreateMessage = "";
-    private List<string> authorizationTypes = [];
+    private List<string> _authorizationTypes = [];
     private string _therapistSpecialization = "";
 
 
@@ -74,7 +81,7 @@
     {
         if (string.IsNullOrEmpty(_treatmentTypeName))
         {
-            treatmentCreateMessage = "Navn skal vøre udfyldt";
+            treatmentCreateMessage = "Navn skal være udfyldt";
             return;
         }
         try
@@ -87,6 +94,7 @@
                 Price = _price,
                 CanBeCombined = _canBeCombined,
                 RequiredSpecialization = _RequiredSpecialization
+                
             };
             var response = await CreateTreatmentTypeUseCase.ExecuteAsync(request);
             treatmentCreateMessage = "Behandlingstype oprettet!";
@@ -95,9 +103,20 @@
         {
             treatmentCreateMessage = ex.Message;
         }
-
-
-
-        
     }
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+    private async Task LoadData()
+    {
+        var therapists = await GetAllTherapistsUseCase.ExecuteAsync();
+        _authorizationTypes = therapists
+            .Select(t => t.AuthorizationType)
+            .Where(a => !string.IsNullOrWhiteSpace(a))
+            .Distinct()
+            .OrderBy(a => a)
+            .ToList();
+    }
+
 }
