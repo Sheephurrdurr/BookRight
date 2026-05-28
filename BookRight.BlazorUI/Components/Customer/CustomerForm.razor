@@ -1,54 +1,118 @@
-﻿@using BookRight.Facade.DTOs.GetAllCustomersDTOs
-<!-- CUSTOMER -->
-<article class="col-md-6">
-	<section class="card">
-		<div class="card-header">
-			<h4 class="mb-0">Opret Kunde</h4>
+﻿@using BookRight.Facade.DTOs.GetAllTherapistsDTOs
+
+
+
+<section class="card">
+	<div class="card-header">
+		<h4 class="mb-0">Opret Kunde</h4>
+	</div>
+	<div class="card-body">
+		<div class="mb-3">
+			<label class="form-label">Fornavn</label>
+			<input class="form-control" @bind="firstName" placeholder="Skriv fornavn her..." />
 		</div>
-		<div class="card-body">
-			<div class="mb-3">
-				<label class="form-label">Fornavn</label>
-				<input class="form-control" @bind="firstName" placeholder="Skriv fornavn her..." />
-			</div>
-			<div class="mb-3">
-				<label class="form-label">Efternavn</label>
-				<input class="form-control" @bind="lastName" placeholder="Skriv efternavn her..." />
-			</div>
-			<div class="mb-3">
-				<label class="form-label">Email</label>
-				<input class="form-control" @bind="email" placeholder="Skriv email her..." />
-			</div>
-			<div class="mb-3">
-				<label class="form-label">Telefon</label>
-				<input class="form-control" @bind="phone" placeholder="Skriv telefon-nummer her..." />
-			</div>
-
-			<button class="btn btn-primary" @onclick="HandleSave">Opret Kunde</button>
-
-			@if (!string.IsNullOrEmpty(message))
-			{
-				<div class="alert @alertClass mt-3">@message</div>
-			}
+		<div class="mb-3">
+			<label class="form-label">Efternavn</label>
+			<input class="form-control" @bind="lastName" placeholder="Skriv efternavn her..." />
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Email</label>
+			<input class="form-control" @bind="email" placeholder="Skriv email her..." />
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Telefon</label>
+			<input class="form-control" @bind="phone" placeholder="Skriv telefon-nummer her..." />
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Fødselsdato</label>
+			<input class="form-control" type="date" value="@dateOfBirth.ToString("yyyy-MM-dd")"  @onchange="e => dateOfBirth = DateOnly.Parse(e.Value!.ToString()!)" />
 		</div>
 
+		<div class="mb-3">
+			<label class="form-label">Gadenavn</label>
+			<input class="form-control" @bind="street" placeholder="Skriv gadenavn og husnummer..."/>
+		</div>
+		<div class="mb-3">
+			<label  class="form-label">Vejnavn</label>
+			<input class="form-control" @bind="city" placeholder="Skriv vejnavn..."/>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Postnummer</label>
+			<input class="form-control" @bind="postalCode" placeholder="Skriv postnummer..."/>
+		</div>
 
-	</section>
-</article>
+		<div class="mb-3">
+			<label>Helbredsnoter</label>
+			<textarea class="form-control" @bind="healthNotes" placeholder="Valgfri helbredsnote" rows="3"></textarea>
+		</div>
+		<div class="mb-3" >
+			<label>Helbredsnoter</label>
+			<select class="form-control" @bind="preferredTherapistId">
+				<option value="">Ingen preference</option>
+				@foreach(var therapist in Therapists) 
+				{
+					<option value="@therapist.Id">@therapist.FirstName @therapist.LastName</option>
+				}
+			</select>
+		</div>
+
+		<button class="btn btn-primary" @onclick="HandleSave">Opret Kunde</button>
+		@if (!string.IsNullOrEmpty(message))
+		{
+			<div class="alert @alertClass mt-3">@message</div>
+		}
+	</div>
+</section>
+
 
 @code {
 	[Parameter]
-	public IReadOnlyList<GetAllCustomersResponse> Customers { get; set; } = [];
+	public IReadOnlyList<GetAllTherapistsResponse> Therapists { get; set; } = [];
+
+	[Parameter]
+	public EventCallback<CustomerFormData> OnSave {get; set;}
+
 
 	private string firstName = "";
 	private string lastName = "";
 	private string email = "";
-	private string address = "";
+	private string city = "";
+	private string street = "";
+	private string postalCode = "";
 	private string phone = "";
+	private DateOnly dateOfBirth = DateOnly.FromDateTime(DateTime.Today);
+	private string? healthNotes = "";
+	private Guid? preferredTherapistId = Guid.Empty;
 	private string message = "";
 	private string alertClass = "";
 
-	public async Task HandleSave()
+	private async Task HandleSave()
 	{
-		throw new NotImplementedException();
+		var data = new CustomerFormData(
+				firstName,
+				lastName,
+				email,
+				city,
+				street,
+				postalCode,
+				phone,
+				dateOfBirth,
+				healthNotes,
+				preferredTherapistId
+			);
+
+		await OnSave.InvokeAsync(data);
+		message = "Gemt!";
+		alertClass = "alert-success";
+		ResetFields();
+	}
+
+	private void ResetFields()
+	{
+		firstName = lastName = email = phone = street = city = postalCode = ""; // neat way to reset fields
+		dateOfBirth = DateOnly.FromDateTime(DateTime.Today);
+		healthNotes = null;
+		preferredTherapistId = Guid.Empty;
+		message = "";
 	}
 }

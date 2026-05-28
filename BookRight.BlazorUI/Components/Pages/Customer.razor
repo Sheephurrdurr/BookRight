@@ -1,0 +1,54 @@
+﻿@page "/kunder"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using BookRight.BlazorUI.Components.Customer
+@using BookRight.Facade.Interfaces
+@using BookRight.Facade.DTOs.GetAllCustomersDTOs
+@using BookRight.Facade.DTOs.CreateCustomerDTOs
+@using BookRight.Facade.DTOs.GetAllTherapistsDTOs
+
+@inject IGetAllCustomersUseCase GetAllCustomersUseCase
+@inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
+@inject ICreateCustomerUseCase CreateCustomerUseCase
+
+<article>
+	<h1>Kunder</h1>
+	<CustomerForm
+		Therapists="therapists"
+		OnSave="HandleSave"/>
+
+	<CustomerTable
+		Customers ="customers"/>
+
+</article>
+
+@code {
+	private IReadOnlyList<GetAllCustomersResponse> customers = [];
+	private IReadOnlyList<GetAllTherapistsResponse> therapists = [];
+
+	private async Task HandleSave(CustomerFormData data)
+	{
+		var request = new CreateCustomerRequest(
+			data.FirstName, 
+			data.LastName,
+			data.Email,
+			data.Street,
+			data.City,
+			data.PostalCode,
+			data.PhoneNumber, 
+			data.DateOfBirth,
+			data.HealthNotes,
+			data.PreferredTherapistId
+		);
+
+		await CreateCustomerUseCase.ExecuteAsync(request);
+		await LoadData();
+	}
+
+
+	private async Task LoadData()
+	{
+		customers = await GetAllCustomersUseCase.ExecuteAsync();
+		therapists = await GetAllTherapistsUseCase.ExecuteAsync();
+	}
+}
