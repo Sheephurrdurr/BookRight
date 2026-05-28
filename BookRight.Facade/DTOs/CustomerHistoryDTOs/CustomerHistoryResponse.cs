@@ -1,6 +1,6 @@
 ﻿namespace BookRight.Facade.DTOs.CustomerHistoryDTOs;
 
-public record CustomerHistoryResponse(
+public sealed record CustomerHistoryResponse(
     Guid CustomerId,
     string FullName,
     string Email,

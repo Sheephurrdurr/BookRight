@@ -1,7 +1,7 @@
 ﻿
 namespace BookRight.Facade.DTOs.GetBookingsByWeekDTOs
 {
-    public record GetByWeekResponse
+    public sealed record GetByWeekResponse
     {
         public Guid BookingId { get; set; }
         public Guid CustomerId { get; set; }

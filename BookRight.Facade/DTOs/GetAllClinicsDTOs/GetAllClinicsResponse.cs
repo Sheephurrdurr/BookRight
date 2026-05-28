@@ -4,5 +4,5 @@ using System.Text;
 
 namespace BookRight.Facade.DTOs.GetAllClinicsDTOs
 {
-    public record GetAllClinicsResponse(Guid Id, string Name);
+    public sealed record GetAllClinicsResponse(Guid Id, string Name);
 }

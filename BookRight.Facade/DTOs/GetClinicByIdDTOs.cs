@@ -1,6 +1,6 @@
 ﻿namespace BookRight.Facade.DTOs.GetClinicByIdDTOs
 {
-    public record GetClinicByIdResponse(
+    public sealed record GetClinicByIdResponse(
         Guid Id,
         string Name,
         string Street,
