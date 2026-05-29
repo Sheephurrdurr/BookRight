@@ -1,7 +1,6 @@
 ﻿@page "/omsætningsrapport"
 @inject IJSRuntime JSRuntime
 
-@* 1. Det flade namespace fra dit interface fjerner nu fejlen på behandleren! *@
 @using BookRight.Facade.Interfaces
 @using BookRight.Facade.Interfaces.RevenueReportUseCase
 @using BookRight.Facade.Interfaces.ClinicsUseCases
@@ -117,8 +116,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // 3. Hent de rigtige data fra databasen via jeres Use Cases
-        // Ret eventuelt .ExecuteAsync() til det jeres metoder hedder (f.eks. Handle eller Query)
         clinics = await GetAllClinicsUseCase.ExecuteAsync();
         therapists = await GetAllTherapistsUseCase.ExecuteAsync();
     }
