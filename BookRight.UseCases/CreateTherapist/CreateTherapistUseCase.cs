@@ -23,7 +23,7 @@ namespace BookRight.UseCases.CreateTherapist
             var alreadyExists = await _repository.ExistsByEmailAsync(request.Email);
 
             if (alreadyExists)
-                throw new EmailAlreadyExistsException(request.Email); // Ved ikke lige hvorfor den samme person skulle blive oprettet som medarbejder...
+                throw new EmailAlreadyExistsException(request.Email); 
 
             var treatmentTypes = await _treatmentTypeRepository.GetAllAsync();
             var treatmentTypeDict = treatmentTypes.ToDictionary(t => t.Id);
