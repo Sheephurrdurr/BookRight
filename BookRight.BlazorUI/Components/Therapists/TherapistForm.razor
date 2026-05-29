@@ -1,0 +1,210 @@
+﻿@using BookRight.Facade.DTOs.GetAllClinicsDTOs
+@using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
+
+
+<section class="card">
+	<div class="card-header">
+		<h4 class="mb-0">Opret Therapist</h4>
+	</div>
+	<div class="card-body">
+		<div class="mb-3">
+			<label class="form-label">Fornavn</label>
+			<input class="form-control" @bind="firstName" placeholder="Skriv fornavn her..." />
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Efternavn</label>
+			<input class="form-control" @bind="lastName" placeholder="Skriv efternavn her..." />
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Email</label>
+			<input class="form-control" @bind="email" placeholder="Skriv email her..." />
+		</div>
+
+		<select class="form-control" @bind="specialization">
+			<option value="">Vælg speciale</option>
+
+			@foreach (var specialization in Specializations) //DropDown list of all the already created specializations
+			{
+				<option value="@specialization">
+					@specialization
+				</option>
+			}
+		</select>
+		<div class="mb-3">
+			<label class="form-label">Autorisation</label>
+
+			<select class="form-control" @onchange="OnAuthTypeChanged">
+				<option value="">Vælg autorisation</option>
+
+				@foreach (var authorizationType in AuthorizationTypes)
+				{
+					<option value="@authorizationType">
+						@authorizationType
+					</option>
+				}
+			</select>
+
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Autorisationsnummer</label>
+
+			<input class="form-control"
+				   @bind="authorizationNumber"
+				   placeholder="Skriv autorisationsnummer her..." />
+
+			<small class="text-muted">
+				Fortsæt med næste nummer i rækken.
+				Seneste registrerede nummer: @LatestAuthorizationNumber
+			</small>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Behandlingstyper / Qualifications</label>
+
+			@foreach (var treatmentType in TreatmentTypes)
+			{
+				<div class="form-check">
+					<input class="form-check-input"
+						   type="checkbox"
+						   value="@treatmentType.Id"
+						   checked="@selectedTreatmentTypeIds.Contains(treatmentType.Id)"
+						   @onchange="e => ToggleTreatmentType(treatmentType.Id, e)" />
+
+					<label class="form-check-label">
+						@treatmentType.Name
+					</label>
+				</div>
+			}
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Klinik</label>
+			<select class="form-control" @bind="selectedClinicId">
+				<option value="@Guid.Empty">Vælg klinik...</option>
+
+				@foreach (var clinic in Clinics)
+				{
+					<option value="@clinic.Id">@clinic.Name</option>
+				}
+			</select>
+		</div>
+
+		<button class="btn btn-primary" @onclick="HandleSave">
+			@(EditingTherapistId.HasValue ? "Gem ændringer" : "Opret")
+		</button>
+		@if (EditingTherapistId.HasValue)
+		{
+			<button class="btn btn-secondary ms-2" @onclick="HandleCancel">Annuller</button>
+		}
+		@if (!string.IsNullOrEmpty(message))
+		{
+			<div class="alert @alertClass mt-3">@message</div>
+		}
+	</div>
+</section>
+
+@code {
+	[Parameter]
+	public IReadOnlyList<GetAllClinicsResponse> Clinics { get; set; } = [];
+
+	[Parameter]
+	public IReadOnlyList<GetAllTreatmentTypesResponse> TreatmentTypes { get; set; } = [];
+
+	[Parameter]
+	public IReadOnlyList<string> Specializations { get; set; } = [];
+
+	[Parameter]
+	public IReadOnlyList<string> AuthorizationTypes { get; set; } = [];
+
+	[Parameter]
+	public Guid? EditingTherapistId { get; set; }
+
+	[Parameter]
+	public string LatestAuthorizationNumber { get; set; } = "";
+
+	[Parameter]
+	public EventCallback<TherapistFormData> OnSave { get; set; }
+
+	[Parameter]
+	public EventCallback<string> OnAuthorizationTypeChanged { get; set; }
+
+	[Parameter]
+	public EventCallback OnCancel { get; set; }
+
+	private string firstName = "";
+	private string lastName = "";
+	private string email = "";
+	private string specialization = "";
+	private string authorizationType = "";
+	private string authorizationNumber = "";
+	private Guid selectedClinicId = Guid.Empty;
+	private List<Guid> selectedTreatmentTypeIds = [];
+	private string message = "";
+	private string alertClass = "";
+
+	[Parameter]
+	public TherapistFormData? InitialData { get; set; }
+
+	protected override void OnParametersSet()
+	{
+		if (InitialData is not null)
+		{
+			firstName = InitialData.FirstName;
+			lastName = InitialData.LastName;
+			email = InitialData.Email;
+			specialization = InitialData.Specialization;
+			authorizationType = InitialData.AuthorizationType;
+			authorizationNumber = InitialData.AuthorizationNumber;
+			selectedClinicId = InitialData.ClinicId;
+			selectedTreatmentTypeIds = InitialData.TreatmentTypeIds
+			.ToList();		
+		}
+		else
+		{
+			ResetFields();
+		}
+	}
+
+	public async Task HandleCancel()
+	{
+		ResetFields();
+		await OnCancel.InvokeAsync();
+	}
+
+	public async Task HandleSave()
+	{
+		var data = new TherapistFormData(
+			firstName, lastName, email,
+			specialization, authorizationType, authorizationNumber,
+			selectedClinicId, selectedTreatmentTypeIds
+		);
+		await OnSave.InvokeAsync(data);
+		message = "Gemt!";
+		alertClass = "alert-success";
+		ResetFields();
+
+	}
+
+	private void ResetFields()
+	{
+		firstName = lastName = email = specialization = "";
+		authorizationType = authorizationNumber = "";
+		selectedClinicId = Guid.Empty;
+		selectedTreatmentTypeIds = [];
+		message = "";
+	}
+
+	private async Task OnAuthTypeChanged(ChangeEventArgs e)
+	{
+		authorizationType = e.Value?.ToString() ?? "";
+		await OnAuthorizationTypeChanged.InvokeAsync(authorizationType);
+	}
+
+	private void ToggleTreatmentType(Guid id, ChangeEventArgs e)
+	{
+		if ((bool?)e.Value == true)
+			selectedTreatmentTypeIds.Add(id);
+		else
+			selectedTreatmentTypeIds.Remove(id);
+
+	}
+
+}

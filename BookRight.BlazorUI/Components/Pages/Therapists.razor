@@ -1,0 +1,124 @@
+﻿@page "/behandlere"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using BookRight.Facade.DTOs.GetAllTherapistsDTOs
+@using BookRight.Facade.DTOs.GetAllClinicsDTOs
+@using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
+@using BookRight.Facade.DTOs.UpdateTherapistDTOs
+@using BookRight.Facade.DTOs.CreateTherapistDTOs
+@using BookRight.Facade.Interfaces
+@using BookRight.Facade.Interfaces.TherapistUseCases
+@using BookRight.Facade.Interfaces.ClinicsUseCases
+@using BookRight.Facade.Interfaces.TreatmentTypesUseCase
+@using BookRight.BlazorUI.Components.Therapists
+
+@inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
+@inject ICreateTherapistUseCase CreateTherapistUseCase
+@inject IUpdateTherapistUseCase UpdateTherapistUseCase
+@inject IGetAllClinicsUseCase GetAllClinicsUseCase
+@inject IGetAllTreatmentTypesUseCase GetAllTreatmentTypesUseCase
+@inject IGetAllTherapistTreatmentTypesUseCase GetAllTherapistTreatmentTypesUseCase
+
+<PageTitle>Terapeuter</PageTitle>
+
+<article>
+	<h1>Terapeuter</h1>
+	<TherapistForm
+		Clinics="clinics"
+		TreatmentTypes="treatmentTypes"
+		Specializations="specializations"
+		AuthorizationTypes="authorizationTypes"
+		EditingTherapistId="editingTherapistId"
+		InitialData="editingInitialData"
+		LatestAuthorizationNumber="latestAuthorizationNumber"
+		OnSave="HandleSave"
+		OnAuthorizationTypeChanged="HandleAuthorizationTypeChanged"
+		OnCancel="HandleCancel"/>
+
+		<TherapistTable 
+			Therapists="therapists"
+			OnEdit="StartEdit"/>
+</article>
+
+@code {
+	private IReadOnlyList<GetAllTherapistsResponse> therapists = [];
+	private IReadOnlyList<GetAllClinicsResponse> clinics = [];
+	private IReadOnlyList<GetAllTreatmentTypesResponse> treatmentTypes = [];
+	private IReadOnlyList<string> specializations = [];
+	private IReadOnlyList<string> authorizationTypes = [];
+	private Guid? editingTherapistId;
+	private TherapistFormData? editingInitialData;
+	private string latestAuthorizationNumber = "";
+
+	protected override async Task OnInitializedAsync() => await LoadData();
+
+	private async Task HandleSave(TherapistFormData data)
+	{
+		if (editingTherapistId.HasValue)
+		{
+			var request = new UpdateTherapistRequest(
+				editingTherapistId.Value,
+				data.FirstName, data.LastName, data.Email,
+				data.Specialization, data.AuthorizationType, data.AuthorizationNumber,
+				data.ClinicId, data.TreatmentTypeIds
+			);
+			await UpdateTherapistUseCase.ExecuteAsync(request);
+		}
+		else
+		{
+			var request = new CreateTherapistRequest(
+				data.FirstName, data.LastName, data.Email,
+				data.Specialization, data.AuthorizationType, data.AuthorizationNumber,
+				data.ClinicId, data.TreatmentTypeIds
+			);
+			await CreateTherapistUseCase.ExecuteAsync(request);
+		}
+		editingInitialData = null;
+		editingTherapistId = null;
+		await LoadData();
+	}
+
+	private void HandleCancel()
+	{
+		editingInitialData = null;
+		editingTherapistId = null;
+	}
+
+	private void HandleAuthorizationTypeChanged(string authType)
+	{
+		latestAuthorizationNumber = therapists
+			.Where(t => t.AuthorizationType == authType)
+			.Select(t => t.AuthorizationNumber)
+			.LastOrDefault() ?? "Ingen tidligere autorisation fundet";
+	}
+
+	private void StartEdit(GetAllTherapistsResponse t)
+	{
+		editingTherapistId = t.Id;
+		editingInitialData = new TherapistFormData(
+			t.FirstName, t.LastName, t.Email,
+			t.Specialization, t.AuthorizationType, t.AuthorizationNumber,
+			t.ClinicId, t.TreatmentTypeIds.ToList()
+		);
+	}
+
+	private async Task LoadData()
+	{
+		therapists = await GetAllTherapistsUseCase.ExecuteAsync();
+		clinics = await GetAllClinicsUseCase.ExecuteAsync();
+		treatmentTypes = await GetAllTreatmentTypesUseCase.ExecuteAsync();
+
+		specializations = therapists
+									.Select(t => t.Specialization)
+									.Distinct()
+									.OrderBy(s => s)
+									.ToList();
+
+		authorizationTypes = therapists
+									.Select(t => t.AuthorizationType)
+									.Where(a => !string.IsNullOrEmpty(a))
+									.Distinct()
+									.OrderBy(a => a)
+									.ToList();
+	}
+}

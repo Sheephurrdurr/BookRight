@@ -1,0 +1,144 @@
+﻿@page "/behandlingstype"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using BookRight.Facade.Interfaces.TreatmentTypeUseCase
+@using BookRight.Facade.Interfaces.TreatmentTypesUseCase
+@using BookRight.Facade.DTOs.CreateTreatmentTypeDTOs
+@using BookRight.Facade.Interfaces
+@inject ICreateTreatmentTypeUseCase CreateTreatmentTypeUseCase
+@inject IGetAllTreatmentTypesUseCase GetAllTreatmentTypesUseCase
+@inject IGetAllTherapistsUseCase GetAllTherapistsUseCase
+@inject IAddQualificationUseCase AddQualificationUseCase
+
+
+<PageTitle>Opret Behandlingstype</PageTitle>
+
+<main class="container mt-4">
+    <h3 class="ms-3">Administrer behandlinger</h3>
+    <article class="card mb-4">
+        <fieldset class="card-body p-4">
+            <h4 class="ms-3 mt-3">Opret ny behandlingstype</h4>
+            <div class="mb-3">
+                <label class="form-label">Behandling</label>
+                <input class="form-control" @bind="_treatmentTypeName" placeholder="Skriv ind navn på behandling her..." />
+                <label class="form-label">Varighed</label>
+                <input class="form-control" type="number" @bind="_treatmentTypeDuration" min="1" placeholder="Skriv ind varighed her..." />
+                <label class="form-label">Andtal deltagere</label>
+                <input class="form-control" type="number" @bind="_maxParticipants" min="1" placeholder="Skriv ind max andtal personer her..." />
+                <label class="form-label">Pris</label>
+                <input class="form-control" type="number" @bind="_price" min="0" placeholder="Skriv ind pris her..." />
+                <label class="form-label" >Kan kombineres</label>
+
+
+                <label class="form-label">Autorisation</label>
+
+                    <select class="form-select" @bind="_RequiredSpecialization">
+                    <option value="">Vælg påkrevd autorisation</option>
+                    @foreach (var authorization in _authorizationTypes)
+                {
+                    <option value="@authorization">
+                        @authorization
+                    </option>
+                       
+                }
+                </select>
+                @if (!string.IsNullOrEmpty(_failedTreatmentCreateMessage))
+                {
+                    <div class="alert alert-danger mt-3">
+                        @_failedTreatmentCreateMessage
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(_successtreatmentCreateMessage))
+                {
+                    <div class="alert alert-success mt-3">
+                        @_successtreatmentCreateMessage
+                    </div>
+                }
+                <button class="button btn-primary mt-4 rounded-1" @onclick="HandleCreateTreatmentType">Opret Behandlingstype</button>
+
+
+            
+            </div>
+        </fieldset>
+    </article>
+</main>
+
+@code {
+
+    private string _treatmentTypeName = "";
+    private int _treatmentTypeDuration;
+    private int _maxParticipants;
+    private decimal _price;
+    private string _canBeCombinedString = "false"; //gemmer input som text, siden select arbejder med string
+    private bool _canBeCombined => _canBeCombinedString == "true"; //convertere string til bool for usecase
+    private string? _RequiredSpecialization;
+    private List<string> _authorizationTypes = [];
+    private string _therapistSpecialization = "";
+    private string _successtreatmentCreateMessage = "";
+    private string _failedTreatmentCreateMessage = "";
+
+
+
+
+    private async Task HandleCreateTreatmentType()
+    {
+        if (string.IsNullOrEmpty(_treatmentTypeName))
+        {
+            _failedTreatmentCreateMessage = "Navn skal være udfyldt";
+            return;
+        }
+        if (string.IsNullOrEmpty(_RequiredSpecialization))
+        {
+            _failedTreatmentCreateMessage = "Du skal vælge en autorisation.";
+            return;
+        }
+        try
+        {
+            var request = new CreateTreatmentTypeRequest
+            {
+                Name = _treatmentTypeName,
+                DurationMinutes = _treatmentTypeDuration,
+                MaxParticipants = _maxParticipants,
+                Price = _price,
+                CanBeCombined = _canBeCombined,
+                RequiredSpecialization = _RequiredSpecialization
+
+            };
+            var response = await CreateTreatmentTypeUseCase.ExecuteAsync(request);
+
+            await AddQualificationUseCase.ExecuteAsync(response.TreatmentTypeId, _RequiredSpecialization, _price);
+
+
+            _successtreatmentCreateMessage = "Behandlingstype oprettet!";
+
+            _treatmentTypeName = "";
+            _treatmentTypeDuration = 0;
+            _maxParticipants = 0;
+            _price = 0;
+            _RequiredSpecialization = "";
+            _failedTreatmentCreateMessage = "";
+
+
+
+
+        }
+        catch(ArgumentException ex)
+        {
+            _failedTreatmentCreateMessage = ex.Message;
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+    private async Task LoadData()
+    {
+        var therapists = await GetAllTherapistsUseCase.ExecuteAsync();
+        _authorizationTypes = therapists
+            .Select(t => t.AuthorizationType)
+            .Where(a => !string.IsNullOrWhiteSpace(a))
+            .Distinct()
+            .OrderBy(a => a)
+            .ToList();
+    }
+
+}

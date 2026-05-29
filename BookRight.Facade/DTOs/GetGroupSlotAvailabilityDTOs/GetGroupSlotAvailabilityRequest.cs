@@ -2,7 +2,7 @@
 
 namespace BookRight.Facade.DTOs.GetGroupSlotAvailabilityDTOs
 {
-    public record GetGroupSlotAvailabilityRequest
+    public sealed record GetGroupSlotAvailabilityRequest
     {
         public Guid TherapistTreatmentTypeId { get; set; }
         public TimeSlotDto TimeSlot { get; set; }

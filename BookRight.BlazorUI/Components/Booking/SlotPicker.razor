@@ -1,0 +1,45 @@
+﻿<div class="mt-4">
+	<label class="form-label fw-semibold">Dato og starttid</label>
+	<input type="datetime-local" class="form-control" value="@StartTime.ToString("yyyy-MM-ddTHH:mm")" @onchange="OnTimeChanged" />
+</div>
+
+@if (RemainingSlots.HasValue)
+{
+	<div class="br-slot-status @(IsFullyBooked ? "alert-danger bg-danger-subtle border border-danger-subtle" : "alert-success bg-success-subtle border border-success-subtle")">
+		@if (IsFullyBooked)
+		{
+			<span>Holdet er fuldt.</span>
+		}
+		else
+		{
+			<span>Ledige pladser: @RemainingSlots.Value </span>
+		}
+	</div>
+}
+
+@code {
+	[Parameter, EditorRequired]
+	public DateTime StartTime { get; set; } = DateTime.Now;
+
+	[Parameter]
+	public int? RemainingSlots { get; set; }
+
+	[Parameter]
+	public bool IsFullyBooked { get; set; }
+
+	[Parameter]
+	public EventCallback<DateTime> OnSlotChanged { get; set; }
+
+	[Parameter]
+	public EventCallback<DateTime> StartTimeChanged { get; set; }
+
+	public async Task OnTimeChanged(ChangeEventArgs e)
+	{
+		if (DateTime.TryParse(e.Value?.ToString(), out var dateTime))
+		{
+			await StartTimeChanged.InvokeAsync(dateTime);
+			await OnSlotChanged.InvokeAsync();
+		}
+		
+	}
+}

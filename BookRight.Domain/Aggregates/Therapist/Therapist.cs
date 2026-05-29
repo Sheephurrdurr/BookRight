@@ -9,6 +9,7 @@ namespace BookRight.Domain.Aggregates.TherapistAggregate //Rename because of nam
         public FullName Name { get; private set; } = null!;//Not nullable. It's a promise to the constructor, that property is set later. Fixes warning. 
         public Email Email { get; private set; } = null!;
         public string Specialization { get; private set; } = null!;
+        public Authorization Authorization { get; private set; } = null!;
         public Guid ClinicId { get; private set; } //FK to Clinic. 1 therapist belongs to 1 Clinic
 
         private readonly List<TherapistTreatmentType> _qualifications = new();
@@ -19,7 +20,7 @@ namespace BookRight.Domain.Aggregates.TherapistAggregate //Rename because of nam
         {
         }
 
-        public Therapist(FullName name, Email email, string specialization, Guid clinicId)
+        public Therapist(FullName name, Email email, string specialization, Authorization authorization, Guid clinicId)
         {
             if (clinicId == Guid.Empty)
                 throw new ArgumentException(nameof(clinicId));
@@ -34,6 +35,30 @@ namespace BookRight.Domain.Aggregates.TherapistAggregate //Rename because of nam
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Email = email ?? throw new ArgumentNullException(nameof(email));
             Specialization = specialization;
+            Authorization = authorization ?? throw new ArgumentNullException(nameof(authorization));
+        }
+
+        //Used to update therapist data through domain behavior instead of modifying private setters directly from the use case
+        public void UpdateDetails(
+            FullName name,
+            Email email,
+            string specialization,
+            Authorization authorization,
+            Guid clinicId)
+            {
+            if (clinicId == Guid.Empty)
+                throw new ArgumentException(nameof(clinicId));
+
+            if (string.IsNullOrWhiteSpace(specialization))
+                throw new ArgumentException(
+                    DomainErrorMessages.SpecializationIsRequired,
+                    nameof(specialization));
+
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Email = email ?? throw new ArgumentNullException(nameof(email));
+            Specialization = specialization;
+            Authorization = authorization ?? throw new ArgumentNullException(nameof(authorization));
+            ClinicId = clinicId;
         }
 
         // Tilføj en kvalifikation for en behandlingstype
@@ -42,6 +67,8 @@ namespace BookRight.Domain.Aggregates.TherapistAggregate //Rename because of nam
             var qualification = new TherapistTreatmentType(Id, treatmentTypeId, basePrice);
             _qualifications.Add(qualification);
         }
+
+
 
         // Fjern en kvalifikation for en behandlingstype
         public void RemoveQualification(Guid treatmentTypeId)

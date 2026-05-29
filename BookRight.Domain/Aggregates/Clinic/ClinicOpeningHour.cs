@@ -33,5 +33,7 @@ namespace BookRight.Domain.Aggregates.Clinic
             OpenTime = openTime;
             CloseTime = closeTime;
         }
+
+
     }
 }

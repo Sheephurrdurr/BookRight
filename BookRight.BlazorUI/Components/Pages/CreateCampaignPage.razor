@@ -1,15 +1,13 @@
 ﻿@page "/opret-kampagne"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @inject ICreateCampaignDiscountUseCase CreateCampaignDiscountUseCase
-@inject IGetAllTreatmentTypeUseCase GetAllTreatmentTypesUseCase
-
-@using BookRight.Facade.Interfaces.DiscountUseCases
-@using BookRight.Facade.Interfaces.TreatmentTypeUseCase
-@using BookRight.Facade.DTOs.CreateCampaignDTOs
-@using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
-@using BookRight.BlazorUI.Models
+@inject IGetAllTreatmentTypesUseCase GetAllTreatmentTypesUseCase
 
 @using BookRight.BlazorUI.Components.Campaign
+@using BookRight.Facade.DTOs.CreateCampaignDTOs
+@using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
+@using BookRight.Facade.Interfaces.DiscountUseCases
+@using BookRight.Facade.Interfaces.TreatmentTypesUseCase
 
 <PageTitle>Opret Kampagne</PageTitle>
 <h2>Opret Kampagne</h2>
