@@ -1,4 +1,6 @@
-﻿using BookRight.Domain.Aggregates.Clinic;
+﻿using BookRight.Domain.Aggregates.CampaignDiscount;
+using BookRight.Domain.Aggregates.Clinic;
+using BookRight.Domain.Aggregates.TherapistAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -33,5 +35,17 @@ public class ClinicConfiguration : IEntityTypeConfiguration<Clinic>
                 .HasMaxLength(20)
                 .IsRequired();
         });
+
+        builder.OwnsMany(c => c.OpeningHours, oh =>
+        {
+            oh.ToTable("ClinicOpeningHours");
+            oh.WithOwner().HasForeignKey(o => o.ClinicId);
+            oh.HasKey(o => o.ClinicId);
+        });
+
+        builder.HasMany<Therapist>()
+                   .WithMany()
+                   .HasForeignKey(x => x.ClinicId);
+
     }
 }

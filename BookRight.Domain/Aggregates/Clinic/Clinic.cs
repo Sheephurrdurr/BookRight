@@ -1,5 +1,4 @@
-﻿using BookRight.Domain.Aggregates.TherapistAggregate;
-using BookRight.Domain.Errors;
+﻿using BookRight.Domain.Errors;
 using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Aggregates.Clinic
@@ -12,18 +11,23 @@ namespace BookRight.Domain.Aggregates.Clinic
         public PhoneNumber Phone { get; private set; } = null!; //Not nullable
         public int NumTreatmentRooms { get; private set; }
 
+
         // Privat liste, som kun Clinic-klassen selv kan ændre direkte
-        private readonly List<Guid> _openingHourIds = new();
+        private readonly List<ClinicOpeningHour> _openingHours = new();
 
         // Andre klasser kan kun læse åbningstiderne, ikke ændre dem direkte
-        public IReadOnlyCollection<Guid> OpeningHourIds => _openingHourIds.AsReadOnly();
+        public List<ClinicOpeningHour> OpeningHours 
+            => _openingHours.ToList();
 
-        private readonly List<Guid> _therapistScheduleIds = new(); // --- DDD POLICE!! WEEWOOO -- Aggregates are only linked to other aggregates via Ids, not direct refererences. Change this at some point, or Kaj is gonna grill us. Alive.
-        public IReadOnlyCollection<Guid> TherapistScheduleIds => _therapistScheduleIds.AsReadOnly();
 
-        private readonly List<Guid> _therapistIds = new(); //--- DDD POLICE!! WEEWOOO -- 
-        public IReadOnlyCollection<Guid> Therapists // --DDD SWAT TEAM!! WEEWOOO -- Aggregates are only linked to other aggregates via Ids, not direct refererences. 
-            => _therapistIds.AsReadOnly();
+        private readonly List<Guid> _therapistScheduleIds = new(); 
+        public List<Guid> TherapistScheduleIds 
+            => _therapistScheduleIds.ToList();
+   
+
+        private readonly List<Guid> _therapistIds = new(); 
+        public List<Guid> TherapistIds 
+            => _therapistIds.ToList();
 
 
         private Clinic() { }
@@ -101,7 +105,7 @@ namespace BookRight.Domain.Aggregates.Clinic
         // Metode: bruges til at tilføje en åbningstid for klinikken i UI
         public void AddOpeningHour(DayOfWeek dayOfWeek, TimeOnly openTime, TimeOnly closeTime)
         {
-            _openingHourIds.Add(new ClinicOpeningHour(Id, dayOfWeek, openTime, closeTime));
+            _openingHours.Add(new ClinicOpeningHour(Id, dayOfWeek, openTime, closeTime));
         }
     }
 }
