@@ -1,0 +1,29 @@
+﻿@using BookRight.Facade.DTOs.GetAllClinicsDTOs
+
+
+<div class="mt-4">
+    <label class="form-label fw-semibold">Klinik</label>
+    <select class="form-select" value="@SelectedClinicId" @onchange="OnChanged">
+        <option value="">-- Vælg Klinik --</option>
+        @foreach (var clinic in Clinics)
+        {
+            <option value="@clinic.Id">@clinic.Name</option>
+        }
+    </select>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<GetAllClinicsResponse> Clinics { get; set; } = [];
+
+    [Parameter]
+    public string SelectedClinicId { get; set; }
+
+    [Parameter]
+    public EventCallback<string> SelectedClinicIdChanged { get; set; }
+
+    public async Task OnChanged(ChangeEventArgs e)
+    {
+        await SelectedClinicIdChanged.InvokeAsync(e.Value?.ToString() ?? "");
+    }
+}

@@ -1,0 +1,95 @@
+﻿@using BookRight.Facade.DTOs.CustomerHistoryDTOs
+@using BookRight.Facade.Interfaces.CustomerUseCases
+
+@inject IGetCustomerHistoryUseCase GetCustomerHistoryUseCase
+
+<section class="card">
+    <div class="card-header">
+        <h4 class="mb-0">Kundehistorik og loyalitetsniveau</h4>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <label class="form-label">Søg kunde</label>
+            <input class="form-control"
+                   @bind="query"
+                   placeholder="Søg på email, telefon eller navn..." />
+        </div>
+        <button class="btn btn-primary" @onclick="Search">Søg</button>
+
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="alert @alertClass mt-3">@message</div>
+        }
+
+        @if (results.Any())
+        {
+            <hr />
+            @foreach (var customerHistory in results)
+            {
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5>@customerHistory.FullName</h5>
+                        <p><strong>Email:</strong> @customerHistory.Email</p>
+                        <p><strong>Telefon:</strong> @customerHistory.Phone</p>
+                        <p><strong>Loyalitetsniveau:</strong> @customerHistory.LoyaltyLevel</p>
+                        <p><strong>Forbrug sidste 12 måneder:</strong> @customerHistory.TotalSpentLast12Months kr.</p>
+
+                        <table class="table table-striped mt-4">
+                            <thead>
+                                <tr>
+                                    <th>Start</th>
+                                    <th>Slut</th>
+                                    <th>Pris</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var booking in customerHistory.Bookings)
+                                {
+                                    <tr>
+                                        <td>@booking.StartTime</td>
+                                        <td>@booking.EndTime</td>
+                                        <td>@booking.TotalPrice kr.</td>
+                                        <td>@booking.Status</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</section>
+
+@code {
+    private string query = "";
+    private string message = "";
+    private string alertClass = "";
+    private IReadOnlyList<CustomerHistoryResponse> results = [];
+
+    private async Task Search()
+    {
+        message = "";
+        alertClass = "";
+        results = [];
+
+        try
+        {
+            results = await GetCustomerHistoryUseCase.ExecuteAsync(query);
+
+            query = "";
+
+            if (!results.Any())
+            {
+                message = "Ingen kunde fundet.";
+                alertClass = "alert-warning";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Fejl: {ex.Message}";
+            alertClass = "alert-danger";
+        }
+    }
+}

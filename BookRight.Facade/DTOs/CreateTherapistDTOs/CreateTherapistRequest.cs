@@ -1,6 +1,6 @@
 ﻿namespace BookRight.Facade.DTOs.CreateTherapistDTOs
 {
-    public record CreateTherapistRequest(
+    public sealed record CreateTherapistRequest(
         string FirstName,
         string LastName,
         string Email,

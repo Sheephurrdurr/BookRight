@@ -14,7 +14,6 @@ namespace BookRight.UseCases.ChangeCustomerHealthNotes
             _repository = repository;
         }
 
-        // Auf der Heide blüht ein kleines Blümelein Und das heißt: Erika.
         public async Task ExecuteAsync(ChangeCustomerHealthNotesRequest request)
         {
             var customer = await _repository.GetByIdAsync(request.CustomerId);

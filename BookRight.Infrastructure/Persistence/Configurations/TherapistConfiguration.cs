@@ -8,7 +8,6 @@ namespace BookRight.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Therapist> builder)
         {
-            builder.ToTable("Therapists");
             // PK konfiguration
             builder.Property(x => x.Id) 
                 .ValueGeneratedNever(); // Db må ikke generere Id. I DDD styrer Domain dette.

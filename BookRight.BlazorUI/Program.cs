@@ -11,11 +11,11 @@ using BookRight.Facade.Interfaces.TherapistUseCases;
 using BookRight.Facade.Interfaces.TreatmentTypesUseCase;
 using BookRight.Infrastructure;
 using BookRight.Infrastructure.Persistence;
-using BookRight.Infrastructure.Persistence.Repositories;
 using BookRight.Infrastructure.Repositories;
 using BookRight.UseCases.CampaignDiscountUseCases;
 using BookRight.UseCases.ChangeCustomerHealthNotes;
 using BookRight.UseCases.CreateBooking;
+using BookRight.UseCases.CreateClinic;
 using BookRight.UseCases.CreateCustomer;
 using BookRight.UseCases.CreateTherapist;
 using BookRight.UseCases.GetAllCampaignDiscounts;
@@ -33,9 +33,18 @@ using BookRight.UseCases.Interfaces;
 using BookRight.UseCases.MarkBookingArrived;
 using BookRight.UseCases.MarkBookingAsNoShow;
 using BookRight.UseCases.MarkBookingCompleted;
-using BookRight.UseCases.RestoreBookingFromNoShow;  
+using BookRight.UseCases.RestoreBookingFromNoShow;
+using BookRight.UseCases.DeleteTreatmentType;
+using BookRight.UseCases.UpdateClinic;
+using BookRight.UseCases.CreateTreatmentType;
 using BookRight.UseCases.UpdateTherapist;
+using BookRight.UseCases.GetClinicById;
 using Microsoft.EntityFrameworkCore;
+using BookRight.Facade.Interfaces.TreatmentTypeUseCase;
+using BookRight.UseCases.GetBookingByWeek;
+using BookRight.UseCases.AddQualification;
+using BookRight.UseCases.GetBookingsForToday;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,8 +100,17 @@ builder.Services.AddScoped<IGetAllTreatmentTypesUseCase, GetAllTreatmentTypesUse
 builder.Services.AddScoped<IGetRevenueReportUseCase, GetRevenueReportUseCase>();
 builder.Services.AddScoped<IGetAllClinicsUseCase, GetAllClinicsUseCase>();
 builder.Services.AddScoped<IGetAllTherapistsUseCase, GetAllTherapistsUseCase>();
+builder.Services.AddScoped<ICreateClinicUseCase, CreateClinicUseCase>();
+builder.Services.AddScoped<IUpdateClinicUseCase, UpdateClinicUseCase>();
 builder.Services.AddScoped<IGetAllCampaignDiscountsUseCase, GetAllCampaignDiscountsUseCase>();
 builder.Services.AddScoped<IUpdateTherapistUseCase, UpdateTherapistUseCase>();
+builder.Services.AddScoped<IGetClinicByIdUseCase, GetClinicByIdUseCase>();
+builder.Services.AddScoped<ICreateTreatmentTypeUseCase, CreateTreatmentTypeUseCase>();
+builder.Services.AddScoped<IDeleteTreatmentTypeUseCase, DeleteTreatmentTypeUseCase>();
+builder.Services.AddScoped<IGetByWeekUseCase, GetByWeekUseCase>();
+builder.Services.AddScoped<IAddQualificationUseCase, AddQualificationUseCase>();
+builder.Services.AddScoped<IGetBookingsForTodayUseCase, GetBookingsForTodayUseCase>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

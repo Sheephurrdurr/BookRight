@@ -3,7 +3,7 @@ using BookRight.Domain.Errors;
 
 namespace BookRight.Domain.Aggregates.TherapistAggregate
 {
-    public class TherapistTreatmentType //Ingen configurations endnu...
+   public class TherapistTreatmentType //Ingen configurations endnu...
     {
         public Guid Id { get; private set; }
         public Guid TherapistId { get; private set; }
@@ -20,7 +20,7 @@ namespace BookRight.Domain.Aggregates.TherapistAggregate
             if (treatmentTypeId == Guid.Empty)
                 throw new ArgumentException(nameof(treatmentTypeId));
 
-            if (basePrice <= 0)
+            if (basePrice <= 0) 
                 throw new ArgumentException(
                     DomainErrorMessages.PriceMustBeGreaterThanZero,
                     nameof(basePrice));

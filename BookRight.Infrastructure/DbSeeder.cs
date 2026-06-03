@@ -62,7 +62,8 @@ namespace BookRight.Infrastructure
                 30, // Duration in minutes
                 1, // Max participants
                 new Money(350),// Price for the treatment
-                true // Can be combined with other treatments?
+                true, // Can be combined with other treatments?
+                "Massage"
             );
 
             var treatmentType2 = new TreatmentType(
@@ -70,7 +71,8 @@ namespace BookRight.Infrastructure
                 60,
                 1,
                 new Money(699),
-                true
+                true,
+                "Autoriseret fysioterapeut"
             );
 
             var treatmentType3 = new TreatmentType(
@@ -78,7 +80,8 @@ namespace BookRight.Infrastructure
                 30,
                 1,
                 new Money(395),
-                true
+                true,
+                "Autoriseret fysioterapeut"
             );
 
             var treatmentType4 = new TreatmentType(
@@ -86,7 +89,8 @@ namespace BookRight.Infrastructure
                 45,
                 1,
                 new Money(589),
-                true
+                true,
+                "Autoriseret fysioterapeut"
             );
 
             var treatmentType5 = new TreatmentType(
@@ -94,7 +98,8 @@ namespace BookRight.Infrastructure
                 60,
                 1,
                 new Money(745),
-                true
+                true,
+                "Autoriseret fysioterapeut"
             );
 
             var treatmentType6 = new TreatmentType(
@@ -102,7 +107,8 @@ namespace BookRight.Infrastructure
                 60,
                 1,
                 new Money(799),
-                false
+                false,
+                "Kostvejledning"
             );
 
             var treatmentType7 = new TreatmentType(
@@ -110,7 +116,8 @@ namespace BookRight.Infrastructure
                 30,
                 1,
                 new Money(450),
-                false
+                false,
+                "Kostvejledning"
             );
 
             var treatmentType8 = new TreatmentType(
@@ -118,7 +125,8 @@ namespace BookRight.Infrastructure
                 45,
                 1,
                 new Money(550),
-                false
+                false,
+                "Akupunktur"
             );
 
             var treatmentType9 = new TreatmentType(
@@ -126,7 +134,8 @@ namespace BookRight.Infrastructure
                 60,
                 6, // Max participants for group training
                 new Money(150),
-                false
+                false,
+                "Autoriseret fysioterapeut"
             );
 
             // Add the treatment types to the database context
@@ -335,10 +344,10 @@ namespace BookRight.Infrastructure
             if (_context.Customers.Any()) return; 
 
             var therapist = _context.Therapists.First();
-
             var customer1 = new Customer(
-                new FullName("Bill","Gates"),
+                new FullName("Bill", "Gates"),
                 new Email("bill.gates@example.com"),
+                new Address("Vesterbrogade 14", "Vejle", "7100"),
                 new PhoneNumber("87654321"),
                 new DateOnly(1990, 1, 1),
                 null,
@@ -348,6 +357,7 @@ namespace BookRight.Infrastructure
             var customer2 = new Customer(
                 new FullName("Anna", "Thomsen"),
                 new Email("anna.thomsen@example.com"),
+                new Address("Nørretorv 3", "Vejle", "7100"),
                 new PhoneNumber("84872234"),
                 new DateOnly(1994, 4, 1),
                 null,
@@ -357,6 +367,7 @@ namespace BookRight.Infrastructure
             var customer3 = new Customer(
                 new FullName("Mikkel", "Jensen"),
                 new Email("mikkel.jensen@example.com"),
+                new Address("Søndergade 22", "Vejle", "7100"),
                 new PhoneNumber("22334455"),
                 new DateOnly(1988, 6, 12),
                 null,
@@ -366,6 +377,7 @@ namespace BookRight.Infrastructure
             var customer4 = new Customer(
                 new FullName("Sofie", "Larsen"),
                 new Email("sofie.larsen@example.com"),
+                new Address("Horsensvej 8", "Vejle", "7100"),
                 new PhoneNumber("33445566"),
                 new DateOnly(1996, 9, 23),
                 null,
@@ -375,6 +387,7 @@ namespace BookRight.Infrastructure
             var customer5 = new Customer(
                 new FullName("Peter", "Nielsen"),
                 new Email("peter.nielsen@example.com"),
+                new Address("Kirketorvet 5", "Vejle", "7100"),
                 new PhoneNumber("44556677"),
                 new DateOnly(1979, 11, 5),
                 null,
@@ -384,6 +397,7 @@ namespace BookRight.Infrastructure
             var customer6 = new Customer(
                 new FullName("Maria", "Hansen"),
                 new Email("maria.hansen@example.com"),
+                new Address("Strandvejen 12", "Vejle", "7100"),
                 new PhoneNumber("55667788"),
                 new DateOnly(1992, 2, 18),
                 null,
@@ -393,6 +407,7 @@ namespace BookRight.Infrastructure
             var customer7 = new Customer(
                 new FullName("Jonas", "Pedersen"),
                 new Email("jonas.pedersen@example.com"),
+                new Address("Bredgade 7", "Kolding", "6000"),
                 new PhoneNumber("66778899"),
                 new DateOnly(1985, 7, 30),
                 null,
@@ -402,6 +417,7 @@ namespace BookRight.Infrastructure
             var customer8 = new Customer(
                 new FullName("Camilla", "Madsen"),
                 new Email("camilla.madsen@example.com"),
+                new Address("Haderslevvej 19", "Kolding", "6000"),
                 new PhoneNumber("77889900"),
                 new DateOnly(1998, 12, 14),
                 null,
@@ -411,6 +427,7 @@ namespace BookRight.Infrastructure
             var customer9 = new Customer(
                 new FullName("Lars", "Christensen"),
                 new Email("lars.christensen@example.com"),
+                new Address("Akseltorv 2", "Kolding", "6000"),
                 new PhoneNumber("88990011"),
                 new DateOnly(1975, 3, 9),
                 null,
@@ -420,6 +437,7 @@ namespace BookRight.Infrastructure
             var customer10 = new Customer(
                 new FullName("Line", "Rasmussen"),
                 new Email("line.rasmussen@example.com"),
+                new Address("Rendebanen 11", "Kolding", "6000"),
                 new PhoneNumber("99001122"),
                 new DateOnly(1991, 8, 21),
                 null,
@@ -429,6 +447,7 @@ namespace BookRight.Infrastructure
             var customer11 = new Customer(
                 new FullName("Frederik", "Mortensen"),
                 new Email("frederik.mortensen@example.com"),
+                new Address("Torvet 1", "Horsens", "8700"),
                 new PhoneNumber("11224455"),
                 new DateOnly(1983, 5, 17),
                 null,
@@ -438,6 +457,7 @@ namespace BookRight.Infrastructure
             var customer12 = new Customer(
                 new FullName("Emma", "Thomsen"),
                 new Email("emma.thomsen@example.com"),
+                new Address("Søndergade 4", "Horsens", "8700"),
                 new PhoneNumber("22335566"),
                 new DateOnly(1997, 10, 3),
                 null,
@@ -447,6 +467,7 @@ namespace BookRight.Infrastructure
             var customer13 = new Customer(
                 new FullName("Nikolaj", "Sørensen"),
                 new Email("nikolaj.sorensen@example.com"),
+                new Address("Fussingsvej 6", "Horsens", "8700"),
                 new PhoneNumber("33446677"),
                 new DateOnly(1989, 1, 28),
                 null,
@@ -456,6 +477,7 @@ namespace BookRight.Infrastructure
             var customer14 = new Customer(
                 new FullName("Julie", "Andersen"),
                 new Email("julie.andersen@example.com"),
+                new Address("Nørrebrogade 33", "Horsens", "8700"),
                 new PhoneNumber("44557788"),
                 new DateOnly(1995, 6, 6),
                 null,
@@ -465,6 +487,7 @@ namespace BookRight.Infrastructure
             var customer15 = new Customer(
                 new FullName("Martin", "Møller"),
                 new Email("martin.moeller@example.com"),
+                new Address("Fredericiavej 41", "Vejle", "7100"),
                 new PhoneNumber("55668899"),
                 new DateOnly(1981, 4, 24),
                 null,
@@ -474,6 +497,7 @@ namespace BookRight.Infrastructure
             var customer16 = new Customer(
                 new FullName("Louise", "Kristensen"),
                 new Email("louise.kristensen@example.com"),
+                new Address("Boulevarden 16", "Vejle", "7100"),
                 new PhoneNumber("66779900"),
                 new DateOnly(1993, 9, 12),
                 null,
@@ -483,6 +507,7 @@ namespace BookRight.Infrastructure
             var customer17 = new Customer(
                 new FullName("Anders", "Olsen"),
                 new Email("anders.olsen@example.com"),
+                new Address("Give Landevej 55", "Give", "7323"),
                 new PhoneNumber("77880011"),
                 new DateOnly(1978, 2, 2),
                 null,
@@ -492,6 +517,7 @@ namespace BookRight.Infrastructure
             var customer18 = new Customer(
                 new FullName("Ida", "Johansen"),
                 new Email("ida.johansen@example.com"),
+                new Address("Vestergade 9", "Juelsminde", "7130"),
                 new PhoneNumber("88991122"),
                 new DateOnly(2000, 7, 19),
                 null,
@@ -501,6 +527,7 @@ namespace BookRight.Infrastructure
             var customer19 = new Customer(
                 new FullName("Thomas", "Bach"),
                 new Email("thomas.bach@example.com"),
+                new Address("Grundet Ringvej 28", "Vejle", "7100"),
                 new PhoneNumber("99112233"),
                 new DateOnly(1986, 11, 27),
                 null,
@@ -510,6 +537,7 @@ namespace BookRight.Infrastructure
             var customer20 = new Customer(
                 new FullName("Sara", "Poulsen"),
                 new Email("sara.poulsen@example.com"),
+                new Address("Munkebjergvej 13", "Vejle", "7100"),
                 new PhoneNumber("10293847"),
                 new DateOnly(1999, 3, 15),
                 null,

@@ -25,6 +25,7 @@ namespace BookRight.UseCases.CreateCustomer
             var customer = new Customer(
             new FullName(request.FirstName, request.LastName),
             new Email(request.Email),
+            new Address(request.Street, request.City, request.PostalCode),
             new PhoneNumber(request.Phone),
             request.DateOfBirth,
             request.HealthNotes,

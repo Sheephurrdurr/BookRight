@@ -1,7 +1,7 @@
 ﻿
 namespace BookRight.Facade.DTOs.CreateBookingDTOs
 {
-    public record CreateBookingRequest
+    public sealed record CreateBookingRequest
     {
         public Guid CustomerId { get; set; }
         public Guid ClinicId { get; set; }

@@ -29,6 +29,9 @@ namespace BookRight.UseCases.GetCustomerById
                 customer.Name.FirstName,
                 customer.Name.LastName,
                 customer.Email.Value,
+                customer.Address.Street,
+                customer.Address.City,
+                customer.Address.PostalCode,
                 customer.Phone.Value,
                 customer.DateOfBirth,
                 customer.PreferredTherapistId

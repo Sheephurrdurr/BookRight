@@ -1,0 +1,136 @@
+﻿.calendar-shell {
+    display: flex;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.calendar-time-col {
+    width: 55px;
+    flex-shrink: 0;
+    border-right: 1px solid #dee2e6;
+}
+
+.calendar-time-header {
+    height: 50px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.calendar-time-label {
+    height: 80px; /*Match HourHeight i selve componentets @code del*/
+    display: flex;
+    align-items: flex-start;
+    padding-top: 6px;
+    padding-right: 8px;
+    font-size: 10px;
+    color: #9ca3af;
+    font-weight: 500;
+    border-bottom: 1px solid #f0f2f5;
+}
+
+.calendar-days-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+}
+
+.calendar-day-headers {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    height: 50px;
+    border-bottom: 1px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    background: #ffff;
+    z-index: 5;
+}
+
+.calendar-day-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6px 8px;
+    border-right: 1px solid #f0f2f5;
+}
+
+    .calendar-day-header:last-child {
+        border-right: none;
+    }
+
+.calendar-today {
+    background: #EBF4FC;
+}
+
+.calendar-day-name {
+    font-size: 10px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.calendar-day-date {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.calendar-today-badge {
+    color: #185FA5;
+    font-weight: 700;
+}
+
+.calendar-grid-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar-hour-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #f0f2f5;
+    z-index: 0;
+}
+
+.calendar-day-track {
+    position: relative;
+    border-right: 1px solid #f0f2f5;
+    z-index: 1;
+    height: 100%;
+}
+
+    .calendar-day-track.today {
+        background: #f7fbff;
+    }
+
+    .calendar-day-track:last-child {
+        border-right: none;
+    }
+
+.calendar-booking {
+    position: absolute;
+    left: 3px;
+    right: 3px;
+    border-radius: 5px;
+    padding: 6px 8px;
+    color: #ffff;
+    font-size: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    line-height: 1.4;
+}
+
+.calendar-booking-time {
+    font-weight: 600;
+}
+
+.calendar-booking-status {
+    opacity: .85;
+}

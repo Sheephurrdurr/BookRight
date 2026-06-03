@@ -1,7 +1,7 @@
 ﻿
 namespace BookRight.Facade.DTOs.GetAllTherapistTreatmentTypesDTOs
 {
-    public record GetAllTherapistTreatmentTypesResponse(
+    public sealed record GetAllTherapistTreatmentTypesResponse(
         Guid Id,
         Guid TherapistId,
         string TherapistName,

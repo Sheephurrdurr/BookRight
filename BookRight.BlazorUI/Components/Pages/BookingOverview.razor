@@ -1,28 +1,23 @@
 ﻿@page "/booking-overview" 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-@using BookRight.Domain.Enums
-@using BookRight.Domain.Aggregates.Booking
-@using BookRight.Domain.Aggregates.Clinic
-@using BookRight.Domain.Aggregates.TherapistAggregate
 @using BookRight.Facade.DTOs.MarkBookingAsNoShowDTOs
 @using BookRight.Facade.DTOs.MarkBookingAsArrivedDTOs
 @using BookRight.Facade.DTOs.MarkBookingCompletedDTOs
-@using BookRight.Facade.Interfaces.BookingUseCases
+
 @using BookRight.Facade.DTOs.RestoreBookingFromNoShowDTOs
+@using BookRight.Facade.DTOs.GetBookingsForTodayDTOs
+@using BookRight.Facade.DTOs.GetAllClinicsDTOs
 
+@using BookRight.Facade.Interfaces.ClinicsUseCases
+@using BookRight.Facade.Interfaces.BookingUseCases
 
-@using BookRight.UseCases.Interfaces
-@using BookRight.Domain.Aggregates.Customer
-
-@inject IBookingRepository BookingRepository
-@inject IClinicRepository ClinicRepository
-@inject ICustomerRepository CustomerRepository
 @inject IMarkBookingAsNoShowUseCase MarkBookingAsNoShowUseCase
 @inject IMarkBookingArrivedUseCase MarkBookingArrivedUseCase
 @inject IMarkBookingCompletedUseCase MarkBookingCompletedUseCase
 @inject IRestoreBookingFromNoShowUseCase RestoreBookingFromNoShowUseCase
-@inject ITherapistRepository TherapistRepository
+@inject IGetAllClinicsUseCase GetAllClinicsUseCase
+@inject IGetBookingsForTodayUseCase GetBookingsForTodayUseCase
 
 <PageTitle>Booking Oversigt</PageTitle>
 
@@ -77,12 +72,12 @@
                     @foreach (var booking in FilteredBookings)
                     {
                         <tr>
-                            <td>@booking.TimeSlot.StartTime.ToString("HH:mm")</td>
-                            <td>@GetCustomerName(booking.CustomerId)</td>
-                            <td>@GetTherapistName(booking.TherapistId)</td>
+                            <td>@booking.StartTime.ToString("HH:mm")</td>
+                            <td>@booking.CustomerName</td>
+                            <td>@booking.TherapistName</td>
 
                             <td>
-                                @if (booking.Status == BookingStatus.NoShow)
+                                @if (booking.Status == "NoShow")
                                 {
                                     <span class="badge bg-danger">Ikke mødt</span>
                                 }
@@ -92,32 +87,32 @@
                                 }
                             </td>
                             <td>
-                                @if (booking.Status == BookingStatus.Confirmed)
+                                @if (booking.Status == "Confirmed")
                                 {
                                     <button class="btn btn-danger btn-sm"
-                                            @onclick="() => RegisterBookingAsNoShow(booking.Id)">
+                                            @onclick="() => RegisterBookingAsNoShow(booking.BookingId)">
                                         Ikke mødt
                                     </button>
                                 }
-                                else if (booking.Status == BookingStatus.NoShow)
+                                else if (booking.Status == "NoShow")
                                 {
                                     <button class="btn btn-success btn-sm"
-                                            @onclick="() => RestoreBookingFromNoShow(booking.Id)">
+                                            @onclick="() => RestoreBookingFromNoShow(booking.BookingId)">
                                         Gendan
                                     </button>
                                 }
-								@if (booking.Status == BookingStatus.Confirmed)
+								@if (booking.Status == "Confirmed")
 								{
 									<button class="btn btn-success btn-sm ms-2"
-											@onclick="() => RegisterBookingAsArrived(booking.Id)">
+											@onclick="() => RegisterBookingAsArrived(booking.BookingId)">
 										Register Arrived
 									</button>
 								}
 								
-                                @if (booking.Status == BookingStatus.Arrived)
+                                @if (booking.Status == "Arrived")
                                 {
                                     <button class="btn btn-success btn-sm ms-2"
-                                            @onclick="() => RegisterBookingAsCompleted(booking.Id)">
+                                            @onclick="() => RegisterBookingAsCompleted(booking.BookingId)">
                                         Afslut behandling
                                     </button>
                                 }
@@ -135,28 +130,24 @@
 </div>
 
 @code {
-    private IReadOnlyList<Booking> bookings = new List<Booking>();
-    private IReadOnlyList<Clinic> clinics = new List<Clinic>();
-    private IReadOnlyList<Customer> customers = new List<Customer>();
-    private IReadOnlyList<Therapist> therapists = new List<Therapist>();
+    private IReadOnlyList<GetBookingsForTodayResponse> bookings = [];
+    private IReadOnlyList<GetAllClinicsResponse> clinics = [];
 
     private string selectedClinicId = "";
     private string message = "";
     private string alertClass = "";
 
-    private IEnumerable<Booking> FilteredBookings =>
+    private IEnumerable<GetBookingsForTodayResponse> FilteredBookings =>
         bookings
-            .Where(b =>
-                b.ClinicId.ToString() == selectedClinicId &&
-                b.TimeSlot.StartTime.Date == DateTime.Today)
-            .OrderBy(b => b.TimeSlot.StartTime);
+            .Where(b => b.ClinicId.ToString() == selectedClinicId);
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData() 
     {
-        clinics = await ClinicRepository.GetAllAsync();
-        bookings = await BookingRepository.GetAllAsync();
-        customers = await CustomerRepository.GetAllAsync();
-        therapists = await TherapistRepository.GetAllAsync();
+         bookings = await GetBookingsForTodayUseCase.ExecuteAsync();
+         clinics = await GetAllClinicsUseCase.ExecuteAsync();
+     
     }
 
     // Registers the selected booking as No-show.
@@ -164,17 +155,14 @@
     {
         try
         {
-            var request = new MarkBookingAsNoShowRequest
-            {
-                BookingId = bookingId
-            };
+ 
 
-            await MarkBookingAsNoShowUseCase.ExecuteAsync(request);
+            await MarkBookingAsNoShowUseCase.ExecuteAsync(new MarkBookingAsNoShowRequest { BookingId = bookingId });
 
             message = "Bookingen er registreret som \"Ikke mødt\".";
             alertClass = "alert alert-success";
 
-            bookings = await BookingRepository.GetAllAsync();
+            await LoadData();
         }
         catch (Exception ex)
         {
@@ -183,37 +171,19 @@
         }
     }
 
-    // Helper method to get the customer's name based on their ID.
-    private string GetCustomerName(Guid customerId)
-    {
-        var customer = customers.FirstOrDefault(c => c.Id == customerId);
-
-        return customer is null
-            ? "Unknown customer"
-            : customer.Name.ToString();
-    }
-    //Helper method for therapist based on ID
-    private string GetTherapistName(Guid therapistId)
-    {
-        var therapist = therapists.FirstOrDefault(t => t.Id == therapistId);
-        return therapist == null
-        ? "Unknown therapist"
-        : therapist.Name.ToString();
-    }
-
     // Restores a NoShow booking back to Confirmed.
     private async Task RestoreBookingFromNoShow(Guid bookingId)
     {
         try
         {
-            var request = new RestoreBookingFromNoShowRequest(bookingId);
+            
 
-            await RestoreBookingFromNoShowUseCase.ExecuteAsync(request);
+            await RestoreBookingFromNoShowUseCase.ExecuteAsync( new RestoreBookingFromNoShowRequest(bookingId)); 
 
             message = "Booking was restored to Confirmed.";
             alertClass = "alert alert-success";
 
-            bookings = await BookingRepository.GetAllAsync();
+            await LoadData();
         }
         catch (Exception ex)
         {
@@ -227,17 +197,12 @@
     {
         try
         {
-            var request = new MarkBookingArrivedRequest
-            {
-                BookingId = bookingId
-            };
-
-            await MarkBookingArrivedUseCase.ExecuteAsync(request);
-
+            await MarkBookingArrivedUseCase.ExecuteAsync(new MarkBookingArrivedRequest { BookingId = bookingId });
+ 
             message = "Kunde markeret som ankommet.";
             alertClass = "alert alert-success";
 
-            bookings = await BookingRepository.GetAllAsync();
+            await LoadData();
         }
         catch (Exception ex)
         {
@@ -257,12 +222,12 @@
                 BookingId = bookingId
             };
 
-            await MarkBookingCompletedUseCase.ExecuteAsync(request);
+            await MarkBookingCompletedUseCase.ExecuteAsync(new MarkBookingCompletedRequest { BookingId = bookingId });
 
             message = "Booking er registreret som afsluttet.";
             alertClass = "alert alert-success";
 
-            bookings = await BookingRepository.GetAllAsync();
+            LoadData();
         }
         catch (Exception ex)
         {

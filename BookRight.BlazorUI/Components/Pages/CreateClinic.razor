@@ -1,0 +1,133 @@
+﻿@page "/opret-klinik"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using BookRight.Facade.DTOs.CreateClinicDTOs
+@using BookRight.Facade.Interfaces.ClinicsUseCases
+@using System.ComponentModel.DataAnnotations
+@inject ICreateClinicUseCase CreateClinicUseCase
+@inject NavigationManager NavigationManager
+
+<h3>Opret klinik</h3>
+
+<EditForm Model="clinicModel" OnValidSubmit="CreateClinicAsync">
+    <div class="mb-3">
+        <label>Navn</label>
+        <InputText class="form-control" @bind-Value="clinicModel.Name" />
+    </div>
+
+    <div class="mb-3">
+        <label>Vejnavn</label>
+        <InputText class="form-control" @bind-Value="clinicModel.Street" />
+    </div>
+
+    <div class="mb-3">
+        <label>By</label>
+        <InputText class="form-control" @bind-Value="clinicModel.City" />
+    </div>
+
+    <div class="mb-3">
+        <label>Postnummer</label>
+        <InputText class="form-control" @bind-Value="clinicModel.PostalCode" />
+    </div>
+
+    <div class="mb-3">
+        <label>Telefon</label>
+        <InputText class="form-control" @bind-Value="clinicModel.Phone" />
+    </div>
+
+    <h5>Åbningstider</h5>
+
+    @foreach (var hour in openingHours)
+    {
+        <div class="row mb-2">
+            <div class="col">
+                <label>@hour.DayOfWeek</label>
+            </div>
+            <div class="col">
+                <InputText class="form-control" @bind-Value="hour.OpenTime" />
+            </div>
+            <div class="col">
+                <InputText class="form-control" @bind-Value="hour.CloseTime" />
+            </div>
+        </div>
+    }
+
+    <div class="mb-3">
+        <label>Antal behandlingsrum</label>
+        <InputNumber class="form-control" @bind-Value="clinicModel.NumberOfTreatmentRooms" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">Opret klinik</button>
+</EditForm>
+
+@code {
+    private CreateClinicModel clinicModel = new();
+
+    private List<OpeningHourModel> openingHours = new()
+    {
+        new(DayOfWeek.Monday, "08:00", "16:00"),
+        new(DayOfWeek.Tuesday, "08:00", "16:00"),
+        new(DayOfWeek.Wednesday, "08:00", "16:00"),
+        new(DayOfWeek.Thursday, "08:00", "16:00"),
+        new(DayOfWeek.Friday, "08:00", "16:00"),
+    };
+
+    private class CreateClinicModel
+    {
+        [Required(ErrorMessage = "Navn er påkrævet")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Vejnavn er påkrævet")]
+        public string Street { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "By er påkrævet")]
+        public string City { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Postnummer er påkrævet")]
+        public string PostalCode { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Telefonnummer er påkrævet")]
+        public string Phone { get; set; } = string.Empty;
+
+        [Range(1, int.MaxValue, ErrorMessage = "Antal behandlingsrum skal være større end 0")]
+        public int NumberOfTreatmentRooms { get; set; }
+    }
+
+    private class OpeningHourModel
+    {
+        public DayOfWeek DayOfWeek { get; set; }
+        public string OpenTime { get; set; } = string.Empty;
+        public string CloseTime { get; set; } = string.Empty;
+
+        public OpeningHourModel(DayOfWeek dayOfWeek, string openTime, string closeTime)
+        {
+            DayOfWeek = dayOfWeek;
+            OpenTime = openTime;
+            CloseTime = closeTime;
+        }
+    }
+
+    // Creates a new clinic and then navigates back to the clinic administration page.
+    private async Task CreateClinicAsync()
+    {
+        var openingHourRequests = openingHours
+            .Select(hour => new CreateClinicOpeningHourRequest(
+                hour.DayOfWeek,
+                TimeOnly.Parse(hour.OpenTime),
+                TimeOnly.Parse(hour.CloseTime)))
+            .ToList();
+
+        var request = new CreateClinicRequest(
+            clinicModel.Name,
+            clinicModel.Street,
+            clinicModel.City,
+            clinicModel.PostalCode,
+            clinicModel.Phone,
+            clinicModel.NumberOfTreatmentRooms,
+            openingHourRequests);
+
+        await CreateClinicUseCase.ExecuteAsync(request);
+
+        NavigationManager.NavigateTo("/administrer-klinikker");
+    }
+}

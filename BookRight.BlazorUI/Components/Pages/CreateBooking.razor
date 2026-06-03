@@ -1,5 +1,6 @@
 ﻿@page "/opret-booking"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using BookRight.BlazorUI.Components.Booking
 @using BookRight.Facade.Interfaces
 @using BookRight.Facade.Interfaces.ClinicsUseCases
 @using BookRight.Facade.Interfaces.TherapistUseCases
@@ -27,174 +28,168 @@
 <div class="container mt-4">
     <h1 class="mb-4">Opret Booking</h1>
     
-    <div class="row">
-        <article class="col-md-6">
-            <section class="card">
+    <article class="row">
+        <section class="col-md-6">
+            <div class="card">
+
                 <div class="card-body">
                     <h4 class="mb-0">Ny Booking</h4>
-                </div>
-
+                
                 <div class="card-body">
-                    <div class="">
-                        <label>Kunde</label>
-                        <select class="form-select" @bind="selectedCustomerId">
-                            <option value="">-- Vælg Kunde --</option>
-                            @foreach (var customer in customers)
-                            {
-                                <option value="@customer.Id">@customer.FirstName @customer.LastName</option>
-                            }
-                        
-                        </select>
-                    </div>
 
-                    <div class="mt-4">
-                        <label>Klinik</label>
-                        <select class="form-select" @bind="selectedClinicId">
-                            <option value="">-- Vælg Klinik --</option>
-                            @foreach (var clinic in clinics)
-                            {
-                                <option value="@clinic.Id">@clinic.Name</option>
-                            }
-                        </select>
-                    </div>
+                   <CustomerSelector
+                       Customers ="customers"
+                       @bind-SelectedCustomerId="selectedCustomerId"/>
 
-                    <div class="mt-4">
-                        <label>Behandler</label>
-                        <select class="form-select" @bind="selectedTherapistId" @bind:after="OnTherapistChanged">
-                            <option value="">-- Vælg Behandler --</option>
-                            @foreach (var therapist in therapists)
-                            {
-                                <option value="@therapist.Id">@therapist.FirstName @therapist.LastName</option>
-                            }
-                        </select>
+                    <ClinicSelector
+                        Clinics="clinics"
+                        @bind-SelectedClinicId="selectedClinicId"/>
 
-                        <select class="form-select mt-4" @bind="selectedTherapistTreatmentTypeId">
-                            <option value="">-- Vælg Behandling --</option>
-                            @foreach (var ttt in filteredTreatmentTypes)
-                            {
-                                <option value="@ttt.Id">@ttt.TreatmentTypeName - @ttt.BasePrice kr.</option>
-                            }
-                        </select>
-                    </div>
-                    <button class="btn btn-secondary mt-2" @onclick="AddLine">Tilføj ekstra behandling</button>
-                    @if (selectedLines.Any())
-                    {
-                        <ul>
-                            @foreach(var line in selectedLines)
-                            {
-                                var name = allTherapistTreatmentTypes
-                                    .FirstOrDefault(t => t.Id == line.TherapistTreatmentTypeId)?.TreatmentTypeName;
-                                <li>@name</li>
-                            }
-                        </ul>
-                    }
-                    <div class="mt-4">
-                        <label>Kampagnerabat (valgfri)</label>
+                    <TreatmentTypeSelector 
+                        FilteredTreatmentTypes="uniqueTreatmentTypes"
+                        @bind-SelectedTreatmentTypeId="selectedTreatmentTypeId"
+                        OnTreatmentTypeSelected="HandleTreatmentTypeSelected"/>
 
-                        <select class="form-select" @bind="selectedCampaignId">
-                            <option value="">-- Ingen kampagne --</option>
-                            @foreach (var campaign in campaigns)
-                            {
-                                <option value="@campaign.Id">
-                                    @campaign.Name - @campaign.DiscountPercentage%
-                                    (@campaign.StartDate.ToString("dd/MM") - @campaign.EndDate.ToString("dd/MM"))
-                                </option>
-                            }
-                        </select>
-                    </div>
+                    <TherapistSelector 
+                        Therapists="filteredTherapists"
+                        @bind-SelectedTherapistId="selectedTherapistId" />
 
-                    <div class="mt-4">
-                        <label>Dato og starttid</label>
-                        <input type="datetime-local" class="form-control" @bind="startTime" @bind:after="OnSlotChanged"/>
-                    </div>
-                    @if (remainingSlots.HasValue)
-                    {
-                        <div class="alrt @(isFullyBooked ? "alert-danger" : "alert-success")">
-							@if (isFullyBooked)
-							{
-								<span>Holdet er fuldt.</span>
-							}
-							else
-							{
-								<span>Ledige pladser: @remainingSlots.Value </span>
-							}
-                        </div>
-                    }
+                    <button class="btn btn-outline-secondary text-dark btn-sm mt-2 mb-3" 
+                            @onclick="AddLine" disabled="@(string.IsNullOrEmpty(selectedTreatmentTypeId) || string.IsNullOrEmpty(selectedTherapistId))">Tilføj Behandling</button>
+
+                    @if (selectedLines.Any()) {
+                          <div class="border rounded p-2 mb-3 bg-light">
+                              <p class="small text-muted mb-2 fw-semibold">Valgte behandlinger</p>
+                              <ul class="list-unstyled mb-0">
+                                  @foreach (var line in selectedLines) 
+                                  {
+                                      var name = uniqueTreatmentTypes
+                                        .FirstOrDefault(t => t.Id == line.TherapistTreatmentTypeId)?.TreatmentTypeName ?? "";
+                                    <li class="br-line-item">
+                                        <span>@name</span>
+                                        <span class="text-success fw-semibold">@line.BasePrice.ToString("F0") kr.</span>
+                                        <button class="btn btn-sm btn-link text-danger p-0" @onclick="() => RemoveLine(line)">✕</button>
+                                    </li>
+                                  }
+                              </ul>
+                          </div>
+                        }
+
+                  <CampaignSelector 
+                      CampaignDiscounts="campaignDiscounts"
+                      @bind-SelectedCampaignDiscountId="selectedCampaignDiscountId"/>
+
+                   <SlotPicker
+                       StartTime="startTime"
+                       StartTimeChanged="t => startTime = t" 
+                       RemainingSlots="remainingSlots"
+                       IsFullyBooked="isFullyBooked"
+                       OnSlotChanged="HandleSlotChanged"/>
 
                     <button class="btn btn-primary mt-4" @onclick="HandleCreateBooking">Opret Booking</button>
-
+                  
 					@if (!string.IsNullOrEmpty(bookingMessage))
 					{
 						<div class="@bookingAlertClass mt-3">
 							@bookingMessage
 						</div>
 					}
-                    @if (lastResponse != null && lastResponse.Success) 
-                    {
-                        <div>
-                            <p>Oprindelig pris: @lastResponse.OriginalPrice.ToString("F2") kr.</p>
-                            <p>Rabattype: @lastResponse.DiscountType</p>
-                            <p>Pris efter rabat: @lastResponse.DiscountedPrice.ToString("F2") kr.</p>
-                        </div>
-                    }
+                 
+                    </div>
                 </div>
-            </section>
-        </article>
-    </div>
+            </div>
+      
+        </section>
+        <section class="col-md-6">
+            <div class="br-summary-aside">
+                <BookingSummary Response="finalResponse" />
+            </div>
+
+        </section>
+    </article>
 </div>
 
 @code {
+    private string firstTherapistId = ""; // First as in the bookingline. If a booking is created with two treatments, it's the first therapist
     private string selectedCustomerId = "";
     private string selectedClinicId = "";
+    private string selectedTreatmentTypeId = "";
     private string selectedTherapistId = "";
-    private string selectedTherapistTreatmentTypeId = "";
+    private string selectedCampaignDiscountId = "";
     private DateTime startTime = DateTime.Now;
+
     private string bookingMessage = "";
     private string bookingAlertClass = "";
-    private string selectedCampaignId = "";
 
     private int? remainingSlots = null;
     private bool isFullyBooked = false;
 
-    private List<BookingLineRequest> selectedLines = new();
+    private List<BookingLineRequest> selectedLines = [];
     private IReadOnlyList<GetAllCustomersResponse> customers = new List<GetAllCustomersResponse>();
     private IReadOnlyList<GetAllClinicsResponse> clinics = new List<GetAllClinicsResponse>();
     private IReadOnlyList<GetAllTherapistsResponse> therapists = new List<GetAllTherapistsResponse>();
+    private IReadOnlyList<GetAllCampaignDiscountsResponse> campaignDiscounts = new List<GetAllCampaignDiscountsResponse>();
     private IReadOnlyList<GetAllTherapistTreatmentTypesResponse> allTherapistTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
-    private IReadOnlyList<GetAllTherapistTreatmentTypesResponse> filteredTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
-    private IReadOnlyList<GetAllCampaignDiscountsResponse> campaigns = new List<GetAllCampaignDiscountsResponse>();
 
-    private CreateBookingResponse? lastResponse = null;
+    private IReadOnlyList<GetAllTherapistTreatmentTypesResponse> uniqueTreatmentTypes = [];
+    private IReadOnlyList<GetAllTherapistsResponse> filteredTherapists = new List<GetAllTherapistsResponse>();
+
+    private CreateBookingResponse? finalResponse = null;
 
     protected override async Task OnInitializedAsync()
-    {
-        await LoadData();
-    }
-
-    private async Task LoadData()
     {
         customers = await GetAllCustomersUseCase.ExecuteAsync();
         clinics = await GetAllClinicsUseCase.ExecuteAsync();
         therapists = await GetAllTherapistsUseCase.ExecuteAsync();
-        campaigns = await GetAllCampaignDiscountsUseCase.ExecuteAsync();
+        campaignDiscounts = await GetAllCampaignDiscountsUseCase.ExecuteAsync();
         allTherapistTreatmentTypes = await GetAllTherapistTreatmentTypesUseCase.ExecuteAsync();
-        filteredTreatmentTypes = new List<GetAllTherapistTreatmentTypesResponse>();
+
+        // How do we get uniqueTreatmentTypes?
+        uniqueTreatmentTypes = allTherapistTreatmentTypes 
+            .GroupBy(ttt => ttt.TreatmentTypeName) // Group the new selection by TreatmentType name
+            .Select(g => g.First()) // Just get the first (element)
+            .OrderBy(ttt => ttt.TreatmentTypeName) // Sort them all on the name, so it looks neat in the list
+            .ToList(); // throw it into that neat looking list
+    }
+
+    private void HandleTreatmentTypeSelected(string treatmentTypeId)
+    {
+        var selectedName = uniqueTreatmentTypes
+            .FirstOrDefault(t => t.Id.ToString() == treatmentTypeId)?.TreatmentTypeName;
+
+        // If no treatmentTypes are selected, show no therapists
+        // Filter therapists with a related TherapistTreatmentType which is both:
+        // Belonging to the therapist (therapistId == t.Id) and ttt matches the selected treatmentType in name too.
+        filteredTherapists = string.IsNullOrEmpty(selectedName)
+            ? []
+            : therapists
+                .Where(t => allTherapistTreatmentTypes
+                .Any(ttt => ttt.TherapistId == t.Id && ttt.TreatmentTypeName == selectedName))
+                .OrderBy(t => t.LastName)
+                .ThenBy(t => t.FirstName)
+                .ToList();
+
     }
 
     // Method is run when either the time slot or the treatment type changes, to check availability for the selected slot and treatment
-    public async Task OnSlotChanged()
+    public async Task HandleSlotChanged()
     {
-        if (selectedTherapistTreatmentTypeId == "" || startTime == default)
+        if (string.IsNullOrEmpty(selectedTreatmentTypeId) || startTime == default)
+        {
+            remainingSlots = null;
             return;
+        }
 
-        var selectedTherapistTreatmentType = allTherapistTreatmentTypes
-            .FirstOrDefault(ttt => ttt.Id.ToString() == selectedTherapistTreatmentTypeId);
+        var therapistTreatmentType = allTherapistTreatmentTypes
+            .FirstOrDefault(t => t.Id.ToString() == selectedTreatmentTypeId);
+        if (therapistTreatmentType is null) 
+            return;
 
         var request = new GetGroupSlotAvailabilityRequest
 		{
 
-            TherapistTreatmentTypeId = Guid.Parse(selectedTherapistTreatmentTypeId),
-			TimeSlot = new TimeSlotDto {StartTime = startTime, EndTime = startTime.AddMinutes(selectedTherapistTreatmentType?.DurationMinutes ?? 0) }
+            TherapistTreatmentTypeId = therapistTreatmentType.Id,
+            TimeSlot = new TimeSlotDto { StartTime = startTime, EndTime = startTime.AddMinutes(therapistTreatmentType?.DurationMinutes ?? 0) }
 		};
 
         var response = await GetGroupSlotAvailabilityUseCase.ExecuteAsync(request);
@@ -202,39 +197,46 @@
         isFullyBooked = response.IsFullyBooked;
     }
 
-    public void OnTherapistChanged()
-    {
-        filteredTreatmentTypes = allTherapistTreatmentTypes
-            .Where(ttt => ttt.TherapistId.ToString() == selectedTherapistId)
-            .ToList();
-    }
+    	private void AddLine()
+	{
+		if (string.IsNullOrEmpty(selectedTreatmentTypeId) ||
+			string.IsNullOrEmpty(selectedTherapistId)) return;
 
-    // Adds booking line, if customer wants a combined booking
-    private void AddLine()
-    {
-        if (string.IsNullOrEmpty(selectedTherapistTreatmentTypeId))
+        var selectedName = uniqueTreatmentTypes
+            .FirstOrDefault(t => t.Id.ToString() == selectedTreatmentTypeId)?.TreatmentTypeName;
+        if (selectedName is null)
             return;
 
-        var therapistTreatmentTypes = allTherapistTreatmentTypes
-            .FirstOrDefault(t => t.Id.ToString() == selectedTherapistTreatmentTypeId);
+        var ttt = allTherapistTreatmentTypes
+            .FirstOrDefault(t => t.TherapistId.ToString() == selectedTherapistId &&
+                                    t.TreatmentTypeName == selectedName);
+        if (ttt is null) return;
 
-        if (therapistTreatmentTypes == null)
-            return;
+        // Save the therapist from the first bookingline
+        if (string.IsNullOrEmpty(firstTherapistId))
+            firstTherapistId = selectedTherapistId;
 
-        selectedLines.Add(new BookingLineRequest
-            {
-                TherapistTreatmentTypeId = therapistTreatmentTypes.Id,
-                BasePrice = therapistTreatmentTypes.BasePrice
-            });
+        selectedLines.Add(new BookingLineRequest{
+            TherapistTreatmentTypeId = ttt.Id,
+            BasePrice = ttt.BasePrice
+        });
 
-        selectedTherapistTreatmentTypeId = "";
+        selectedTreatmentTypeId = "";
+        selectedTherapistId = "";
+        filteredTherapists = [];
+		
+	}
+
+    private void RemoveLine(BookingLineRequest line) {
+        selectedLines.Remove(line);
     }
 
     private async Task HandleCreateBooking()
     {
+
         if (string.IsNullOrEmpty(selectedCustomerId) ||
-            string.IsNullOrEmpty(selectedTherapistId) ||
-            string.IsNullOrEmpty(selectedClinicId))
+            string.IsNullOrEmpty(selectedClinicId) ||
+            !selectedLines.Any())
         {
             bookingMessage = "Alle felter skal udfyldes før booking kan oprettes.";
             bookingAlertClass = "alert alert-danger";
@@ -242,20 +244,20 @@
         }
         try
         {
-           // var selectedTherapistTreatmentType = allTherapistTreatmentTypes
-             //   .FirstOrDefault(ttt => ttt.Id.ToString() == selectedTherapistTreatmentTypeId);  
+            var therapistTreatmentTypes = allTherapistTreatmentTypes
+                .FirstOrDefault(t => t.Id.ToString() == selectedTreatmentTypeId);
 
             var request = new CreateBookingRequest
 			{
 			    CustomerId = Guid.Parse(selectedCustomerId),
 				ClinicId = Guid.Parse(selectedClinicId),
-                TherapistId = Guid.Parse(selectedTherapistId),
+                TherapistId = Guid.Parse(firstTherapistId),
 
-                CampaignDiscountId = string.IsNullOrEmpty(selectedCampaignId) 
+                CampaignDiscountId = string.IsNullOrEmpty(selectedCampaignDiscountId) 
                 ? (Guid?)null 
-                : Guid.Parse(selectedCampaignId),
+                : Guid.Parse(selectedCampaignDiscountId),
                 StartTime = startTime, 
-				Lines = selectedLines
+                Lines = selectedLines
 			};
 
             var response = await CreateBookingUseCase.ExecuteAsync(request);
@@ -268,13 +270,12 @@
                 selectedCustomerId = "";
                 selectedClinicId = "";
                 selectedTherapistId = "";
-                selectedTherapistTreatmentTypeId = "";
-                selectedCampaignId = "";
+                selectedCampaignDiscountId = "";
+                firstTherapistId = "";
                 startTime = DateTime.Now;
                 remainingSlots = null;
                 isFullyBooked = false;
-                selectedLines = new();
-                lastResponse = response;
+                finalResponse = response;
                
             }
             else

@@ -12,7 +12,6 @@ namespace BookRight.Infrastructure.Persistence.Configurations
         {
             public void Configure(EntityTypeBuilder<Booking> builder)
             {
-            builder.ToTable("Bookings");
 
                 // PK konfiguration
                 builder.Property(x => x.Id)
@@ -60,7 +59,6 @@ namespace BookRight.Infrastructure.Persistence.Configurations
                             value => new Money(value))
                         .HasPrecision(18, 2)
                         .IsRequired();// Er præcis op til 18 cifre, med 2 efter kommaet. Så 16 før kommaet.
-                                      // SqlServers bruger som regel den samme præcision som udgangspunkt, men en eksplicit definition minimerer dumme fejl.
                 });
 
                 // Status konfiguration

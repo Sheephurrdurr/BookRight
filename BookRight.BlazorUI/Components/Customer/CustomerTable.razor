@@ -1,0 +1,43 @@
+﻿@using BookRight.Facade.DTOs.GetAllCustomersDTOs;
+
+<section class="card">
+	<div class="card-header">
+		<h4 class="mb-0">Kunde Oversigt</h4>
+	</div>
+	<div class="card-body">
+		@if (!Customers.Any())
+		{
+			<p class="text-muted">Ingen kunder oprettet endnu.</p>
+		}
+		else
+		{
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Navn</th>
+						<th>Email</th>
+						<th>Telefon</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var customer in Customers)
+					{
+						<tr>
+							<td>@customer.FirstName @customer.LastName</td>
+							<td>@customer.Email</td>
+							<td>@customer.Phone</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
+	</div>
+</section>
+
+
+@code {
+	[Parameter]
+	public IReadOnlyList<GetAllCustomersResponse> Customers {get; set;} = [];
+
+}
