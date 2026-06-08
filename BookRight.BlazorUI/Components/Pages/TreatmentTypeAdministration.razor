@@ -10,20 +10,20 @@
 @inject IAddQualificationUseCase AddQualificationUseCase
 
 
-<PageTitle>Opret Behandlingstype</PageTitle>
+<PageTitle>Opret Behandling</PageTitle>
 
 <main class="container mt-4">
     <h3 class="ms-3">Administrer behandlinger</h3>
     <article class="card mb-4">
         <fieldset class="card-body p-4">
-            <h4 class="ms-3 mt-3">Opret ny behandlingstype</h4>
+            <h4 class="ms-3 mt-3">Opret ny behandling</h4>
             <div class="mb-3">
                 <label class="form-label">Behandling</label>
                 <input class="form-control" @bind="_treatmentTypeName" placeholder="Skriv ind navn på behandling her..." />
-                <label class="form-label">Varighed</label>
+                <label class="form-label">Varighed i minutter</label>
                 <input class="form-control" type="number" @bind="_treatmentTypeDuration" min="1" placeholder="Skriv ind varighed her..." />
-                <label class="form-label">Andtal deltagere</label>
-                <input class="form-control" type="number" @bind="_maxParticipants" min="1" placeholder="Skriv ind max andtal personer her..." />
+                <label class="form-label">Antal deltagere</label>
+                <input class="form-control" type="number" @bind="_maxParticipants" min="1" placeholder="Skriv ind max antal personer her..." />
                 <label class="form-label">Pris</label>
                 <input class="form-control" type="number" @bind="_price" min="0" placeholder="Skriv ind pris her..." />
                 <label class="form-label" >Kan kombineres</label>

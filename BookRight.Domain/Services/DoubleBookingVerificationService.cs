@@ -1,11 +1,7 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
-using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.Domain.Enums;
 using BookRight.Domain.Exceptions;
 using BookRight.Domain.ValueObjects;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BookRight.Domain.Services
 {
@@ -20,12 +16,12 @@ namespace BookRight.Domain.Services
                 throw new CustomerAlreadyHasBookingException();
         }
 
-        public void TherapistVerification(IEnumerable<Booking> existingTherapistBooking, TimeSlot slot)
+        public void TherapistVerification(IEnumerable<Booking> existingTherapistBooking, TimeSlot slot, int maxParticipants)
         {
             var therapistOverlap = existingTherapistBooking
                 .Where(c => c.Status != BookingStatus.Cancelled)
-                .FirstOrDefault(c => slot.OverlapsWith(c.TimeSlot));
-            if (therapistOverlap != null)
+                .Where(c => slot.OverlapsWith(c.TimeSlot));
+            if (therapistOverlap.Count() >= maxParticipants)
                 throw new TherapistAlreadyHasBookingException();
         }
     }
