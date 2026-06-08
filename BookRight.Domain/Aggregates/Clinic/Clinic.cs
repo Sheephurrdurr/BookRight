@@ -103,5 +103,17 @@ namespace BookRight.Domain.Aggregates.Clinic
         {
             _openingHours.Add(new ClinicOpeningHour(Id, dayOfWeek, openTime, closeTime));
         }
+
+        // Metode: Bruges til at validere om en given TimeSlot kan bookes inden for klinikkens åbningstider
+        public bool CanBookTimeSlot(TimeSlot timeSlot)
+        {
+            var day = timeSlot.StartTime.DayOfWeek;
+            var openingHour = _openingHours.FirstOrDefault(oh => oh.DayOfWeek == day);
+
+            if (openingHour is null)
+                return false;
+
+            return openingHour.IsWithinOpeningHours(timeSlot);
+        }
     }
 }
