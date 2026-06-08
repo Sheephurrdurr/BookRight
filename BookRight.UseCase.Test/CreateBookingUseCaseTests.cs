@@ -1,13 +1,16 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.Customer;
+using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.Domain.Aggregates.TreatmentType;
+using BookRight.Domain.Exceptions;
 using BookRight.Domain.Services;
 using BookRight.Domain.Services.DiscountStrategies;
 using BookRight.Domain.ValueObjects;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.UseCases.CreateBooking;
 using BookRight.UseCases.Interfaces;
+using Castle.Core.Resource;
 using Moq;
 
 namespace BookRight.UseCase.Test
@@ -60,12 +63,22 @@ namespace BookRight.UseCase.Test
             preferredTherapistId: null
             );
 
-        private Clinic CreateTestClinic() => new Clinic(
-            "Test Klinik",
-            new Address("Testvej 1", "By", "2000"),
-            new PhoneNumber("12345678"),
-            numTreatmentRooms: 4
+        private Clinic CreateTestClinic()
+        {
+            var clinic = new Clinic(
+                "Test Clinic",
+                new Address("ClinicVej", "ClinicBy", "1111"),
+                new PhoneNumber("7654321"),
+                numTreatmentRooms: 3
             );
+            clinic.AddOpeningHour(DayOfWeek.Monday, new TimeOnly(8, 0), new TimeOnly(16, 0));
+            clinic.AddOpeningHour(DayOfWeek.Tuesday, new TimeOnly(8, 0), new TimeOnly(16, 0));
+            clinic.AddOpeningHour(DayOfWeek.Wednesday, new TimeOnly(8, 0), new TimeOnly(16, 0));
+            clinic.AddOpeningHour(DayOfWeek.Thursday, new TimeOnly(8, 0), new TimeOnly(16, 0));
+            clinic.AddOpeningHour(DayOfWeek.Friday, new TimeOnly(8, 0), new TimeOnly(16, 0));
+            return clinic;
+        }
+        
 
         private TreatmentType CreateTestGroupTreatmentType(int maxParticipants) => new TreatmentType(
         "Gruppeyoga",
@@ -107,7 +120,7 @@ namespace BookRight.UseCase.Test
             {
                 CustomerId = customerId,
                 ClinicId = clinicId,
-                StartTime = DateTime.Now.AddDays(1),
+                StartTime = new DateTime(2027, 1, 4, 11, 0, 0),
               
                 Lines = new List<BookingLineRequest>
                 {
@@ -126,6 +139,54 @@ namespace BookRight.UseCase.Test
             Assert.False(response.Success);
             _mockBookingRepository.Verify(r => r.CreateAsync(It.IsAny<Booking>()), Times.Never);
                 
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_BookingOutsideOpeningHours_ThrowException()
+        {
+            // Arrange
+            var customerId = Guid.NewGuid();
+            var clinicId = Guid.NewGuid();
+            var therapistTreatmentTypeId = Guid.NewGuid();
+
+            _mockCustomerRepository
+                .Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(CreateTestCustomer());
+
+            _mockClinicRepository
+                .Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(CreateTestClinic());
+
+            _mockTreatmentTypeRepository
+                .Setup(r => r.GetByTherapistTreatmentTypeIdsAsync(It.IsAny<IEnumerable<Guid>>()))
+                .ReturnsAsync(new Dictionary<Guid, TreatmentType>
+                {
+                    {therapistTreatmentTypeId, CreateTestGroupTreatmentType(maxParticipants: 5) }
+                });
+
+            _mockBookingRepository
+                .Setup(r => r.CountParticipantsAsync(therapistTreatmentTypeId, It.IsAny<TimeSlot>()))
+                .ReturnsAsync(5);
+
+            var request = new CreateBookingRequest
+            {
+                CustomerId = customerId,
+                ClinicId = clinicId,
+                StartTime = new DateTime(2027, 1, 4, 1, 0, 0),
+
+                Lines = new List<BookingLineRequest>
+                {
+                    new BookingLineRequest
+                    {
+                        TherapistTreatmentTypeId = therapistTreatmentTypeId,
+                        BasePrice = 200,
+                    }
+                }
+            };
+
+            //Act & Assert
+            await Assert.ThrowsAsync<BookingOutsideOpeningHoursException>(() 
+                => _sut.ExecuteAsync(request));
         }
     }
 }
