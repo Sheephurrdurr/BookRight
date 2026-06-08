@@ -11,13 +11,16 @@ namespace BookRight.UseCases.GetBookingByWeek
         private readonly ITherapistRepository _therapistRepository;
         private readonly IClinicRepository _clinicRepository;
         private readonly ITreatmentTypeRepository _treatmentTypeRepository;
+        private readonly ICustomerRepository _customerRepository;
 
-        public GetByWeekUseCase(IBookingRepository bookingRepository, ITherapistRepository therapistRepository, IClinicRepository clinicRepository, ITreatmentTypeRepository treatmentTypeRepository)
+        public GetByWeekUseCase(IBookingRepository bookingRepository, ITherapistRepository therapistRepository, IClinicRepository clinicRepository, ITreatmentTypeRepository treatmentTypeRepository, ICustomerRepository customerRepository)
             {
                 _bookingRepository = bookingRepository;
                 _therapistRepository = therapistRepository;
                 _clinicRepository = clinicRepository;
                 _treatmentTypeRepository = treatmentTypeRepository;
+                _customerRepository = customerRepository;
+
             }
 
         public async Task<IReadOnlyList<GetByWeekResponse>> ExecuteAsync(DateOnly weekStart)
@@ -37,6 +40,7 @@ namespace BookRight.UseCases.GetBookingByWeek
             {
                 var therapist = await _therapistRepository.GetByIdAsync(b.TherapistId);
                 var clinic = await _clinicRepository.GetByIdAsync(b.ClinicId);
+                var customer = await _customerRepository.GetByIdAsync(b.CustomerId);
                 var treatmentName = b.Lines
                 .Select(line => treatmentTypesByLineId.TryGetValue(line.TherapistTreatmentTypeId, out var treatment)
                     ? treatment.Name
@@ -51,7 +55,10 @@ namespace BookRight.UseCases.GetBookingByWeek
                     b.Status.ToString(),
                     therapist?.Name.ToString() ?? "",
                     treatmentName,
-                    clinic?.Name ?? ""
+                    clinic?.Name ?? "",
+                    customer?.Name.ToString() ?? "",
+                    customer?.Phone.ToString() ?? "",
+                    customer?.Email.ToString() ?? ""
                 ));
             }
 

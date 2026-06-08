@@ -58,31 +58,63 @@
 						var dayBookings = bookings
 							.Where(b => DateOnly.FromDateTime(b.StartTime) == day)
 							.ToList();
-						<div class="calendar-day-track @(day == DateOnly.FromDateTime(DateTime.Today) ? "today" : "")" style="height: @(TotalHeight)px;">
-							@foreach (var booking in dayBookings)
+						<div class="calendar-day-track @(day == DateOnly.FromDateTime(DateTime.Today) ? "today" : "")"
+							 style="height: @(TotalHeight)px;">
+
+							@foreach (var group in dayBookings
+							.GroupBy(b => b.StartTime)
+							.Select(g => new
 							{
-								var top = TimeToTop(booking.StartTime);
-								var height = Math.Max(DurationToHeight(booking.StartTime, booking.EndTime), 28);
-								var color = ClinicToColor(booking.ClinicName);
+								StartTime = g.Key,
+								EndTime = g.Max(x => x.EndTime),
+								Bookings = g.ToList()
+							}))
+							{
+								var booking = group.Bookings.First();
+								var top = TimeToTop(group.StartTime);
+								var height = group.Bookings.Count > 1
+								? Math.Max(DurationToHeight(group.StartTime, group.EndTime), 60)
+								: Math.Max(DurationToHeight(group.StartTime, group.EndTime), 70);
+								var color = group.Bookings.Count > 1
+								? "#64748B"                  //Grey multiple bookings
+								: ClinicToColor(booking.ClinicName);
 
 								<div class="calendar-booking"
-									 @onclick="@(() => selectedBooking = booking)"
-									 style="@($"top: {Px(top)}; height: {Px(height)}; background: {color};")">
-									<div class="calendar-booking-time">
-										@booking.StartTime.ToString("HH:mm") - @booking.EndTime.ToString("HH:mm")
-									</div>
+									 @onclick="() => SelectBookings(group.Bookings)"
+									 style="top: @Px(top); height: @Px(height); background: @color;">
 
-									<div class="calendar-booking-title">
-										@booking.TreatmentName
-									</div>
+									@if (group.Bookings.Count > 1)
+									{
+										<div class="calendar-booking-time">
+											@group.StartTime.ToString("HH:mm") - @group.EndTime.ToString("HH:mm")
+										</div>
 
-									<div>
-										@booking.TherapistName
-									</div>
+										<div class="calendar-booking-title">
+											@group.Bookings.Count bookinger
+										</div>
 
-									<div class="calendar-booking-clinic">
-										@booking.ClinicName
-									</div>
+										<div class="calendar-booking-clinic">
+											Klik for detaljer
+										</div>
+									}
+									else
+									{
+										<div class="calendar-booking-time">
+											@booking.StartTime.ToString("HH:mm") - @booking.EndTime.ToString("HH:mm")
+										</div>
+
+										<div class="calendar-booking-title">
+											@booking.TreatmentName
+										</div>
+
+										<div>
+											@booking.TherapistName
+										</div>
+
+										<div class="calendar-booking-clinic">
+											@booking.ClinicName
+										</div>
+									}
 								</div>
 							}
 						</div>
@@ -93,43 +125,80 @@
 		</div>
 	</div>
 </div>
-@if (selectedBooking is not null)
+@if (selectedBookings.Any())
 {
 	<div class="booking-overlay">
 		<div class="booking-popup">
 
-			<h4>@selectedBooking.TreatmentName</h4>
+			<h3>@selectedBookings.Count booking(er)</h3>
 
-			<p>
-				<strong>Terapeut</strong><br />
-				@selectedBooking.TherapistName
-			</p>
+			@foreach (var booking in selectedBookings)
+			{
+				<div class="booking-detail-card">
+				<div class="booking-details-grid">
+					<div>
+						<strong>Behandling</strong>
+						@booking.TreatmentName
+					</div>
+					<div>
+						<strong>Tid</strong>
+						@booking.StartTime.ToString("HH:mm") - @booking.EndTime.ToString("HH:mm")
+					</div>
 
-			<p>
-				<strong>Klinik</strong><br />
-				@selectedBooking.ClinicName
-			</p>
+					<div>
+						<strong>Status</strong>
+						@booking.Status
+					</div>
 
-			<p>
-				<strong>Tid</strong><br />
-				@selectedBooking.StartTime.ToString("HH:mm")
-				-
-				@selectedBooking.EndTime.ToString("HH:mm")
-			</p>
+					<div>
+						<strong>Terapeut</strong>
+						@booking.TherapistName
+					</div>
 
-			<p>
-				<strong>Status</strong><br />
-				@selectedBooking.Status
-			</p>
+					<div>
+						<strong>Klinik</strong>
+						@booking.ClinicName
+					</div>
+
+					<div>
+						<strong>Kunde</strong>
+						@booking.CustomerName
+					</div>
+
+					<div>
+						<strong>Telefon</strong>
+						@booking.CustomerPhone
+					</div>
+
+					<div>
+						<strong>E-mail</strong>
+						@booking.CustomerEmail
+					</div>
+
+					
+				</div>
+					<button class="btn btn-outline-primary btn-sm">
+						Rediger booking
+					</button>
+
+				</div>
+				
+
+
+
+			}
+
 
 			<button class="btn btn-secondary"
-					@onclick="() => selectedBooking = null">
+					@onclick="() => selectedBookings.Clear()">
 				Luk
 			</button>
 
 		</div>
 	</div>
 }
+
+
 
 @code {
 	private const int StartHour = 8;
@@ -139,7 +208,7 @@
 
 	private DateOnly WeekStart = GetCurrentWeekMonday();
 	private IReadOnlyList<GetByWeekResponse> bookings = [];
-	private GetByWeekResponse? selectedBooking;
+	private List<GetByWeekResponse> selectedBookings = [];
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -210,12 +279,17 @@
 
 	private static string ClinicToColor(string clinicName) => clinicName switch
 	{
-		"BookRight Vejle Ved Åen" => "#378ADD",
-		"BookRight Egtved" => "#3FA66B",
-		"BookRight Børkop" => "#8B5CF6",
-		_ => "#378ADD"
+		"BookRight Vejle Ved Åen" => "#3B82F6", // blå
+		"BookRight Egtved" => "#10B981", // grøn
+		"BookRight Vejle Bredballe" => "#F59E0B", // orange
+		_ => "#64748B" // grå
 	};
 
+	private void SelectBookings(IEnumerable<GetByWeekResponse> bookingsToSelect)
+	{
+		selectedBookings = bookingsToSelect.ToList();
+	}
+	
 
 }
 
