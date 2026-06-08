@@ -65,7 +65,9 @@
 								var height = Math.Max(DurationToHeight(booking.StartTime, booking.EndTime), 28);
 								var color = ClinicToColor(booking.ClinicName);
 
-								<div class="calendar-booking" style="top: @Px(top); height: @Px(height); background: @color;">
+								<div class="calendar-booking"
+									 @onclick="@(() => selectedBooking = booking)"
+									 style="@($"top: {Px(top)}; height: {Px(height)}; background: {color};")">
 									<div class="calendar-booking-time">
 										@booking.StartTime.ToString("HH:mm") - @booking.EndTime.ToString("HH:mm")
 									</div>
@@ -91,6 +93,43 @@
 		</div>
 	</div>
 </div>
+@if (selectedBooking is not null)
+{
+	<div class="booking-overlay">
+		<div class="booking-popup">
+
+			<h4>@selectedBooking.TreatmentName</h4>
+
+			<p>
+				<strong>Terapeut</strong><br />
+				@selectedBooking.TherapistName
+			</p>
+
+			<p>
+				<strong>Klinik</strong><br />
+				@selectedBooking.ClinicName
+			</p>
+
+			<p>
+				<strong>Tid</strong><br />
+				@selectedBooking.StartTime.ToString("HH:mm")
+				-
+				@selectedBooking.EndTime.ToString("HH:mm")
+			</p>
+
+			<p>
+				<strong>Status</strong><br />
+				@selectedBooking.Status
+			</p>
+
+			<button class="btn btn-secondary"
+					@onclick="() => selectedBooking = null">
+				Luk
+			</button>
+
+		</div>
+	</div>
+}
 
 @code {
 	private const int StartHour = 8;
@@ -100,6 +139,7 @@
 
 	private DateOnly WeekStart = GetCurrentWeekMonday();
 	private IReadOnlyList<GetByWeekResponse> bookings = [];
+	private GetByWeekResponse? selectedBooking;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -175,5 +215,7 @@
 		"BookRight Børkop" => "#8B5CF6",
 		_ => "#378ADD"
 	};
+
+
 }
 
