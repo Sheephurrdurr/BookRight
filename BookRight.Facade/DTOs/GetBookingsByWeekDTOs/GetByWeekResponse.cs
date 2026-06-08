@@ -1,13 +1,16 @@
-﻿
-namespace BookRight.Facade.DTOs.GetBookingsByWeekDTOs
+﻿namespace BookRight.Facade.DTOs.GetBookingsByWeekDTOs
 {
-    public sealed record GetByWeekResponse
-    {
-        public Guid BookingId { get; set; }
-        public Guid CustomerId { get; set; }
-        public Guid TherapistId { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
-        public string Status { get; set; }
-    }
+    public sealed record GetByWeekResponse(
+    Guid BookingId,
+    Guid CustomerId,
+    Guid TherapistId,
+    DateTime StartTime,
+    DateTime EndTime,
+    string Status,
+    string TherapistName,
+    string TreatmentName,
+    string ClinicName,
+    string CustomerName,
+    string CustomerPhone,
+    string CustomerEmail);
 }
