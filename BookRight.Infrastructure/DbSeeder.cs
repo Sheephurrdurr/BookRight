@@ -947,6 +947,33 @@ namespace BookRight.Infrastructure
             await _context.SaveChangesAsync();
 
         }
+
+        private List<TreatmentType> BuildTreatmentPool()
+        {
+            var massage30 = _context.TreatmentTypes.First(t => t.Name == "Sportsmassage 30 min.");
+            var massage60 = _context.TreatmentTypes.First(t => t.Name == "Sportsmassage 60 min.");
+            var fys30 = _context.TreatmentTypes.First(t => t.Name == "Fysioterapi 30 min.");
+            var fys45 = _context.TreatmentTypes.First(t => t.Name == "Fysioterapi 45 min.");
+            var fys60 = _context.TreatmentTypes.First(t => t.Name == "Fysioterapi 60 min.");
+            var kost60 = _context.TreatmentTypes.First(t => t.Name == "Kostvejledning 60 min. førstegangskonsultation");
+            var kost30 = _context.TreatmentTypes.First(t => t.Name == "Kostvejledning 30 min. opfølgning");
+            var aku45 = _context.TreatmentTypes.First(t => t.Name == "Akupunktur 45 min.");
+            var hold60 = _context.TreatmentTypes.First(t => t.Name == "Holdtræning/genoptræning 60 min.");
+
+            var pool = new List<TreatmentType>();
+
+            pool.AddRange(Enumerable.Repeat(massage30, 18));
+            pool.AddRange(Enumerable.Repeat(massage60, 12));
+            pool.AddRange(Enumerable.Repeat(fys30, 15));
+            pool.AddRange(Enumerable.Repeat(fys45, 18));
+            pool.AddRange(Enumerable.Repeat(fys60, 10));
+            pool.AddRange(Enumerable.Repeat(kost60, 5));
+            pool.AddRange(Enumerable.Repeat(kost30, 8));
+            pool.AddRange(Enumerable.Repeat(aku45, 8));
+            pool.AddRange(Enumerable.Repeat(hold60, 6));
+
+            return pool;
+        }
         private void GenerateBookingsForCustomers(
         List<Customer> customers,
         int minBookings,
@@ -957,24 +984,7 @@ namespace BookRight.Infrastructure
         List<Clinic> clinics,
         Random random)
         {
-            var treatmentPool = new List<TreatmentType>();
-
-
-            treatmentPool.AddRange(
-                Enumerable.Repeat(
-                    treatmentTypes.First(t => t.Name.Contains("Massage")), 40));
-
-            treatmentPool.AddRange(
-                Enumerable.Repeat(
-                    treatmentTypes.First(t => t.Name.Contains("Fysioterapi")), 30));
-
-            treatmentPool.AddRange(
-                Enumerable.Repeat(
-                    treatmentTypes.First(t => t.Name.Contains("Kostvejledning")), 20));
-
-            treatmentPool.AddRange(
-                Enumerable.Repeat(
-                    treatmentTypes.First(t => t.Name.Contains("Akupunktur")), 10));
+            var treatmentPool = BuildTreatmentPool();
 
             foreach (var customer in customers)
             {
