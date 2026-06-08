@@ -137,39 +137,5 @@ else
     {
         await JSRuntime.InvokeVoidAsync("window.print");
     }
-
-    /*<style>
-    @media print {
-        body *, html * {
-            visibility: hidden;
-        }
-
-         2. Gør KUN din print-area container og dens børn synlige 
-        .print-area, .print-area * {
-            visibility: visible;
-        }
-
-         3. Tving print-area helt op i øverste venstre hjørne, så sidemenuens tomme plads forsvinder 
-        .print-area {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-
-         4. Fjern Bootstrap-kortets skygger og rammer på print, så det passer til et A4-ark 
-        .print-area .card {
-            border: none !important;
-            box-shadow: none !important;
-        }
-        
-         5. Skjul forhåndsvisnings-badgen på det endelige print 
-        .badge {
-            display: none !important;
-        }
-    }
-</style>*/
 }
 
