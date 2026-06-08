@@ -873,7 +873,7 @@ namespace BookRight.Infrastructure
         }
         private async Task SeedGeneratedBookingsAsync()
         {
-            if (_context.Bookings.Count() > 500)
+            if (_context.Bookings.Count() > 1000)
                 return;
 
             var random = new Random();
