@@ -1007,9 +1007,6 @@ namespace BookRight.Infrastructure
                     ? favoriteClinic
                     : clinics[random.Next(clinics.Count)];
 
-
-                    
-
                     var possibleTreatmentTypes = treatmentPool
                     .Where(t => therapist.Qualifications.Any(q => q.TreatmentTypeId == t.Id))
                     .ToList();
