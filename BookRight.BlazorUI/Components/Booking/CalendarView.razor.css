@@ -134,3 +134,8 @@
 .calendar-booking-status {
     opacity: .85;
 }
+
+.calendar-booking-clinic {
+    font-size: 9px;
+    opacity: 0.85;
+}

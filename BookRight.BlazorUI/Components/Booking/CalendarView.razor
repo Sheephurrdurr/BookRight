@@ -63,13 +63,24 @@
 							{
 								var top = TimeToTop(booking.StartTime);
 								var height = Math.Max(DurationToHeight(booking.StartTime, booking.EndTime), 28);
-								var color = StatusToColor(booking.Status);
+								var color = ClinicToColor(booking.ClinicName);
 
 								<div class="calendar-booking" style="top: @Px(top); height: @Px(height); background: @color;">
 									<div class="calendar-booking-time">
 										@booking.StartTime.ToString("HH:mm") - @booking.EndTime.ToString("HH:mm")
 									</div>
-									<div class="calendar-booking-status">@booking.Status</div>
+
+									<div class="calendar-booking-title">
+										@booking.TreatmentName
+									</div>
+
+									<div>
+										@booking.TherapistName
+									</div>
+
+									<div class="calendar-booking-clinic">
+										@booking.ClinicName
+									</div>
 								</div>
 							}
 						</div>
@@ -152,19 +163,17 @@
 		_ => ""
 	};
 
-	private static string StatusToColor(string status) => status switch
-	{
-		"Confirmed" => "#378ADD",
-		"Arrived" => "#4caf50",
-		"Completed" => "#639922",
-		"NoShow" => "#9ca3af",
-		"Cancelled" => "#e53e3e",
-		_ => "#4378ADD"
-	};
-
 	private static string Px(double value)
 	{
 		return $"{value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px";
 	}
+
+	private static string ClinicToColor(string clinicName) => clinicName switch
+	{
+		"BookRight Vejle Ved Åen" => "#378ADD",
+		"BookRight Egtved" => "#3FA66B",
+		"BookRight Børkop" => "#8B5CF6",
+		_ => "#378ADD"
+	};
 }
 
