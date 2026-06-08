@@ -2,8 +2,11 @@
 using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Aggregates.TherapistAggregate;
 using BookRight.Domain.Aggregates.Customer;
+using BookRight.Domain.Aggregates.Booking;
 using BookRight.Domain.ValueObjects;
+using BookRight.Domain.Enums;
 using BookRight.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookRight.Infrastructure
 {
@@ -22,6 +25,7 @@ namespace BookRight.Infrastructure
             await SeedTreatmentTypesAsync();
             await SeedTherapistsAsync();
             await SeedCustomersAsync();
+            await SeedBookingsAsync();
         }
 
         private async Task SeedClinicsAsync()
@@ -569,6 +573,206 @@ namespace BookRight.Infrastructure
                 customer20
             );
 
+            await _context.SaveChangesAsync();
+        }
+
+        // This method creates a variety of bookings with different statuses, treatment types, therapists,
+        // and customers to provide a rich dataset for testing and development purposes.
+        private async Task SeedBookingsAsync()
+        {
+            if (_context.Bookings.Any()) return;
+
+            var customers = _context.Customers.ToList();
+
+            var therapists = _context.Therapists
+                .Include(t => t.Qualifications)
+                .ToList();
+
+            var clinic1 = _context.Clinics.First(c => c.Name == "BookRight Vejle Ved Åen");
+            var clinic2 = _context.Clinics.First(c => c.Name == "BookRight Vejle Bredballe");
+            var clinic3 = _context.Clinics.First(c => c.Name == "BookRight Egtved");
+
+            // TreatmentTypes
+            var massage30 = _context.TreatmentTypes.First(t => t.Name == "Sportsmassage 30 min.");
+            var massage60 = _context.TreatmentTypes.First(t => t.Name == "Sportsmassage 60 min.");
+            var fys30 = _context.TreatmentTypes.First(t => t.Name == "Fysioterapi 30 min.");
+            var fys45 = _context.TreatmentTypes.First(t => t.Name == "Fysioterapi 45 min.");
+            var fys60 = _context.TreatmentTypes.First(t => t.Name == "Fysioterapi 60 min.");
+            var kost60 = _context.TreatmentTypes.First(t => t.Name == "Kostvejledning 60 min. førstegangskonsultation");
+            var kost30 = _context.TreatmentTypes.First(t => t.Name == "Kostvejledning 30 min. opfølgning");
+            var aku45 = _context.TreatmentTypes.First(t => t.Name == "Akupunktur 45 min.");
+            var hold60 = _context.TreatmentTypes.First(t => t.Name == "Holdtræning/genoptræning 60 min.");
+
+            // Therapists
+            var therapistMassage1 = therapists.First(t => t.Name.FirstName == "Hans" && t.Name.LastName == "Hansen");
+            var therapistFys1 = therapists.First(t => t.Name.FirstName == "Lise" && t.Name.LastName == "Larsen");
+            var therapistKost1 = therapists.First(t => t.Name.FirstName == "Peter" && t.Name.LastName == "Pedersen");
+            var therapistAku1 = therapists.First(t => t.Name.FirstName == "Anna" && t.Name.LastName == "Andersen");
+
+            var therapistMassage2 = therapists.First(t => t.Name.FirstName == "Mette" && t.Name.LastName == "Madsen");
+            var therapistFys2 = therapists.First(t => t.Name.FirstName == "Jens" && t.Name.LastName == "Jensen");
+            var therapistKost2 = therapists.First(t => t.Name.FirstName == "Sofie" && t.Name.LastName == "Sørensen");
+            var therapistAku2 = therapists.First(t => t.Name.FirstName == "Lars" && t.Name.LastName == "Larsen");
+
+            var therapistMassage3 = therapists.First(t => t.Name.FirstName == "Kirsten" && t.Name.LastName == "Kristensen");
+            var therapistFys3 = therapists.First(t => t.Name.FirstName == "Ole" && t.Name.LastName == "Olsen");
+            var therapistKost3 = therapists.First(t => t.Name.FirstName == "Maria" && t.Name.LastName == "Møller");
+            var therapistAku3 = therapists.First(t => t.Name.FirstName == "Niels" && t.Name.LastName == "Nielsen");
+
+            var june = new DateTime(2026, 6, 1);
+
+            var bookings = new List<Booking>();
+
+            Booking CreateBooking(
+                Customer customer,
+                Therapist therapist,
+                Clinic clinic,
+                DateTime startTime,
+                int durationMinutes,
+                TreatmentType treatmentType,
+                decimal price,
+                decimal discountPercent = 0,
+                DiscountType discountType = DiscountType.None,
+                BookingStatus status = BookingStatus.Confirmed)
+            {
+                var therapistTreatmentTypeId = therapist.Qualifications
+                    .First(q => q.TreatmentTypeId == treatmentType.Id)
+                    .Id;
+
+                var booking = new Booking(
+                    Guid.NewGuid(),
+                    customer.Id,
+                    therapist.Id,
+                    clinic.Id,
+                    new TimeSlot(startTime, startTime.AddMinutes(durationMinutes))
+                );
+
+                booking.AddLine(new BookingLine(
+                    therapistTreatmentTypeId,
+                    new Money(price),
+                    discountPercent,
+                    discountType
+                ));
+
+                if (status == BookingStatus.Completed)
+                    booking.Complete();
+
+                if (status == BookingStatus.NoShow)
+                    booking.MarkAsNoShow();
+
+                if (status == BookingStatus.Cancelled)
+                    booking.Cancel();
+
+                if (status == BookingStatus.Arrived)
+                    booking.MarkAsArrived();
+
+                return booking;
+            }
+
+
+            // Klinik 1 - BookRight Vejle Ved Åen
+            bookings.Add(CreateBooking(customers[0], therapistMassage1, clinic1, june.AddDays(0).AddHours(9), 30, massage30, 350, 0, DiscountType.None, BookingStatus.Completed));
+            bookings.Add(CreateBooking(customers[1], therapistFys1, clinic1, june.AddDays(0).AddHours(10), 60, fys60, 745, 10, DiscountType.Loyalty, BookingStatus.Completed));
+            bookings.Add(CreateBooking(customers[2], therapistKost1, clinic1, june.AddDays(1).AddHours(11), 30, kost30, 450, 0, DiscountType.None, BookingStatus.Completed));
+            bookings.Add(CreateBooking(customers[3], therapistAku1, clinic1, june.AddDays(1).AddHours(13), 45, aku45, 550, 25, DiscountType.Birthday, BookingStatus.Completed));
+            bookings.Add(CreateBooking(customers[4], therapistMassage1, clinic1, june.AddDays(2).AddHours(14), 60, massage60, 699, 0, DiscountType.None, BookingStatus.NoShow));
+            bookings.Add(CreateBooking(customers[5], therapistFys1, clinic1, june.AddDays(3).AddHours(9), 45, fys45, 589));
+            bookings.Add(CreateBooking(customers[6], therapistMassage1, clinic1, june.AddDays(4).AddHours(10), 30, massage30, 350));
+            bookings.Add(CreateBooking(customers[7], therapistKost1, clinic1, june.AddDays(7).AddHours(12), 60, kost60, 799));
+            bookings.Add(CreateBooking(customers[8], therapistAku1, clinic1, june.AddDays(8).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[9], therapistFys1, clinic1, june.AddDays(9).AddHours(15), 60, hold60, 150));
+
+            bookings.Add(CreateBooking(customers[10], therapistMassage1, clinic1, june.AddDays(10).AddHours(9), 30, massage30, 350));
+            bookings.Add(CreateBooking(customers[11], therapistFys1, clinic1, june.AddDays(11).AddHours(10), 30, fys30, 395));
+            bookings.Add(CreateBooking(customers[12], therapistKost1, clinic1, june.AddDays(14).AddHours(11), 60, kost60, 799));
+            bookings.Add(CreateBooking(customers[13], therapistAku1, clinic1, june.AddDays(15).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[14], therapistFys1, clinic1, june.AddDays(16).AddHours(14), 45, fys45, 589));
+            bookings.Add(CreateBooking(customers[15], therapistMassage1, clinic1, june.AddDays(17).AddHours(9), 60, massage60, 699));
+            bookings.Add(CreateBooking(customers[16], therapistFys1, clinic1, june.AddDays(17).AddHours(11), 60, fys60, 745));
+            bookings.Add(CreateBooking(customers[17], therapistKost1, clinic1, june.AddDays(18).AddHours(12), 30, kost30, 450));
+            bookings.Add(CreateBooking(customers[18], therapistAku1, clinic1, june.AddDays(19).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[19], therapistFys1, clinic1, june.AddDays(21).AddHours(15), 60, hold60, 150));
+
+            bookings.Add(CreateBooking(customers[0], therapistMassage1, clinic1, june.AddDays(22).AddHours(9), 30, massage30, 350));
+            bookings.Add(CreateBooking(customers[1], therapistFys1, clinic1, june.AddDays(23).AddHours(10), 45, fys45, 589));
+            bookings.Add(CreateBooking(customers[2], therapistKost1, clinic1, june.AddDays(24).AddHours(11), 60, kost60, 799));
+            bookings.Add(CreateBooking(customers[3], therapistAku1, clinic1, june.AddDays(25).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[4], therapistMassage1, clinic1, june.AddDays(26).AddHours(14), 30, massage30, 350));
+            bookings.Add(CreateBooking(customers[5], therapistFys1, clinic1, june.AddDays(27).AddHours(9), 60, fys60, 745));
+            bookings.Add(CreateBooking(customers[6], therapistKost1, clinic1, june.AddDays(28).AddHours(12), 30, kost30, 450));
+            bookings.Add(CreateBooking(customers[7], therapistAku1, clinic1, june.AddDays(29).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[8], therapistFys1, clinic1, june.AddDays(29).AddHours(15), 45, fys45, 589));
+            bookings.Add(CreateBooking(customers[9], therapistMassage1, clinic1, june.AddDays(29).AddHours(16), 60, massage60, 699));
+
+            // Klinik 2 - BookRight Vejle Bredballe
+            bookings.Add(CreateBooking(customers[7], therapistMassage2, clinic2, june.AddDays(0).AddHours(9), 30, massage30, 350, 20, DiscountType.Campaign, BookingStatus.Completed));
+            bookings.Add(CreateBooking(customers[8], therapistFys2, clinic2, june.AddDays(0).AddHours(10), 45, fys45, 589, 10, DiscountType.Loyalty, BookingStatus.Completed));
+            bookings.Add(CreateBooking(customers[9], therapistKost2, clinic2, june.AddDays(1).AddHours(11), 60, kost60, 799, 0, DiscountType.None, BookingStatus.Completed));
+            bookings.Add(CreateBooking(customers[10], therapistAku2, clinic2, june.AddDays(1).AddHours(13), 45, aku45, 550, 0, DiscountType.None, BookingStatus.Cancelled));
+            bookings.Add(CreateBooking(customers[11], therapistMassage2, clinic2, june.AddDays(2).AddHours(14), 60, massage60, 699, 0, DiscountType.None, BookingStatus.NoShow));
+            bookings.Add(CreateBooking(customers[12], therapistFys2, clinic2, june.AddDays(3).AddHours(9), 30, fys30, 395));
+            bookings.Add(CreateBooking(customers[13], therapistMassage2, clinic2, june.AddDays(4).AddHours(10), 30, massage30, 350));
+            bookings.Add(CreateBooking(customers[14], therapistKost2, clinic2, june.AddDays(7).AddHours(12), 30, kost30, 450));
+            bookings.Add(CreateBooking(customers[15], therapistAku2, clinic2, june.AddDays(8).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[16], therapistFys2, clinic2, june.AddDays(9).AddHours(15), 60, hold60, 150));
+
+            bookings.Add(CreateBooking(customers[17], therapistMassage2, clinic2, june.AddDays(10).AddHours(9), 60, massage60, 699));
+            bookings.Add(CreateBooking(customers[18], therapistFys2, clinic2, june.AddDays(11).AddHours(10), 60, fys60, 745));
+            bookings.Add(CreateBooking(customers[19], therapistKost2, clinic2, june.AddDays(14).AddHours(11), 60, kost60, 799));
+            bookings.Add(CreateBooking(customers[1], therapistAku2, clinic2, june.AddDays(15).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[2], therapistFys2, clinic2, june.AddDays(16).AddHours(14), 45, fys45, 589));
+            bookings.Add(CreateBooking(customers[3], therapistMassage2, clinic2, june.AddDays(17).AddHours(9), 30, massage30, 350));
+            bookings.Add(CreateBooking(customers[4], therapistFys2, clinic2, june.AddDays(17).AddHours(11), 30, fys30, 395));
+            bookings.Add(CreateBooking(customers[5], therapistKost2, clinic2, june.AddDays(18).AddHours(12), 30, kost30, 450));
+            bookings.Add(CreateBooking(customers[6], therapistAku2, clinic2, june.AddDays(19).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[7], therapistFys2, clinic2, june.AddDays(21).AddHours(15), 60, hold60, 150));
+
+            bookings.Add(CreateBooking(customers[8], therapistMassage2, clinic2, june.AddDays(22).AddHours(9), 30, massage30, 350));
+            bookings.Add(CreateBooking(customers[9], therapistFys2, clinic2, june.AddDays(23).AddHours(10), 45, fys45, 589));
+            bookings.Add(CreateBooking(customers[10], therapistKost2, clinic2, june.AddDays(24).AddHours(11), 60, kost60, 799));
+            bookings.Add(CreateBooking(customers[11], therapistAku2, clinic2, june.AddDays(25).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[12], therapistMassage2, clinic2, june.AddDays(26).AddHours(14), 60, massage60, 699));
+            bookings.Add(CreateBooking(customers[13], therapistFys2, clinic2, june.AddDays(27).AddHours(9), 30, fys30, 395));
+            bookings.Add(CreateBooking(customers[14], therapistKost2, clinic2, june.AddDays(28).AddHours(12), 30, kost30, 450));
+            bookings.Add(CreateBooking(customers[15], therapistAku2, clinic2, june.AddDays(29).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[16], therapistFys2, clinic2, june.AddDays(29).AddHours(15), 60, fys60, 745));
+            bookings.Add(CreateBooking(customers[17], therapistMassage2, clinic2, june.AddDays(29).AddHours(16), 30, massage30, 350));
+
+            // Klinik 3 - BookRight Egtved
+            bookings.Add(CreateBooking(customers[14], therapistMassage3, clinic3, june.AddDays(0).AddHours(9), 30, massage30, 350, 0, DiscountType.None, BookingStatus.Completed));
+            bookings.Add(CreateBooking(customers[15], therapistFys3, clinic3, june.AddDays(0).AddHours(10), 60, fys60, 745, 15, DiscountType.Loyalty, BookingStatus.Completed));
+            bookings.Add(CreateBooking(customers[16], therapistKost3, clinic3, june.AddDays(1).AddHours(11), 60, kost60, 799, 0, DiscountType.None, BookingStatus.Completed));
+            bookings.Add(CreateBooking(customers[17], therapistAku3, clinic3, june.AddDays(1).AddHours(13), 45, aku45, 550, 25, DiscountType.Birthday, BookingStatus.Completed));
+            bookings.Add(CreateBooking(customers[18], therapistMassage3, clinic3, june.AddDays(2).AddHours(14), 30, massage30, 350, 0, DiscountType.None, BookingStatus.NoShow));
+            bookings.Add(CreateBooking(customers[19], therapistFys3, clinic3, june.AddDays(3).AddHours(9), 30, fys30, 395));
+            bookings.Add(CreateBooking(customers[0], therapistMassage3, clinic3, june.AddDays(4).AddHours(10), 30, massage30, 350));
+            bookings.Add(CreateBooking(customers[1], therapistKost3, clinic3, june.AddDays(7).AddHours(12), 30, kost30, 450));
+            bookings.Add(CreateBooking(customers[2], therapistAku3, clinic3, june.AddDays(8).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[3], therapistFys3, clinic3, june.AddDays(9).AddHours(15), 60, hold60, 150));
+
+            bookings.Add(CreateBooking(customers[4], therapistMassage3, clinic3, june.AddDays(10).AddHours(9), 30, massage30, 350));
+            bookings.Add(CreateBooking(customers[5], therapistFys3, clinic3, june.AddDays(11).AddHours(10), 45, fys45, 589));
+            bookings.Add(CreateBooking(customers[6], therapistKost3, clinic3, june.AddDays(14).AddHours(11), 60, kost60, 799));
+            bookings.Add(CreateBooking(customers[7], therapistAku3, clinic3, june.AddDays(15).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[8], therapistFys3, clinic3, june.AddDays(16).AddHours(14), 60, fys60, 745));
+            bookings.Add(CreateBooking(customers[9], therapistMassage3, clinic3, june.AddDays(17).AddHours(9), 30, massage30, 350));
+            bookings.Add(CreateBooking(customers[10], therapistFys3, clinic3, june.AddDays(17).AddHours(11), 30, fys30, 395));
+            bookings.Add(CreateBooking(customers[11], therapistKost3, clinic3, june.AddDays(18).AddHours(12), 30, kost30, 450));
+            bookings.Add(CreateBooking(customers[12], therapistAku3, clinic3, june.AddDays(19).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[13], therapistFys3, clinic3, june.AddDays(21).AddHours(15), 60, hold60, 150));
+
+            bookings.Add(CreateBooking(customers[14], therapistMassage3, clinic3, june.AddDays(22).AddHours(9), 30, massage30, 350));
+            bookings.Add(CreateBooking(customers[15], therapistFys3, clinic3, june.AddDays(23).AddHours(10), 45, fys45, 589));
+            bookings.Add(CreateBooking(customers[16], therapistKost3, clinic3, june.AddDays(24).AddHours(11), 60, kost60, 799));
+            bookings.Add(CreateBooking(customers[17], therapistAku3, clinic3, june.AddDays(25).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[18], therapistMassage3, clinic3, june.AddDays(26).AddHours(14), 30, massage30, 350));
+            bookings.Add(CreateBooking(customers[19], therapistFys3, clinic3, june.AddDays(27).AddHours(9), 60, fys60, 745));
+            bookings.Add(CreateBooking(customers[0], therapistKost3, clinic3, june.AddDays(28).AddHours(12), 30, kost30, 450));
+            bookings.Add(CreateBooking(customers[1], therapistAku3, clinic3, june.AddDays(29).AddHours(13), 45, aku45, 550));
+            bookings.Add(CreateBooking(customers[2], therapistFys3, clinic3, june.AddDays(29).AddHours(15), 45, fys45, 589));
+            bookings.Add(CreateBooking(customers[3], therapistMassage3, clinic3, june.AddDays(29).AddHours(16), 30, massage30, 350));
+
+            await _context.Bookings.AddRangeAsync(bookings);
             await _context.SaveChangesAsync();
         }
     }

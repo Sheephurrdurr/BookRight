@@ -110,29 +110,38 @@ namespace BookRight.UseCases.CreateBooking
                 .FirstOrDefault(kvp => kvp.Value.MaxParticipants > 1);
 
             // Check current number of participants for the TimeSlot against max participants allowed
+
+            int maxParticipants;
             if (groupTreatmentType.Key != Guid.Empty)
             {
+                maxParticipants = groupTreatmentType.Value.MaxParticipants;
                 var currentCount = await _bookingRepository.CountParticipantsAsync(
                     groupTreatmentType.Key,
-                    timeSlot
-                    );
+                    timeSlot);
 
-                // If currentCount is greater than or equal to maxParticipants, return response indicating booking is rejected due to full capacity
-                if (currentCount >= groupTreatmentType.Value.MaxParticipants)
+                if (currentCount >= maxParticipants)
                 {
+
                     return new CreateBookingResponse
                     {
                         Success = false,
-                        Message = $"Der er ikke plads på holdet: ({currentCount}/{groupTreatmentType.Value.MaxParticipants}). Booking Afvist.)"
+                        Message = $"Der er ikke plads på holdet: ({currentCount}/{maxParticipants}). Booking Afvist."
                     };
                 }
             }
+
+            else
+            {
+                maxParticipants = 1;
+            }
+
             // Calculate the customer's loyalty level based on previous bookings  
             var loyaltyLevel = _loyaltyService.GetLoyaltyLevel(completedBookings, DateTime.Now);
 
             //Verifying both customer and therapist against double booking
+
             _doubleBookingVerificationService.CustomerBookingVerification(allCustomerBooking, timeSlot);
-            _doubleBookingVerificationService.TherapistVerification(allTherapistBooking, timeSlot);
+            _doubleBookingVerificationService.TherapistVerification(allTherapistBooking, timeSlot, maxParticipants);
 
             // Create new Booking object using the Booking constructor
             var booking = new Booking(
@@ -142,7 +151,7 @@ namespace BookRight.UseCases.CreateBooking
                 request.ClinicId,
                 timeSlot
             );
-
+            
             if (campaignDiscount != null)
             {
                 booking.ApplyCampaignDiscount(campaignDiscount.Id);
