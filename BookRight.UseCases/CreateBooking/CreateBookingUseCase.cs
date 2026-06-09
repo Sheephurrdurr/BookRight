@@ -93,10 +93,6 @@ namespace BookRight.UseCases.CreateBooking
             if (clinic == null)
                 throw new ClinicNotFoundException(request.ClinicId);
 
-           
-
-            
-
             // Henter kundens tidligere bookinger.
             // De bruges til loyalitetsberegning og rabatregler.
             var completedBookings =
