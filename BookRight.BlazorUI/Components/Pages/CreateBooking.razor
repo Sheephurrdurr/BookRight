@@ -102,7 +102,20 @@
 									IsFullyBooked="isFullyBooked"
 									OnSlotChanged="HandleSlotChanged" />
 
-						<button class="btn btn-primary mt-4" @onclick="HandleCreateBooking">Opret Booking</button>
+						<button class="btn btn-primary mt-4"
+								@onclick="HandleCreateBooking"
+								disabled="@isLoading">
+
+							@if (isLoading)
+							{
+								<span class="spinner-border spinner-border-sm me-2"></span>
+								<span>Opretter booking...</span>
+							}
+							else
+							{
+								<span>Opret Booking</span>
+							}
+						</button>
 
 						@if (!string.IsNullOrEmpty(bookingMessage))
 						{
@@ -136,6 +149,8 @@
 
 	private string bookingMessage = "";
 	private string bookingAlertClass = "";
+	
+	private bool isLoading = false; // Bruges til at forhindre dobbeltklik og vise loading-status.
 
 	private int? remainingSlots = null;
 	private bool isFullyBooked = false;
@@ -154,13 +169,16 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+		// Henter grunddata til siden, når komponenten åbnes.
+		// Data bruges til dropdowns for kunder, klinikker, behandlere, behandlinger og kampagner.
 		customers = await GetAllCustomersUseCase.ExecuteAsync();
 		clinics = await GetAllClinicsUseCase.ExecuteAsync();
 		therapists = await GetAllTherapistsUseCase.ExecuteAsync();
 		campaignDiscounts = await GetAllCampaignDiscountsUseCase.ExecuteAsync();
 		allTherapistTreatmentTypes = await GetAllTherapistTreatmentTypesUseCase.ExecuteAsync();
 
-		// How do we get uniqueTreatmentTypes?
+		// Flere behandlere kan have samme behandlingstype.
+		// Derfor grupperes behandlingerne efter navn, så brugeren kun ser hver behandling én gang.
 		uniqueTreatmentTypes = allTherapistTreatmentTypes
 			.GroupBy(ttt => ttt.TreatmentTypeName) // Group the new selection by TreatmentType name
 			.Select(g => g.First()) // Just get the first (element)
@@ -214,6 +232,8 @@
 		isFullyBooked = response.IsFullyBooked;
 	}
 
+	// Tilføjer den valgte behandling til bookingens linjer.
+	// En booking kan bestå af én eller flere behandlinger.
 	private void AddLine()
 	{
 		if (string.IsNullOrEmpty(selectedTreatmentTypeId) ||
@@ -252,19 +272,22 @@
 
 	private async Task HandleCreateBooking()
 	{
-
-		if (string.IsNullOrEmpty(selectedCustomerId) ||
-			string.IsNullOrEmpty(selectedClinicId) ||
-			!selectedLines.Any())
-		{
-			bookingMessage = "Alle felter skal udfyldes før booking kan oprettes.";
-			bookingAlertClass = "alert alert-danger";
+		// Forhindrer at brugeren starter flere booking-processer samtidigt.
+		if (isLoading)
 			return;
-		}
+
+		isLoading = true;
+
 		try
 		{
-			var therapistTreatmentTypes = allTherapistTreatmentTypes
-				.FirstOrDefault(t => t.Id.ToString() == selectedTreatmentTypeId);
+			if (string.IsNullOrEmpty(selectedCustomerId) ||
+				string.IsNullOrEmpty(selectedClinicId) ||
+				!selectedLines.Any())
+			{
+				bookingMessage = "Alle felter skal udfyldes før booking kan oprettes.";
+				bookingAlertClass = "alert alert-danger";
+				return;
+			}
 
 			var request = new CreateBookingRequest
 			{
@@ -273,19 +296,20 @@
 				TherapistId = Guid.Parse(firstTherapistId),
 
 				CampaignDiscountId = string.IsNullOrEmpty(selectedCampaignDiscountId)
-				? (Guid?)null
-				: Guid.Parse(selectedCampaignDiscountId),
+					? (Guid?)null
+					: Guid.Parse(selectedCampaignDiscountId),
+
 				StartTime = startTime,
 				Lines = selectedLines
 			};
 
 			var response = await CreateBookingUseCase.ExecuteAsync(request);
-			bookingMessage = $"Booking oprettet!";
-			bookingAlertClass = "alert alert-success";
 
 			if (response.Success)
 			{
-				// Clear form after successful booking
+				bookingMessage = "Booking oprettet!";
+				bookingAlertClass = "alert alert-success";
+
 				selectedCustomerId = "";
 				selectedClinicId = "";
 				selectedTherapistId = "";
@@ -295,7 +319,6 @@
 				remainingSlots = null;
 				isFullyBooked = false;
 				finalResponse = response;
-
 			}
 			else
 			{
@@ -307,6 +330,11 @@
 		{
 			bookingMessage = $"Fejl: {ex.Message}";
 			bookingAlertClass = "alert alert-danger";
+		}
+		finally
+		{
+			// Loading afsluttes altid, både ved succes og fejl.
+			isLoading = false;
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.CampaignDiscount;
 using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.Aggregates.TherapistAggregate;
@@ -11,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookRight.Infrastructure
 {
+    // DbSeeder bruges kun til at oprette testdata/demo-data i databasen.
+    // Det gør det lettere at vise systemet til fremlæggelse uden at oprette alt manuelt.
     public class DbSeeder
     {
         private readonly BookRightDbContext _context;
@@ -22,12 +25,15 @@ namespace BookRight.Infrastructure
 
         public async Task SeedAsync()
         {
+            // Rækkefølgen er vigtig:
+            // Klinikker og behandlingstyper skal oprettes før terapeuter,
+            // fordi terapeuter får kvalifikationer baseret på behandlingstyper.
             await SeedClinicsAsync();
             await SeedTreatmentTypesAsync();
             await SeedTherapistsAsync();
             await SeedCustomersAsync();
             await SeedBookingsAsync();
-
+            await SeedCampaignDiscountsAsync();
             await SeedGeneratedCustomersAsync();
             await SeedGeneratedBookingsAsync();
         }
@@ -1075,6 +1081,85 @@ namespace BookRight.Infrastructure
                     generatedBookings.Add(booking);
                 }
             }
+        }
+
+        // Perioderne bruges af kampagnelogikken, så en kampagne kun kan anvendes
+        // på bookinger indenfor den periode, kampagnen gælder.
+        private async Task SeedCampaignDiscountsAsync()
+        {
+            // Undgår at oprette de samme kampagner flere gange,
+            // hvis seed-metoden køres igen.
+            if (_context.CampaignDiscounts.Any())
+                return;
+
+            // Henter alle behandlingstyper, så kampagnerne kan gælde for alle behandlinger.
+            // I denne demo fokuserer vi på kampagnens periode fremfor bestemte behandlingstyper.
+            var treatmentTypes = _context.TreatmentTypes.ToList();
+            var allTreatmentTypeIds = treatmentTypes.Select(t => t.Id).ToList();
+
+            // Kampagner bruges til at demonstrere systemets prisberegning.
+            // Kampagner kan kun anvendes indenfor deres gyldige periode.
+            var campaigns = new List<CampaignDiscount>
+    {
+        new CampaignDiscount(
+            "Påskekampagne",
+            10,
+            new DateRange(
+                new DateOnly(2026, 3, 23),
+                new DateOnly(2026, 4, 7)),
+            allTreatmentTypeIds),
+
+        new CampaignDiscount(
+            "Mors Dag Kampagne",
+            15,
+            new DateRange(
+                new DateOnly(2026, 5, 10),
+                new DateOnly(2026, 5, 11)),
+            allTreatmentTypeIds),
+
+        new CampaignDiscount(
+            "Fars Dag Kampagne",
+            15,
+            new DateRange(
+                new DateOnly(2026, 6, 5),
+                new DateOnly(2026, 6, 6)),
+            allTreatmentTypeIds),
+
+        new CampaignDiscount(
+            "Sommer Wellness",
+            10,
+            new DateRange(
+                new DateOnly(2026, 7, 1),
+                new DateOnly(2026, 8, 1)),
+            allTreatmentTypeIds),
+
+        new CampaignDiscount(
+            "Black Friday Week",
+            20,
+            new DateRange(
+                new DateOnly(2026, 11, 23),
+                new DateOnly(2026, 11, 28)),
+            allTreatmentTypeIds),
+
+        new CampaignDiscount(
+            "Xmas Kampagne",
+            25,
+            new DateRange(
+                new DateOnly(2026, 12, 1),
+                new DateOnly(2026, 12, 25)),
+            allTreatmentTypeIds),
+
+        new CampaignDiscount(
+            "Nytårskampagne",
+            30,
+            new DateRange(
+                new DateOnly(2026, 12, 26),
+                new DateOnly(2027, 1, 2)),
+            allTreatmentTypeIds)
+    };
+
+            await _context.CampaignDiscounts.AddRangeAsync(campaigns);
+            await _context.SaveChangesAsync();
         }
     }
 }
