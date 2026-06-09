@@ -1,12 +1,13 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.TherapistAggregate;
+using BookRight.Domain.Enums;
 using BookRight.Domain.Errors;
-using BookRight.Domain.Services;
 using BookRight.Domain.Exceptions;
+using BookRight.Domain.Services;
 using BookRight.Domain.ValueObjects;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.Facade.Interfaces;
 using BookRight.UseCases.Interfaces;
-using BookRight.Domain.Enums;
 
 namespace BookRight.UseCases.CreateBooking
 {
@@ -17,6 +18,7 @@ namespace BookRight.UseCases.CreateBooking
         private readonly IClinicRepository _clinicRepository;
         private readonly ITreatmentTypeRepository _treatmentTypeRepository;
         private readonly ICampaignDiscountRepository _campaignDiscountRepository;
+        private readonly ITherapistRepository _therapistRepository;
 
         private readonly LoyaltyService _loyaltyService;
         private readonly DoubleBookingVerificationService _doubleBookingVerificationService;
@@ -27,6 +29,7 @@ namespace BookRight.UseCases.CreateBooking
             IClinicRepository clinicRepository,
             ITreatmentTypeRepository treatmentTypeRepository,
             ICampaignDiscountRepository campaignDiscountRepository,
+            ITherapistRepository therapistRepository,
 
             LoyaltyService loyaltyService,
             DoubleBookingVerificationService doubleBookingVerificationService, 
@@ -37,6 +40,7 @@ namespace BookRight.UseCases.CreateBooking
             _clinicRepository = clinicRepository;
             _customerRepository = customerRepository;
             _campaignDiscountRepository = campaignDiscountRepository;
+            _therapistRepository = therapistRepository;
 
             _loyaltyService = loyaltyService;
             _doubleBookingVerificationService = doubleBookingVerificationService;
@@ -75,6 +79,18 @@ namespace BookRight.UseCases.CreateBooking
                         DomainErrorMessages
                         .TreatmentTypeCannotBeCombinedWith(nonCombinableType.Name));
                 }
+            }
+            if (clinic == null)
+                throw new ClinicNotFoundException(request.ClinicId);
+
+            var therapist = await _therapistRepository.GetByIdAsync(request.TherapistId);
+            if (therapist == null)
+                throw new TherapistNotFoundException(request.TherapistId);
+
+            if (therapist.ClinicId != clinic.Id)
+            {
+                throw new InvalidOperationException(
+                    "Behandleren er ikke tilknyttet den valgte klinik.");
             }
 
             // Get all completed bookings for the customer to determine loyalty level and potential discounts for the new booking
@@ -228,6 +244,7 @@ namespace BookRight.UseCases.CreateBooking
                 DiscountedPrice = booking.GetTotalPrice().Value,
                 DiscountType = booking.Lines.FirstOrDefault()?.DiscountType.ToString()
             };
+
         }
     }
 }
