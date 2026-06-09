@@ -90,12 +90,12 @@ namespace BookRight.UseCases.CreateBooking
             if (clinic == null)
                 throw new ClinicNotFoundException(request.ClinicId);
 
-            //
+           
 
             var therapist = await _therapistRepository.GetByIdAsync(request.TherapistId);
             if (therapist == null)
                 throw new TherapistNotFoundException(request.TherapistId);
-
+            //Checks if the therapist is connected to the chosen clinic.
             if (therapist.ClinicId != clinic.Id)
             {
                 throw new InvalidOperationException(
