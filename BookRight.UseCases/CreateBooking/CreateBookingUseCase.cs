@@ -107,7 +107,7 @@ namespace BookRight.UseCases.CreateBooking
 
             if (!clinic.CanBookTimeSlot(timeSlot))
             {
-                throw new BookingOutsideOpeningHoursException(clinic.Id, timeSlot);
+                throw new BookingOutsideOpeningHoursException(timeSlot);
             }
 
             // Find first treatment type that is a group treatment (MaxParticipants > 1)
