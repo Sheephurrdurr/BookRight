@@ -1,4 +1,6 @@
-﻿namespace BookRight.Domain.Errors;
+﻿using BookRight.Domain.ValueObjects;
+
+namespace BookRight.Domain.Errors;
 
 public static class DomainErrorMessages //Static because we don't want to create an object
 {
@@ -101,7 +103,9 @@ public static class DomainErrorMessages //Static because we don't want to create
     public static string TreatmentTypeCannotBeCombinedWith(string treatmentTypeName)
         => $"Behandlingstype {treatmentTypeName} kan ikke blive kombineret med andre.";
 
+    public static string BookingOutsideOpeningHours(Guid clinicId, TimeSlot timeSlot)
+       => $"Klinik: '{clinicId}' er ikke åben på det valgte tidspunkt: {timeSlot.StartTime} - {timeSlot.EndTime}.";
 
 }
-    
+
 
