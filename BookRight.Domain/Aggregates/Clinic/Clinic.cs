@@ -28,6 +28,11 @@ namespace BookRight.Domain.Aggregates.Clinic
 
         private Clinic() { }
 
+        public bool HasTherapist(Guid therapistId)
+        {
+            return _therapists.Any(t => t.Id == therapistId);
+        }
+
 
         // Constructor: bruges til at oprette en ny Clinic og give den startværdier
         public Clinic(string name, Address address, PhoneNumber phone, int numTreatmentRooms)
@@ -114,6 +119,17 @@ namespace BookRight.Domain.Aggregates.Clinic
                 return false;
 
             return openingHour.IsWithinOpeningHours(timeSlot);
+        }
+        // Metode: bruges til at tilknytte en behandler til klinikken
+        public void AddTherapist(Therapist therapist)
+        {
+            if (therapist is null)
+                throw new ArgumentNullException(nameof(therapist));
+
+            if (_therapists.Any(t => t.Id == therapist.Id))
+                return;
+
+            _therapists.Add(therapist);
         }
     }
 }

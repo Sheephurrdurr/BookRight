@@ -18,6 +18,7 @@ namespace BookRight.Infrastructure.Repositories
         {
             return await _context.Clinics
                 .Include(c => c.TherapistSchedules)
+                .Include(c => c.OpeningHours)
                 .FirstOrDefaultAsync(c => c.Id == clinicId);
         }
 

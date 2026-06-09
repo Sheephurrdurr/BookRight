@@ -1,7 +1,4 @@
-﻿using BookRight.Domain.Errors;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using BookRight.Domain.Exceptions;
 
 namespace BookRight.Domain.ValueObjects
 {
@@ -13,9 +10,7 @@ namespace BookRight.Domain.ValueObjects
         {
             // Phone number is required.
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException(
-                    DomainErrorMessages.PhoneNumberCannotBeNull,
-                    nameof(value));
+                throw new PhoneNumberIsRequiredException();
 
             Value = value.Trim();
         }

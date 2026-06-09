@@ -1,4 +1,5 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.CampaignDiscount;
 using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.Customer;
 using BookRight.Domain.Aggregates.TherapistAggregate;
@@ -11,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookRight.Infrastructure
 {
+    // DbSeeder bruges kun til at oprette testdata/demo-data i databasen.
+    // Det gør det lettere at vise systemet til fremlæggelse uden at oprette alt manuelt.
     public class DbSeeder
     {
         private readonly BookRightDbContext _context;
@@ -22,12 +25,15 @@ namespace BookRight.Infrastructure
 
         public async Task SeedAsync()
         {
+            // Rækkefølgen er vigtig:
+            // Klinikker og behandlingstyper skal oprettes før terapeuter,
+            // fordi terapeuter får kvalifikationer baseret på behandlingstyper.
             await SeedClinicsAsync();
             await SeedTreatmentTypesAsync();
             await SeedTherapistsAsync();
             await SeedCustomersAsync();
             await SeedBookingsAsync();
-
+            await SeedCampaignDiscountsAsync();
             await SeedGeneratedCustomersAsync();
             await SeedGeneratedBookingsAsync();
         }
@@ -36,12 +42,20 @@ namespace BookRight.Infrastructure
         {
             if (_context.Clinics.Any()) return;
 
+            var weekdays = new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday };
+
+
             var clinic1 = new Clinic(
                 "BookRight Vejle Ved Åen",
                 new Address("Ågade 10", "Vejle", "7100"),
                 new PhoneNumber("12345678"),
                 5 // Number of treatment rooms
+        
             );
+            foreach (var day in weekdays) // Add opening hours for each weekday to the clinic
+            {
+                clinic1.AddOpeningHour(day, new TimeOnly(8, 0), new TimeOnly(17, 0));
+            }
 
             var clinic2 = new Clinic(
                 "BookRight Vejle Bredballe",
@@ -49,6 +63,10 @@ namespace BookRight.Infrastructure
                 new PhoneNumber("87654321"),
                 4
             );
+            foreach (var day in weekdays) // Add opening hours for each weekday to the clinic
+            {
+                clinic2.AddOpeningHour(day, new TimeOnly(8, 0), new TimeOnly(17, 0));
+            }
 
             var clinic3 = new Clinic(
                 "BookRight Egtved",
@@ -56,6 +74,10 @@ namespace BookRight.Infrastructure
                 new PhoneNumber("11223344"),
                 4
             );
+            foreach (var day in weekdays) // Add opening hours for each weekday to the clinic
+            {
+                clinic3.AddOpeningHour(day, new TimeOnly(8, 0), new TimeOnly(17, 0));
+            }
 
             await _context.Clinics.AddRangeAsync(clinic1, clinic2, clinic3);
             await _context.SaveChangesAsync();
@@ -1012,12 +1034,10 @@ namespace BookRight.Infrastructure
                 for (int i = 0; i < bookingCount; i++)
                 {
                     var therapist = random.Next(100) < 70
-                    ? favoriteTherapist
-                    : therapists[random.Next(therapists.Count)];
+                       ? favoriteTherapist
+                        : therapists[random.Next(therapists.Count)];
 
-                    var clinic = random.Next(100) < 75
-                    ? favoriteClinic
-                    : clinics[random.Next(clinics.Count)];
+                    var clinic = clinics.First(c => c.Id == therapist.ClinicId);
 
                     var possibleTreatmentTypes = treatmentPool
                     .Where(t => therapist.Qualifications.Any(q => q.TreatmentTypeId == t.Id))
@@ -1077,6 +1097,85 @@ namespace BookRight.Infrastructure
                     generatedBookings.Add(booking);
                 }
             }
+        }
+
+        // Perioderne bruges af kampagnelogikken, så en kampagne kun kan anvendes
+        // på bookinger indenfor den periode, kampagnen gælder.
+        private async Task SeedCampaignDiscountsAsync()
+        {
+            // Undgår at oprette de samme kampagner flere gange,
+            // hvis seed-metoden køres igen.
+            if (_context.CampaignDiscounts.Any())
+                return;
+
+            // Henter alle behandlingstyper, så kampagnerne kan gælde for alle behandlinger.
+            // I denne demo fokuserer vi på kampagnens periode fremfor bestemte behandlingstyper.
+            var treatmentTypes = _context.TreatmentTypes.ToList();
+            var allTreatmentTypeIds = treatmentTypes.Select(t => t.Id).ToList();
+
+            // Kampagner bruges til at demonstrere systemets prisberegning.
+            // Kampagner kan kun anvendes indenfor deres gyldige periode.
+            var campaigns = new List<CampaignDiscount>
+    {
+        new CampaignDiscount(
+            "Påskekampagne",
+            10,
+            new DateRange(
+                new DateOnly(2026, 3, 23),
+                new DateOnly(2026, 4, 7)),
+            allTreatmentTypeIds),
+
+        new CampaignDiscount(
+            "Mors Dag Kampagne",
+            15,
+            new DateRange(
+                new DateOnly(2026, 5, 10),
+                new DateOnly(2026, 5, 11)),
+            allTreatmentTypeIds),
+
+        new CampaignDiscount(
+            "Fars Dag Kampagne",
+            15,
+            new DateRange(
+                new DateOnly(2026, 6, 5),
+                new DateOnly(2026, 6, 6)),
+            allTreatmentTypeIds),
+
+        new CampaignDiscount(
+            "Sommer Wellness",
+            10,
+            new DateRange(
+                new DateOnly(2026, 7, 1),
+                new DateOnly(2026, 8, 1)),
+            allTreatmentTypeIds),
+
+        new CampaignDiscount(
+            "Black Friday Week",
+            20,
+            new DateRange(
+                new DateOnly(2026, 11, 23),
+                new DateOnly(2026, 11, 28)),
+            allTreatmentTypeIds),
+
+        new CampaignDiscount(
+            "Xmas Kampagne",
+            25,
+            new DateRange(
+                new DateOnly(2026, 12, 1),
+                new DateOnly(2026, 12, 25)),
+            allTreatmentTypeIds),
+
+        new CampaignDiscount(
+            "Nytårskampagne",
+            30,
+            new DateRange(
+                new DateOnly(2026, 12, 26),
+                new DateOnly(2027, 1, 2)),
+            allTreatmentTypeIds)
+    };
+
+            await _context.CampaignDiscounts.AddRangeAsync(campaigns);
+            await _context.SaveChangesAsync();
         }
     }
 }

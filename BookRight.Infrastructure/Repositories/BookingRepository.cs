@@ -46,6 +46,7 @@ namespace BookRight.Infrastructure.Repositories
         public async Task<IReadOnlyList<Booking>> GetByCustomerIdAsync(Guid customerId)
         {
             return await _context.Bookings
+                .AsNoTracking()
                 .Include(b => b.Lines)
                 .Where(b => b.CustomerId == customerId)
                 .ToListAsync();
@@ -54,6 +55,7 @@ namespace BookRight.Infrastructure.Repositories
         public async Task<IReadOnlyList<Booking>> GetByTherapistIdAsync(Guid therapistId)
         {
             return await _context.Bookings
+                .AsNoTracking()
                 .Include(b => b.Lines)
                 .Where(b => b.TherapistId == therapistId)
                 .ToListAsync();
@@ -62,6 +64,7 @@ namespace BookRight.Infrastructure.Repositories
         public async Task<IReadOnlyList<Booking>> GetAllBookingsByCustomerIdAsync(Guid customerId)
         {
             return await _context.Bookings
+                .AsNoTracking()
                 .Include(b => b.Lines)
                 .Where(b => b.CustomerId == customerId && b.Status == BookingStatus.Completed)
                 .ToListAsync();

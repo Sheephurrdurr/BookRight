@@ -21,12 +21,22 @@
                 <label class="form-label">Behandling</label>
                 <input class="form-control" @bind="_treatmentTypeName" placeholder="Skriv ind navn på behandling her..." />
                 <label class="form-label">Varighed i minutter</label>
-                <input class="form-control" type="number" @bind="_treatmentTypeDuration" min="1" placeholder="Skriv ind varighed her..." />
+                <select class="form-select" @bind="_treatmentTypeDuration">
+                    <option value="15">15 minutter</option>
+                    <option value="30">30 minutter</option>
+                    <option value="45">45 minutter</option>
+                    <option value="60">60 minutter</option>
+                </select>
                 <label class="form-label">Antal deltagere</label>
                 <input class="form-control" type="number" @bind="_maxParticipants" min="1" placeholder="Skriv ind max antal personer her..." />
                 <label class="form-label">Pris</label>
                 <input class="form-control" type="number" @bind="_price" min="0" placeholder="Skriv ind pris her..." />
                 <label class="form-label" >Kan kombineres</label>
+                <select class="form-select" @bind="_canBeCombinedString">
+                    <option value="false">Nej</option>
+                    <option value="true">Ja</option>
+                </select>
+
 
 
                 <label class="form-label">Autorisation</label>
@@ -81,6 +91,8 @@
 
     private async Task HandleCreateTreatmentType()
     {
+        _failedTreatmentCreateMessage = "";
+        _successtreatmentCreateMessage = "";
         if (string.IsNullOrEmpty(_treatmentTypeName))
         {
             _failedTreatmentCreateMessage = "Navn skal være udfyldt";

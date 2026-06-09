@@ -33,8 +33,8 @@
 			<input class="form-control" @bind="street" placeholder="Skriv gadenavn og husnummer..."/>
 		</div>
 		<div class="mb-3">
-			<label  class="form-label">Vejnavn</label>
-			<input class="form-control" @bind="city" placeholder="Skriv vejnavn..."/>
+			<label  class="form-label">By</label>
+			<input class="form-control" @bind="city" placeholder="Skriv by..."/>
 		</div>
 		<div class="mb-3">
 			<label class="form-label">Postnummer</label>
@@ -46,7 +46,7 @@
 			<textarea class="form-control" @bind="healthNotes" placeholder="Valgfri helbredsnote" rows="3"></textarea>
 		</div>
 		<div class="mb-3" >
-			<label>Helbredsnoter</label>
+			<label>Foretrukne behandler</label>
 			<select class="form-control" @bind="preferredTherapistId">
 				<option value="">Ingen preference</option>
 				@foreach(var therapist in Therapists) 
@@ -76,8 +76,8 @@
 	private string firstName = "";
 	private string lastName = "";
 	private string email = "";
-	private string city = "";
 	private string street = "";
+	private string city = "";
 	private string postalCode = "";
 	private string phone = "";
 	private DateOnly dateOfBirth = DateOnly.FromDateTime(DateTime.Today);
@@ -88,12 +88,14 @@
 
 	private async Task HandleSave()
 	{
-		var data = new CustomerFormData(
+		try
+		{
+			var data = new CustomerFormData(
 				firstName,
 				lastName,
 				email,
-				city,
 				street,
+				city,
 				postalCode,
 				phone,
 				dateOfBirth,
@@ -101,10 +103,18 @@
 				preferredTherapistId
 			);
 
-		await OnSave.InvokeAsync(data);
-		message = "Gemt!";
-		alertClass = "alert-success";
-		ResetFields();
+			await OnSave.InvokeAsync(data);
+			message = "Gemt!";
+			alertClass = "alert-success";
+			ResetFields();
+
+		}
+		catch (Exception ex)
+		{
+			message = ex.Message;
+			alertClass = "alert-danger";
+		}
+
 	}
 
 	private void ResetFields()
