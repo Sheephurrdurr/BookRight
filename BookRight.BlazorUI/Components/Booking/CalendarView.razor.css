@@ -18,7 +18,7 @@
 }
 
 .calendar-time-label {
-    height: 80px; /*Match HourHeight i selve componentets @code del*/
+    height: 80px;
     display: flex;
     align-items: flex-start;
     padding-top: 6px;
@@ -43,7 +43,7 @@
     border-bottom: 1px solid #dee2e6;
     position: sticky;
     top: 0;
-    background: #ffff;
+    background: #fff;
     z-index: 5;
 }
 
@@ -55,10 +55,6 @@
     border-right: 1px solid #f0f2f5;
 }
 
-    .calendar-day-header:last-child {
-        border-right: none;
-    }
-
 .calendar-today {
     background: #EBF4FC;
 }
@@ -69,11 +65,6 @@
     color: #6b7280;
     text-transform: uppercase;
     letter-spacing: .05em;
-}
-
-.calendar-day-date {
-    font-size: 12px;
-    color: #9ca3af;
 }
 
 .calendar-today-badge {
@@ -101,36 +92,42 @@
 
 .calendar-day-track {
     position: relative;
+    border-right: 1px solid #f0f2f5;
 }
 
     .calendar-day-track.today {
         background: #f7fbff;
     }
 
-    .calendar-day-track:last-child {
-        border-right: none;
-    }
-
 .calendar-booking {
-    width: 85%;
+    position: absolute;
     left: 7.5%;
+    width: 85%;
+    border-radius: 7px;
+    padding: 6px 8px;
+    color: #fff;
+    font-size: 11px;
+    line-height: 1.25;
+    overflow: hidden;
+    cursor: pointer;
     display: flex;
     flex-direction: column;
     justify-content: center;
     text-align: center;
+    z-index: 2;
 }
 
 .calendar-booking-time {
-    font-weight: 600;
+    font-weight: 700;
 }
 
-.calendar-booking-status {
-    opacity: .85;
+.calendar-booking-title {
+    font-weight: 500;
 }
 
-.calendar-booking-clinic {
-    font-size: 9px;
-    opacity: 0.85;
+.multi-booking {
+    left: 15%;
+    width: 70%;
 }
 
 .booking-overlay {
@@ -149,21 +146,12 @@
     color: #111827;
     padding: 20px;
     border-radius: 12px;
-    width: 420px;
-    max-width: 90vw;
-    max-height: 85vh;
+    width: 90%;
+    max-width: 900px;
+    max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
 }
-
-    .booking-popup h4 {
-        font-size: 24px;
-        margin-bottom: 16px;
-    }
-
-    .booking-popup p {
-        margin-bottom: 12px;
-    }
 
 .booking-details-grid {
     display: grid;
@@ -177,12 +165,6 @@
         margin-bottom: 3px;
     }
 
-.booking-popup {
-    max-width: 900px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-}
 .booking-detail-card {
     background: #f8fafc;
     border: 1px solid #e5e7eb;
@@ -190,9 +172,4 @@
     border-radius: 10px;
     padding: 16px;
     margin-bottom: 16px;
-}
-.multi-booking {
-    width: 70%;
-    left: 15%;
-    text-align: center;
 }
