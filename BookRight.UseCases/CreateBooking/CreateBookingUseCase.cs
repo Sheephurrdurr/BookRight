@@ -1,15 +1,17 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.TherapistAggregate;
+using BookRight.Domain.Enums;
 using BookRight.Domain.Errors;
-using BookRight.Domain.Services;
 using BookRight.Domain.Exceptions;
+using BookRight.Domain.Services;
 using BookRight.Domain.ValueObjects;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.Facade.Interfaces;
 using BookRight.UseCases.Interfaces;
-using BookRight.Domain.Enums;
 
 namespace BookRight.UseCases.CreateBooking
 {
+
     public class CreateBookingUseCase : ICreateBookingUseCase
     {
         private readonly IBookingRepository _bookingRepository;
@@ -21,39 +23,52 @@ namespace BookRight.UseCases.CreateBooking
         private readonly LoyaltyService _loyaltyService;
         private readonly DoubleBookingVerificationService _doubleBookingVerificationService;
         private readonly PriceCalculatorService _priceCalculatorService;
+
         public CreateBookingUseCase(
             IBookingRepository bookingRepository,
             ICustomerRepository customerRepository,
             IClinicRepository clinicRepository,
             ITreatmentTypeRepository treatmentTypeRepository,
             ICampaignDiscountRepository campaignDiscountRepository,
-
             LoyaltyService loyaltyService,
-            DoubleBookingVerificationService doubleBookingVerificationService, 
+            DoubleBookingVerificationService doubleBookingVerificationService,
             PriceCalculatorService priceCalculatorService)
         {
+            // Repositories bruges til at hente og gemme data via interfaces.
+            // Use casen kender derfor ikke direkte til databasen.
             _bookingRepository = bookingRepository;
-            _treatmentTypeRepository = treatmentTypeRepository; 
+            _treatmentTypeRepository = treatmentTypeRepository;
             _clinicRepository = clinicRepository;
             _customerRepository = customerRepository;
             _campaignDiscountRepository = campaignDiscountRepository;
 
+            // Domain services indeholder forretningslogik,
+            // fx loyalitet, dobbeltbooking og prisberegning.
             _loyaltyService = loyaltyService;
             _doubleBookingVerificationService = doubleBookingVerificationService;
             _priceCalculatorService = priceCalculatorService;
         }
 
-        public async Task<CreateBookingResponse> ExecuteAsync (CreateBookingRequest request)
+        public async Task<CreateBookingResponse> ExecuteAsync(CreateBookingRequest request)
         {
-            // Hent kunde via repository i infrastructure laget 
+            // Henter kunden. Hvis kunden ikke findes, stoppes use casen.
             var customer = await _customerRepository.GetByIdAsync(request.CustomerId);
             if (customer == null)
                 throw new CustomerNotFoundException(request.CustomerId);
 
-          
+            // Henter klinikken. Booking kan ikke oprettes uden en gyldig klinik.
             var clinic = await _clinicRepository.GetByIdAsync(request.ClinicId);
             if (clinic == null)
                 throw new ClinicNotFoundException(request.ClinicId);
+
+            // Henter de behandlingstyper, der er valgt i bookingen.
+            // De bruges både til varighed, pris og kombinationsregler.
+            if (!clinic.HasTherapist(request.TherapistId))
+            {
+                throw new ArgumentException(
+                    $"Den valgte behandler er ikke tilknyttet klinikken: {clinic.Name}.",
+                    nameof(request.TherapistId));
+            }
 
             // Get relevant treatment types for the booking lines 
             var treatmentTypes = await _treatmentTypeRepository
@@ -61,11 +76,10 @@ namespace BookRight.UseCases.CreateBooking
                     request.Lines.Select(l => l.TherapistTreatmentTypeId)
                 );
 
-            // Handles Bookings with more than one treatment in them (BookingLine). 
-            // If there are more than 1 treatment in the booking -
+            // Hvis der vælges flere behandlinger i samme booking,
+            // må ingen af dem være markeret som "kan ikke kombineres".
             if (request.Lines.Count() > 1)
             {
-                // Find treatmentTypes that cant be combined
                 var nonCombinableType = treatmentTypes.Values
                     .FirstOrDefault(t => !t.CanBeCombined);
 
@@ -73,60 +87,92 @@ namespace BookRight.UseCases.CreateBooking
                 {
                     throw new ArgumentException(
                         DomainErrorMessages
-                        .TreatmentTypeCannotBeCombinedWith(nonCombinableType.Name));
+                            .TreatmentTypeCannotBeCombinedWith(nonCombinableType.Name));
                 }
             }
+            if (clinic == null)
+                throw new ClinicNotFoundException(request.ClinicId);
 
-            // Get all completed bookings for the customer to determine loyalty level and potential discounts for the new booking
-            var completedBookings = await _bookingRepository.GetAllBookingsByCustomerIdAsync(request.CustomerId);
-            //Get all bookings by customer and therapist to check for overlap
-            var allCustomerBooking = await _bookingRepository.GetByCustomerIdAsync(request.CustomerId);
-            var allTherapistBooking = await _bookingRepository.GetByTherapistIdAsync(request.TherapistId);
+           
 
+            
+
+            // Henter kundens tidligere bookinger.
+            // De bruges til loyalitetsberegning og rabatregler.
+            var completedBookings =
+                await _bookingRepository.GetAllBookingsByCustomerIdAsync(request.CustomerId);
+
+            // Henter kundens og behandlerens eksisterende bookinger.
+            // De bruges til at kontrollere dobbeltbooking.
+            var allCustomerBooking =
+                await _bookingRepository.GetByCustomerIdAsync(request.CustomerId);
+
+            var allTherapistBooking =
+                await _bookingRepository.GetByTherapistIdAsync(request.TherapistId);
+
+            // Henter kampagnerabat, hvis receptionisten har valgt en.
             var campaignDiscount = request.CampaignDiscountId.HasValue
                 ? await _campaignDiscountRepository.GetByIdAsync(request.CampaignDiscountId.Value)
                 : null;
 
 
-            // Check if the requested time slot is in the past 
+            // Booking må ikke oprettes i fortiden.
+            // 1. Først: Er bookingdatoen overhovedet gyldig?
             if (request.StartTime < DateTime.Now)
             {
                 throw new ArgumentException(
-                    DomainErrorMessages.DateCannotBeBeforeToday,
-                    nameof(request.StartTime));
+                    DomainErrorMessages.DateCannotBeBeforeToday);
             }
-            
-            // Sum the duration (in minutes) for all the treatmentTypes in the query.
+
+            // Kampagnerabat må kun bruges, hvis bookingdatoen ligger i kampagnens periode.
+            // 2. Derefter: Kan den valgte kampagne bruges på den gyldige dato?
+            if (campaignDiscount is not null)
+            {
+                var bookingDate = DateOnly.FromDateTime(request.StartTime);
+
+                if (!campaignDiscount.IsActive(bookingDate))
+                {
+                    throw new CampaignDiscountNotValidException(
+                        campaignDiscount.Name,
+                        campaignDiscount.DateRange.StartDate);
+                }
+            }
+
+            // Beregner samlet varighed.
+            // Hvis der er flere behandlinger, lægges deres varigheder sammen.
             var totalMinutes = treatmentTypes.Values
                 .Sum(t => t.DurationMinutes);
 
-            // Convert TimeSlot DTO til domain TimeSlot value object
+            // Opretter TimeSlot value object.
+            // Sluttidspunktet beregnes automatisk ud fra samlet behandlingstid.
             var timeSlot = new TimeSlot(
-                request.StartTime, 
-                request.StartTime.AddMinutes(totalMinutes)); // Automatically set endTime in case of multiple treatments(booking lines) in one booking
+                request.StartTime,
+                request.StartTime.AddMinutes(totalMinutes));
 
+            // Kontrollerer om bookingen ligger indenfor klinikkens åbningstid.
             if (!clinic.CanBookTimeSlot(timeSlot))
             {
                 throw new BookingOutsideOpeningHoursException(clinic.Id, timeSlot);
             }
 
-            // Find first treatment type that is a group treatment (MaxParticipants > 1)
+            // Finder ud af, om bookingen er en holdtræning eller anden gruppebehandling.
             var groupTreatmentType = treatmentTypes
                 .FirstOrDefault(kvp => kvp.Value.MaxParticipants > 1);
 
-            // Check current number of participants for the TimeSlot against max participants allowed
-
             int maxParticipants;
+
+            // Hvis behandlingen er en gruppebehandling,
+            // skal systemet kontrollere om der stadig er ledige pladser.
             if (groupTreatmentType.Key != Guid.Empty)
             {
                 maxParticipants = groupTreatmentType.Value.MaxParticipants;
+
                 var currentCount = await _bookingRepository.CountParticipantsAsync(
                     groupTreatmentType.Key,
                     timeSlot);
 
                 if (currentCount >= maxParticipants)
                 {
-
                     return new CreateBookingResponse
                     {
                         Success = false,
@@ -134,21 +180,20 @@ namespace BookRight.UseCases.CreateBooking
                     };
                 }
             }
-
             else
             {
+                // Almindelige behandlinger har kun én deltager.
                 maxParticipants = 1;
             }
 
-            // Calculate the customer's loyalty level based on previous bookings  
+            // Beregner kundens loyalitetsniveau ud fra tidligere bookinger.
             var loyaltyLevel = _loyaltyService.GetLoyaltyLevel(completedBookings, DateTime.Now);
 
-            //Verifying both customer and therapist against double booking
-
+            // Kontrollerer at kunden og behandleren ikke allerede har booking i samme tidsrum.
             _doubleBookingVerificationService.CustomerBookingVerification(allCustomerBooking, timeSlot);
             _doubleBookingVerificationService.TherapistVerification(allTherapistBooking, timeSlot, maxParticipants);
 
-            // Create new Booking object using the Booking constructor
+            // Opretter selve Booking aggregate.
             var booking = new Booking(
                 Guid.NewGuid(),
                 request.CustomerId,
@@ -156,15 +201,19 @@ namespace BookRight.UseCases.CreateBooking
                 request.ClinicId,
                 timeSlot
             );
-            
+
+            // Gemmer kampagnens id på bookingen, hvis kampagne er valgt.
             if (campaignDiscount != null)
             {
                 booking.ApplyCampaignDiscount(campaignDiscount.Id);
-            }       
+            }
 
+            // Finder automatiske tillæg, fx aften- eller weekendtillæg.
             var addOns = _priceCalculatorService.GetAutomaticAddOns(timeSlot);
 
-            
+            // Beregner pris med tillæg for hver bookinglinje.
+            // Dette bruges til at finde den dyreste behandling,
+            // fordi nogle rabatter kun må anvendes på én behandling.
             var allLinePrices = request.Lines
                 .Select(l =>
                 {
@@ -174,20 +223,22 @@ namespace BookRight.UseCases.CreateBooking
                 })
                 .ToList();
 
-            // Use allLinePrices to find the best price to apply discount to. Only 1 discount is applied per purchase.
-            // MaxBy can compare .Value (which is decimal for Money). It's neat here, because we won't have to make Money implement IComparable<Money>. Although that isnt too difficult either..
             var mostExpensivePrice = allLinePrices.MaxBy(m => m.Value);
 
+            // Bruges til at sikre, at fødselsdagsrabat kun gives én gang i bookingen.
             var birthdayDiscountAssigned = false;
 
+            // Opretter en BookingLine for hver valgt behandling.
             foreach (var lineRequest in request.Lines)
             {
-
                 var treatmentType = treatmentTypes[lineRequest.TherapistTreatmentTypeId];
-                var basePrice = _priceCalculatorService.CalculateBasePrice(treatmentType);
 
+                // Beregner grundpris og eventuelle automatiske tillæg.
+                var basePrice = _priceCalculatorService.CalculateBasePrice(treatmentType);
                 var priceWithAddons = _priceCalculatorService.ApplyAddOns(basePrice, addOns);
 
+                // Samler alle oplysninger, som prisberegneren skal bruge
+                // for at finde den bedste rabat.
                 var pricingContext = new PricingContext
                 {
                     Customer = customer,
@@ -199,12 +250,17 @@ namespace BookRight.UseCases.CreateBooking
                     BirthdayDiscountAssigned = birthdayDiscountAssigned
                 };
 
+                // Beregner bedste rabat.
+                // Systemet vælger den rabat, der giver kunden lavest pris.
                 var discountResult = await _priceCalculatorService
                     .CalculateBestDiscountAsync(pricingContext);
 
+                // Hvis fødselsdagsrabat allerede er brugt,
+                // må den ikke bruges igen på næste bookinglinje.
                 if (discountResult.AppliedDiscount == DiscountType.Birthday)
                     birthdayDiscountAssigned = true;
 
+                // Opretter bookinglinje med behandling, pris og anvendt rabattype.
                 var line = new BookingLine(
                     lineRequest.TherapistTreatmentTypeId,
                     priceWithAddons,
@@ -213,12 +269,11 @@ namespace BookRight.UseCases.CreateBooking
 
                 booking.AddLine(line);
             }
-       
 
-            // Create object of CreateBookingResponse DTO type to return as response
+            // Gemmer bookingen i databasen via repository.
             await _bookingRepository.CreateAsync(booking);
 
-            // Return success response
+            // Returnerer resultatet til UI/facade.
             return new CreateBookingResponse
             {
                 Success = true,
@@ -226,8 +281,13 @@ namespace BookRight.UseCases.CreateBooking
                 Id = booking.Id,
                 OriginalPrice = booking.GetBasePrice().Value,
                 DiscountedPrice = booking.GetTotalPrice().Value,
-                DiscountType = booking.Lines.FirstOrDefault()?.DiscountType.ToString()
+                DiscountType = booking.Lines.FirstOrDefault() is null
+                ? null
+                : booking.Lines.First().DiscountType.ToString()
             };
+
         }
+
+        
     }
 }
