@@ -5,8 +5,8 @@ namespace BookRight.Domain.Exceptions
 {
     public class BookingOutsideOpeningHoursException : DomainException
     {
-        public BookingOutsideOpeningHoursException(Guid clinicId, TimeSlot timeSlot)
-        : base(DomainErrorMessages.BookingOutsideOpeningHours(clinicId, timeSlot))
+        public BookingOutsideOpeningHoursException(TimeSlot timeSlot)
+        : base(DomainErrorMessages.BookingOutsideOpeningHours(timeSlot))
         {
         }
     }

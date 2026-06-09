@@ -93,10 +93,6 @@ namespace BookRight.UseCases.CreateBooking
             if (clinic == null)
                 throw new ClinicNotFoundException(request.ClinicId);
 
-           
-
-            
-
             // Henter kundens tidligere bookinger.
             // De bruges til loyalitetsberegning og rabatregler.
             var completedBookings =
@@ -152,7 +148,7 @@ namespace BookRight.UseCases.CreateBooking
             // Kontrollerer om bookingen ligger indenfor klinikkens åbningstid.
             if (!clinic.CanBookTimeSlot(timeSlot))
             {
-                throw new BookingOutsideOpeningHoursException(clinic.Id, timeSlot);
+                throw new BookingOutsideOpeningHoursException(timeSlot);
             }
 
             // Finder ud af, om bookingen er en holdtræning eller anden gruppebehandling.
