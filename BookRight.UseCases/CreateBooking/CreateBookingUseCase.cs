@@ -1,12 +1,13 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.TherapistAggregate;
+using BookRight.Domain.Enums;
 using BookRight.Domain.Errors;
-using BookRight.Domain.Services;
 using BookRight.Domain.Exceptions;
+using BookRight.Domain.Services;
 using BookRight.Domain.ValueObjects;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.Facade.Interfaces;
 using BookRight.UseCases.Interfaces;
-using BookRight.Domain.Enums;
 
 namespace BookRight.UseCases.CreateBooking
 {
@@ -55,6 +56,13 @@ namespace BookRight.UseCases.CreateBooking
             if (clinic == null)
                 throw new ClinicNotFoundException(request.ClinicId);
 
+            if (!clinic.HasTherapist(request.TherapistId))
+            {
+                throw new ArgumentException(
+                    $"Den valgte behandler er ikke tilknyttet klinikken: {clinic.Name}.",
+                    nameof(request.TherapistId));
+            }
+
             // Get relevant treatment types for the booking lines 
             var treatmentTypes = await _treatmentTypeRepository
                 .GetByTherapistTreatmentTypeIdsAsync(
@@ -76,6 +84,12 @@ namespace BookRight.UseCases.CreateBooking
                         .TreatmentTypeCannotBeCombinedWith(nonCombinableType.Name));
                 }
             }
+            if (clinic == null)
+                throw new ClinicNotFoundException(request.ClinicId);
+
+           
+
+            
 
             // Get all completed bookings for the customer to determine loyalty level and potential discounts for the new booking
             var completedBookings = await _bookingRepository.GetAllBookingsByCustomerIdAsync(request.CustomerId);
@@ -226,8 +240,11 @@ namespace BookRight.UseCases.CreateBooking
                 Id = booking.Id,
                 OriginalPrice = booking.GetBasePrice().Value,
                 DiscountedPrice = booking.GetTotalPrice().Value,
-                DiscountType = booking.Lines.FirstOrDefault()?.DiscountType.ToString()
+                DiscountType = booking.Lines.FirstOrDefault() is null
+                ? null
+                : booking.Lines.First().DiscountType.ToString()
             };
+
         }
     }
 }
