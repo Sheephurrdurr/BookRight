@@ -22,7 +22,6 @@ namespace BookRight.UseCase.Test
         private readonly Mock<IClinicRepository> _mockClinicRepository;
         private readonly Mock<ITreatmentTypeRepository> _mockTreatmentTypeRepository;
         private readonly Mock<ICampaignDiscountRepository> _mockCampaignDiscountRepository;
-        private readonly Mock<ITherapistRepository> _mockTherapistRepository;
         private readonly PriceCalculatorService _priceCalculatorService;
         private readonly LoyaltyService _loyaltyService;
         private readonly DoubleBookingVerificationService _doubleBookingVerificationService;
@@ -35,7 +34,6 @@ namespace BookRight.UseCase.Test
             _mockClinicRepository = new Mock<IClinicRepository>();
             _mockTreatmentTypeRepository = new Mock<ITreatmentTypeRepository>();
             _mockCampaignDiscountRepository = new Mock<ICampaignDiscountRepository>();
-            _mockTherapistRepository = new Mock<ITherapistRepository>();
 
             _priceCalculatorService = new PriceCalculatorService(Enumerable.Empty<IDiscountStrategy>());
             _loyaltyService = new LoyaltyService();
@@ -47,7 +45,6 @@ namespace BookRight.UseCase.Test
                 _mockClinicRepository.Object,
                 _mockTreatmentTypeRepository.Object,
                 _mockCampaignDiscountRepository.Object,
-                _mockTherapistRepository.Object,
                 _loyaltyService,
                  _doubleBookingVerificationService,
                 _priceCalculatorService

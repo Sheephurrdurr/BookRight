@@ -18,7 +18,6 @@ namespace BookRight.UseCases.CreateBooking
         private readonly IClinicRepository _clinicRepository;
         private readonly ITreatmentTypeRepository _treatmentTypeRepository;
         private readonly ICampaignDiscountRepository _campaignDiscountRepository;
-        private readonly ITherapistRepository _therapistRepository;
 
         private readonly LoyaltyService _loyaltyService;
         private readonly DoubleBookingVerificationService _doubleBookingVerificationService;
@@ -29,7 +28,6 @@ namespace BookRight.UseCases.CreateBooking
             IClinicRepository clinicRepository,
             ITreatmentTypeRepository treatmentTypeRepository,
             ICampaignDiscountRepository campaignDiscountRepository,
-            ITherapistRepository therapistRepository,
 
             LoyaltyService loyaltyService,
             DoubleBookingVerificationService doubleBookingVerificationService, 
@@ -40,7 +38,6 @@ namespace BookRight.UseCases.CreateBooking
             _clinicRepository = clinicRepository;
             _customerRepository = customerRepository;
             _campaignDiscountRepository = campaignDiscountRepository;
-            _therapistRepository = therapistRepository;
 
             _loyaltyService = loyaltyService;
             _doubleBookingVerificationService = doubleBookingVerificationService;
@@ -92,15 +89,7 @@ namespace BookRight.UseCases.CreateBooking
 
            
 
-            var therapist = await _therapistRepository.GetByIdAsync(request.TherapistId);
-            if (therapist == null)
-                throw new TherapistNotFoundException(request.TherapistId);
-            //Checks if the therapist is connected to the chosen clinic.
-            if (therapist.ClinicId != clinic.Id)
-            {
-                throw new InvalidOperationException(
-                    "Behandleren er ikke tilknyttet den valgte klinik.");
-            }
+            
 
             // Get all completed bookings for the customer to determine loyalty level and potential discounts for the new booking
             var completedBookings = await _bookingRepository.GetAllBookingsByCustomerIdAsync(request.CustomerId);
