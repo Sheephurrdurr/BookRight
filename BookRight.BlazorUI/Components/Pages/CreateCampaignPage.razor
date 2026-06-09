@@ -1,13 +1,10 @@
 ﻿@page "/opret-kampagne"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @inject ICreateCampaignDiscountUseCase CreateCampaignDiscountUseCase
-@inject IGetAllTreatmentTypesUseCase GetAllTreatmentTypesUseCase
 
 @using BookRight.BlazorUI.Components.Campaign
 @using BookRight.Facade.DTOs.CreateCampaignDTOs
-@using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
 @using BookRight.Facade.Interfaces.DiscountUseCases
-@using BookRight.Facade.Interfaces.TreatmentTypesUseCase
 
 <PageTitle>Opret Kampagne</PageTitle>
 <h2>Opret Kampagne</h2>
@@ -25,7 +22,6 @@ else if (_loading)
 else
 {
 	<CreateCampaignForm Model="@_model"
-						TreatmentTypes="@_treatmentTypes"
 						OnValidSubmit="HandleSubmit" />
 	@if (_statusMessage is not null)
 	{
@@ -35,26 +31,9 @@ else
 
 @code {
 	private readonly CreateCampaignInputModel _model = new();
-	private IReadOnlyList<GetAllTreatmentTypesResponse> _treatmentTypes = [];
 	private string? _error;
 	private string? _statusMessage;
-	private bool _loading = true;
-
-	protected override async Task OnInitializedAsync()
-	{
-		try
-		{
-			_treatmentTypes = await GetAllTreatmentTypesUseCase.ExecuteAsync();
-		}
-		catch (Exception ex)
-		{
-			_error = ex.Message;
-		}
-		finally
-		{
-			_loading = false;
-		}
-	}
+	private bool _loading = false;
 
 	private async Task HandleSubmit()
 	{
@@ -69,12 +48,11 @@ else
 				DiscountPercent = _model.DiscountPercent,
 				StartDate = _model.StartDate,
 				EndDate = _model.EndDate,
-				TreatmentTypeIds = _model.TreatmentTypeIds
+				TreatmentTypeIds = new()
 			});
 
 			_model.Name = string.Empty;
 			_model.DiscountPercent = 0;
-			_model.TreatmentTypeIds = new();
 
 			_statusMessage = "Kampagne oprettet!";
 		}
