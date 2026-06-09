@@ -59,6 +59,13 @@ namespace BookRight.UseCases.CreateBooking
             if (clinic == null)
                 throw new ClinicNotFoundException(request.ClinicId);
 
+            if (!clinic.HasTherapist(request.TherapistId))
+            {
+                throw new ArgumentException(
+                    $"Den valgte behandler er ikke tilknyttet klinikken: {clinic.Name}.",
+                    nameof(request.TherapistId));
+            }
+
             // Get relevant treatment types for the booking lines 
             var treatmentTypes = await _treatmentTypeRepository
                 .GetByTherapistTreatmentTypeIdsAsync(

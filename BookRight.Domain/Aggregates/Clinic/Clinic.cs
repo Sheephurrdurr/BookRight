@@ -28,6 +28,11 @@ namespace BookRight.Domain.Aggregates.Clinic
 
         private Clinic() { }
 
+        public bool HasTherapist(Guid therapistId)
+        {
+            return _therapists.Any(t => t.Id == therapistId);
+        }
+
 
         // Constructor: bruges til at oprette en ny Clinic og give den startværdier
         public Clinic(string name, Address address, PhoneNumber phone, int numTreatmentRooms)

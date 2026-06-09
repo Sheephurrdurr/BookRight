@@ -179,8 +179,9 @@
 		filteredTherapists = string.IsNullOrEmpty(selectedName)
 			? []
 			: therapists
-				.Where(t => allTherapistTreatmentTypes
-				.Any(ttt => ttt.TherapistId == t.Id && ttt.TreatmentTypeName == selectedName))
+
+				.Where(t => t.ClinicId.ToString() == selectedClinicId &&
+					allTherapistTreatmentTypes.Any(ttt => ttt.TherapistId == t.Id && ttt.TreatmentTypeName == selectedName))
 				.OrderBy(t => t.LastName)
 				.ThenBy(t => t.FirstName)
 				.ToList();
