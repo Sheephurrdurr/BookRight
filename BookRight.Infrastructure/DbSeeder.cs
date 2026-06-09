@@ -42,12 +42,20 @@ namespace BookRight.Infrastructure
         {
             if (_context.Clinics.Any()) return;
 
+            var weekdays = new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday };
+
+
             var clinic1 = new Clinic(
                 "BookRight Vejle Ved Åen",
                 new Address("Ågade 10", "Vejle", "7100"),
                 new PhoneNumber("12345678"),
                 5 // Number of treatment rooms
+        
             );
+            foreach (var day in weekdays) // Add opening hours for each weekday to the clinic
+            {
+                clinic1.AddOpeningHour(day, new TimeOnly(8, 0), new TimeOnly(17, 0));
+            }
 
             var clinic2 = new Clinic(
                 "BookRight Vejle Bredballe",
@@ -55,6 +63,10 @@ namespace BookRight.Infrastructure
                 new PhoneNumber("87654321"),
                 4
             );
+            foreach (var day in weekdays) // Add opening hours for each weekday to the clinic
+            {
+                clinic2.AddOpeningHour(day, new TimeOnly(8, 0), new TimeOnly(17, 0));
+            }
 
             var clinic3 = new Clinic(
                 "BookRight Egtved",
@@ -62,6 +74,10 @@ namespace BookRight.Infrastructure
                 new PhoneNumber("11223344"),
                 4
             );
+            foreach (var day in weekdays) // Add opening hours for each weekday to the clinic
+            {
+                clinic3.AddOpeningHour(day, new TimeOnly(8, 0), new TimeOnly(17, 0));
+            }
 
             await _context.Clinics.AddRangeAsync(clinic1, clinic2, clinic3);
             await _context.SaveChangesAsync();
