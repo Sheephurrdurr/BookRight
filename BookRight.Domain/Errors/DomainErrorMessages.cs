@@ -20,7 +20,7 @@ public static class DomainErrorMessages //Static because we don't want to create
         "Specialisering er påkrævet";
 
     public const string StreetCannotBeEmpty =
-        "Vejnavn er påkrævet";
+        "Gadenavn er påkrævet";
 
     public const string CityCannotBeEmpty =
         "By er påkrævet";

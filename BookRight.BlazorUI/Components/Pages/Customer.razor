@@ -45,6 +45,7 @@
 		await LoadData();
 	}
 
+	protected override async Task OnInitializedAsync() => await LoadData();
 
 	private async Task LoadData()
 	{

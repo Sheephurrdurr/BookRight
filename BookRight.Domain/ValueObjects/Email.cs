@@ -1,4 +1,5 @@
 ﻿using BookRight.Domain.Errors;
+using BookRight.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,9 +13,7 @@ namespace BookRight.Domain.ValueObjects
         public Email(string value)
         {
             if (string.IsNullOrWhiteSpace(value) || !value.Contains('@')) //Email must contain a valid value
-                throw new ArgumentException(
-                    DomainErrorMessages.InvalidEmailAddress,
-                    nameof(value));
+                throw new InvalidEmailException();
 
             Value = value.ToLowerInvariant();
         }
