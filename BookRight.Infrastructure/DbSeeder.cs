@@ -601,8 +601,11 @@ namespace BookRight.Infrastructure
 
             await _context.SaveChangesAsync();
         }
+
+        // Generates additional customers until the database contains 300 customers
         private async Task SeedGeneratedCustomersAsync()
         {
+            // Prevent duplicate seed data
             if (_context.Customers.Count() >= 300)
                 return;
             var existingCustomerCount = _context.Customers.Count();
@@ -614,6 +617,7 @@ namespace BookRight.Infrastructure
             var therapists = _context.Therapists.ToList();
             var random = new Random();
 
+            // Prevent duplicate seed data
             var firstNames = new[]
              {
                 "Mads","Emma","Noah","Freja","William","Clara","Oscar","Ida","Carl","Alma",
@@ -653,6 +657,7 @@ namespace BookRight.Infrastructure
 
                 var therapist = therapists[random.Next(therapists.Count)];
 
+                // Defensive validation in case seed data arrays are changed later
                 if (string.IsNullOrWhiteSpace(firstName)) //First name is required
                     throw new ArgumentException(
                         DomainErrorMessages.FirstNameIsRequired,
@@ -674,31 +679,11 @@ namespace BookRight.Infrastructure
                         random.Next(1, 28)),
                     null,
                     therapist.Id
-                );
+                    );
 
                 generatedCustomers.Add(customer);
-
-                
-
-                var allCustomers = _context.Customers.ToList();
-
-                var noLoyaltyCustomers = allCustomers.Take(75).ToList();
-
-                var bronzeCustomers = allCustomers
-                    .Skip(75)
-                    .Take(75)
-                    .ToList();
-
-                var silverCustomers = allCustomers
-                    .Skip(150)
-                    .Take(75)
-                    .ToList();
-
-                var goldCustomers = allCustomers
-                    .Skip(225)
-                    .Take(75)
-                    .ToList();
             }
+
             await _context.Customers.AddRangeAsync(generatedCustomers);
             await _context.SaveChangesAsync();
         }
