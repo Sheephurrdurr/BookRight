@@ -1,10 +1,11 @@
-﻿using BookRight.Domain.Aggregates.Clinic;
-using BookRight.Domain.Aggregates.TreatmentType;
-using BookRight.Domain.Aggregates.TherapistAggregate;
+﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.Customer;
-using BookRight.Domain.Aggregates.Booking;
-using BookRight.Domain.ValueObjects;
+using BookRight.Domain.Aggregates.TherapistAggregate;
+using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Enums;
+using BookRight.Domain.Errors;
+using BookRight.Domain.ValueObjects;
 using BookRight.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -630,7 +631,17 @@ namespace BookRight.Infrastructure
 
                 var therapist = therapists[random.Next(therapists.Count)];
 
-                var customer = new Customer(
+                if (string.IsNullOrWhiteSpace(firstName)) //First name is required
+                    throw new ArgumentException(
+                        DomainErrorMessages.FirstNameIsRequired,
+                        nameof(firstName));
+
+                if (string.IsNullOrWhiteSpace(lastName)) //Last name is required
+                    throw new ArgumentException(
+                        DomainErrorMessages.LastNameIsRequired,
+                        nameof(lastName));
+                var customer = new Customer
+                    (
                     new FullName(firstName, lastName),
                     new Email($"{firstName.ToLower()}.{lastName.ToLower()}{i}@example.com"),
                     new Address($"Testvej {random.Next(1, 100)}", cityInfo.Item1, cityInfo.Item2),
@@ -645,8 +656,7 @@ namespace BookRight.Infrastructure
 
                 generatedCustomers.Add(customer);
 
-                await _context.Customers.AddRangeAsync(generatedCustomers);
-                await _context.SaveChangesAsync();
+                
 
                 var allCustomers = _context.Customers.ToList();
 
@@ -667,6 +677,8 @@ namespace BookRight.Infrastructure
                     .Take(75)
                     .ToList();
             }
+            await _context.Customers.AddRangeAsync(generatedCustomers);
+            await _context.SaveChangesAsync();
         }
             
 
