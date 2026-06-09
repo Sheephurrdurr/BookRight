@@ -104,7 +104,7 @@ public static class DomainErrorMessages //Static because we don't want to create
         => $"Behandlingstype {treatmentTypeName} kan ikke blive kombineret med andre.";
 
     public static string BookingOutsideOpeningHours(TimeSlot timeSlot)
-       => $"Klinikken er ikke åben på det valgte tidspunkt: {timeSlot.StartTime} : {timeSlot.EndTime}.";
+       => $"Klinikken er ikke åben på det valgte tidspunkt: {TimeOnly.FromDateTime(timeSlot.StartTime):HH:mm} - {TimeOnly.FromDateTime(timeSlot.EndTime):HH:mm}.";
 
 }
 
