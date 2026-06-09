@@ -120,5 +120,16 @@ namespace BookRight.Domain.Aggregates.Clinic
 
             return openingHour.IsWithinOpeningHours(timeSlot);
         }
+        // Metode: bruges til at tilknytte en behandler til klinikken
+        public void AddTherapist(Therapist therapist)
+        {
+            if (therapist is null)
+                throw new ArgumentNullException(nameof(therapist));
+
+            if (_therapists.Any(t => t.Id == therapist.Id))
+                return;
+
+            _therapists.Add(therapist);
+        }
     }
 }

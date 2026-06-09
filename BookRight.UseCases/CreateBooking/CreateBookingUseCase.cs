@@ -240,7 +240,9 @@ namespace BookRight.UseCases.CreateBooking
                 Id = booking.Id,
                 OriginalPrice = booking.GetBasePrice().Value,
                 DiscountedPrice = booking.GetTotalPrice().Value,
-                DiscountType = booking.Lines.FirstOrDefault()?.DiscountType.ToString()
+                DiscountType = booking.Lines.FirstOrDefault() is null
+                ? null
+                : booking.Lines.First().DiscountType.ToString()
             };
 
         }
