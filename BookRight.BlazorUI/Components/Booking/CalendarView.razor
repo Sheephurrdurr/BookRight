@@ -44,13 +44,13 @@
 			@{
 				var totalHeight = $"{TotalHeight}px";
 			}
-			<div class="calendar-grid-wrapper" style="height: @(TotalHeight)px;">
+			<div class="calendar-grid-wrapper" style="height: @Px(TotalHeight);">
 				@*Create the lines to mark hours*@
 				@for (int h = StartHour; h <= EndHour; h++)
 				{
 					<div class="calendar-hour-line" style="top: @Px(HourToTop(h));"></div>
 				}
-				<div class="calendar-grid" style="height: @(TotalHeight)px;">
+				<div class="calendar-grid" style="height: @Px(TotalHeight);">
 					@*"day-track"*@
 					@for (int d = 0; d < 7; d++)
 					{
@@ -59,16 +59,16 @@
 							.Where(b => DateOnly.FromDateTime(b.StartTime) == day)
 							.ToList();
 						<div class="calendar-day-track @(day == DateOnly.FromDateTime(DateTime.Today) ? "today" : "")"
-							 style="height: @(TotalHeight)px;">
+						style="height: @(TotalHeight)px;">
 
 							@foreach (var group in dayBookings
-							.GroupBy(b => b.StartTime)
-							.Select(g => new
-							{
-								StartTime = g.Key,
-								EndTime = g.Max(x => x.EndTime),
-								Bookings = g.ToList()
-							}))
+																		.GroupBy(b => b.StartTime)
+																		.Select(g => new
+																		{
+																			StartTime = g.Key,
+																			EndTime = g.Max(x => x.EndTime),
+																			Bookings = g.ToList()
+																		}))
 							{
 								var booking = group.Bookings.First();
 								var top = TimeToTop(group.StartTime);
@@ -78,25 +78,45 @@
 								var color = group.Bookings.Count > 1
 								? "#64748B"                  //Grey multiple bookings
 								: ClinicToColor(booking.ClinicName);
+								var compact = height < 60 && group.Bookings.Count == 1;
 
-								<div class="calendar-booking @(group.Bookings.Count > 1 ? "multi-booking" : "")"
-									 @onclick="() => SelectBookings(group.Bookings)"
-									 style="top: @Px(top); height: @Px(height); background: @color;">
+								<div class="calendar-booking @(compact ? "compact-booking" : "")"
+								@onclick="() => SelectBookings(group.Bookings)"
+								style="top: @Px(top); height: @Px(height); background: @color;">
 
-									@if (group.Bookings.Count > 1)
-									{
-										<div class="calendar-booking-time">
-											@group.StartTime.ToString("HH:mm") - @group.EndTime.ToString("HH:mm")
-										</div>
+									<div class="calendar-booking @(group.Bookings.Count > 1 ? "multi-booking" : "")"
+									@onclick="() => SelectBookings(group.Bookings)"
+									style="top: @Px(top); height: @Px(height); background: @color;">
 
 										@if (group.Bookings.Count > 1)
 										{
-											<div class="calendar-booking-title">
-												@group.Bookings.Count bookinger
+											<div class="calendar-booking-time">
+												@group.StartTime.ToString("HH:mm") - @group.EndTime.ToString("HH:mm")
 											</div>
+
+											@if (group.Bookings.Count > 1)
+											{
+												<div class="calendar-booking-title">
+													@group.Bookings.Count bookinger
+												</div>
+											}
+											else
+											{
+												<div class="calendar-booking-title">
+													@booking.TreatmentName
+												</div>
+
+												<div>
+													@booking.TherapistName
+												</div>
+											}
 										}
 										else
 										{
+											<div class="calendar-booking-time">
+												@booking.StartTime.ToString("HH:mm") - @booking.EndTime.ToString("HH:mm")
+											</div>
+
 											<div class="calendar-booking-title">
 												@booking.TreatmentName
 											</div>
@@ -105,28 +125,13 @@
 												@booking.TherapistName
 											</div>
 										}
-									}
-									else
-									{
-										<div class="calendar-booking-time">
-											@booking.StartTime.ToString("HH:mm") - @booking.EndTime.ToString("HH:mm")
-										</div>
-
-										<div class="calendar-booking-title">
-											@booking.TreatmentName
-										</div>
-
-										<div>
-											@booking.TherapistName
-										</div>
+									</div>
 									}
 								</div>
 							}
 						</div>
 					}
 				</div>
-
-			</div>
 		</div>
 	</div>
 </div>
