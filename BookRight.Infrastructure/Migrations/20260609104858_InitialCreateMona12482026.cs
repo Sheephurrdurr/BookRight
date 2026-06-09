@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookRight.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreateMona0702 : Migration
+    public partial class InitialCreateMona12482026 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

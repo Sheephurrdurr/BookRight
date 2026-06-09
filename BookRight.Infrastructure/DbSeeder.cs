@@ -1018,12 +1018,10 @@ namespace BookRight.Infrastructure
                 for (int i = 0; i < bookingCount; i++)
                 {
                     var therapist = random.Next(100) < 70
-                    ? favoriteTherapist
-                    : therapists[random.Next(therapists.Count)];
+                       ? favoriteTherapist
+                        : therapists[random.Next(therapists.Count)];
 
-                    var clinic = random.Next(100) < 75
-                    ? favoriteClinic
-                    : clinics[random.Next(clinics.Count)];
+                    var clinic = clinics.First(c => c.Id == therapist.ClinicId);
 
                     var possibleTreatmentTypes = treatmentPool
                     .Where(t => therapist.Qualifications.Any(q => q.TreatmentTypeId == t.Id))

@@ -1,12 +1,13 @@
 ﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.TherapistAggregate;
+using BookRight.Domain.Enums;
 using BookRight.Domain.Errors;
-using BookRight.Domain.Services;
 using BookRight.Domain.Exceptions;
+using BookRight.Domain.Services;
 using BookRight.Domain.ValueObjects;
 using BookRight.Facade.DTOs.CreateBookingDTOs;
 using BookRight.Facade.Interfaces;
 using BookRight.UseCases.Interfaces;
-using BookRight.Domain.Enums;
 
 namespace BookRight.UseCases.CreateBooking
 {
@@ -62,6 +63,14 @@ namespace BookRight.UseCases.CreateBooking
 
             // Henter de behandlingstyper, der er valgt i bookingen.
             // De bruges både til varighed, pris og kombinationsregler.
+            if (!clinic.HasTherapist(request.TherapistId))
+            {
+                throw new ArgumentException(
+                    $"Den valgte behandler er ikke tilknyttet klinikken: {clinic.Name}.",
+                    nameof(request.TherapistId));
+            }
+
+            // Get relevant treatment types for the booking lines 
             var treatmentTypes = await _treatmentTypeRepository
                 .GetByTherapistTreatmentTypeIdsAsync(
                     request.Lines.Select(l => l.TherapistTreatmentTypeId)
@@ -81,6 +90,12 @@ namespace BookRight.UseCases.CreateBooking
                             .TreatmentTypeCannotBeCombinedWith(nonCombinableType.Name));
                 }
             }
+            if (clinic == null)
+                throw new ClinicNotFoundException(request.ClinicId);
+
+           
+
+            
 
             // Henter kundens tidligere bookinger.
             // De bruges til loyalitetsberegning og rabatregler.
@@ -266,8 +281,11 @@ namespace BookRight.UseCases.CreateBooking
                 Id = booking.Id,
                 OriginalPrice = booking.GetBasePrice().Value,
                 DiscountedPrice = booking.GetTotalPrice().Value,
-                DiscountType = booking.Lines.FirstOrDefault()?.DiscountType.ToString()
+                DiscountType = booking.Lines.FirstOrDefault() is null
+                ? null
+                : booking.Lines.First().DiscountType.ToString()
             };
+
         }
 
         
