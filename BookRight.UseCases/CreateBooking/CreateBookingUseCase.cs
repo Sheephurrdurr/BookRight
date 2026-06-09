@@ -105,6 +105,11 @@ namespace BookRight.UseCases.CreateBooking
                 request.StartTime, 
                 request.StartTime.AddMinutes(totalMinutes)); // Automatically set endTime in case of multiple treatments(booking lines) in one booking
 
+            if (!clinic.CanBookTimeSlot(timeSlot))
+            {
+                throw new BookingOutsideOpeningHoursException(clinic.Id, timeSlot);
+            }
+
             // Find first treatment type that is a group treatment (MaxParticipants > 1)
             var groupTreatmentType = treatmentTypes
                 .FirstOrDefault(kvp => kvp.Value.MaxParticipants > 1);
