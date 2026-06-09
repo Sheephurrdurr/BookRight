@@ -171,15 +171,23 @@
 
 	public async Task HandleSave()
 	{
-		var data = new TherapistFormData(
-			firstName, lastName, email,
-			specialization, authorizationType, authorizationNumber,
-			selectedClinicId, selectedTreatmentTypeIds
-		);
-		await OnSave.InvokeAsync(data);
-		message = "Gemt!";
-		alertClass = "alert-success";
-		ResetFields();
+		try
+		{
+			var data = new TherapistFormData(
+		firstName, lastName, email,
+		specialization, authorizationType, authorizationNumber,
+		selectedClinicId, selectedTreatmentTypeIds
+	);
+			await OnSave.InvokeAsync(data);
+			message = "Gemt!";
+			alertClass = "alert-success";
+			ResetFields();
+		}
+		catch(Exception ex)
+		{
+			message = ex.Message;
+			alertClass = "alert-danger";
+		}
 
 	}
 

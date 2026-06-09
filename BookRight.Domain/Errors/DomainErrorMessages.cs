@@ -1,4 +1,6 @@
-﻿namespace BookRight.Domain.Errors;
+﻿using BookRight.Domain.ValueObjects;
+
+namespace BookRight.Domain.Errors;
 
 public static class DomainErrorMessages //Static because we don't want to create an object
 {
@@ -18,7 +20,7 @@ public static class DomainErrorMessages //Static because we don't want to create
         "Specialisering er påkrævet";
 
     public const string StreetCannotBeEmpty =
-        "Vejnavn er påkrævet";
+        "Gadenavn er påkrævet";
 
     public const string CityCannotBeEmpty =
         "By er påkrævet";
@@ -101,7 +103,9 @@ public static class DomainErrorMessages //Static because we don't want to create
     public static string TreatmentTypeCannotBeCombinedWith(string treatmentTypeName)
         => $"Behandlingstype {treatmentTypeName} kan ikke blive kombineret med andre.";
 
+    public static string BookingOutsideOpeningHours(TimeSlot timeSlot)
+       => $"Klinikken er ikke åben på det valgte tidspunkt: {TimeOnly.FromDateTime(timeSlot.StartTime):HH:mm} - {TimeOnly.FromDateTime(timeSlot.EndTime):HH:mm}.";
 
 }
-    
+
 

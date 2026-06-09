@@ -2,6 +2,7 @@
 using BookRight.Domain.ValueObjects;
 using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Services;
+using BookRight.Domain.Exceptions;
 
 namespace BookRight.Domain.Test
 {
@@ -11,7 +12,7 @@ namespace BookRight.Domain.Test
         public void Customer_LastName_Has_WhiteSpace_Throws_ArguementException() //Unhappy path
         {
             //Arrange, Act & Assert
-            var exception = Assert.Throws<ArgumentException>
+            var exception = Assert.Throws<LastNameIsRequiredException>
                  (() => new FullName("Cate", " "));
         }
     }

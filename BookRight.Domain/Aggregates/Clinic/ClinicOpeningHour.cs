@@ -1,4 +1,5 @@
 ﻿using BookRight.Domain.Errors;
+using BookRight.Domain.ValueObjects;
 using System;
 
 namespace BookRight.Domain.Aggregates.Clinic
@@ -34,6 +35,11 @@ namespace BookRight.Domain.Aggregates.Clinic
             CloseTime = closeTime;
         }
 
-
+        // Helper method for clinic to check if a given time slot falls within the opening hours
+        // If the time slot starts before the opening time or ends after the closing time, it returns false
+        public bool IsWithinOpeningHours(TimeSlot timeSlot)
+        {
+            return TimeOnly.FromDateTime(timeSlot.StartTime) >= OpenTime && TimeOnly.FromDateTime(timeSlot.EndTime) <= CloseTime;
+        }
     }
 }

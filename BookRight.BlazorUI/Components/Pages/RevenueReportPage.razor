@@ -14,9 +14,8 @@
 @using BookRight.Facade.DTOs.GetAllClinicsDTOs
 @using BookRight.Facade.DTOs.GetAllTherapistsDTOs
 
-<h3 class="mb-4 no-print">Omsætningsrapport</h3>
 
-<div class="card p-4 mb-4 no-print shadow-sm">
+<h3 class="mb-4 no-print">Omsætningsrapport</h3><div class="card p-4 mb-4 no-print shadow-sm">
     <div class="row g-3 align-items-end">
         <div class="col-md-4">
             <label class="form-label font-weight-bold">Vælg Klinik</label>
@@ -47,8 +46,7 @@
                 <button class="btn btn-success flex-grow-1" @onclick="PrintReport">Udskriv / Gem PDF</button>
             }
         </div>
-    </div>
-</div>
+    </div></div>
 
 @if (reportResult != null)
 {
@@ -96,8 +94,7 @@
 
         </div>
     </div>
-}
-else
+}else
 {
     <div class="alert alert-info text-center p-4 shadow-sm">
         <span class="oi oi-info mr-2"></span> Vælg eventuelle filtre i menuen ovenfor og klik på <strong>"Generer rapport"</strong> for at se forhåndsvisningen.
@@ -137,39 +134,4 @@ else
     {
         await JSRuntime.InvokeVoidAsync("window.print");
     }
-
-    /*<style>
-    @media print {
-        body *, html * {
-            visibility: hidden;
-        }
-
-         2. Gør KUN din print-area container og dens børn synlige 
-        .print-area, .print-area * {
-            visibility: visible;
-        }
-
-         3. Tving print-area helt op i øverste venstre hjørne, så sidemenuens tomme plads forsvinder 
-        .print-area {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-
-         4. Fjern Bootstrap-kortets skygger og rammer på print, så det passer til et A4-ark 
-        .print-area .card {
-            border: none !important;
-            box-shadow: none !important;
-        }
-        
-         5. Skjul forhåndsvisnings-badgen på det endelige print 
-        .badge {
-            display: none !important;
-        }
-    }
-</style>*/
 }
-

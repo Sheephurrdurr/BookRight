@@ -1,4 +1,5 @@
 ﻿using BookRight.Domain.Errors;
+using BookRight.Domain.Exceptions;
 
 namespace BookRight.Domain.ValueObjects
 {
@@ -11,20 +12,13 @@ namespace BookRight.Domain.ValueObjects
 	  public Address(string street, string city, string postalCode)
 	  {
             if (string.IsNullOrWhiteSpace(street))
-                throw new ArgumentException(
-                    DomainErrorMessages.StreetCannotBeEmpty,
-                    nameof(street));
+                throw new StreetCannotBeEmptyException();
 
-            if (string.IsNullOrWhiteSpace(city))
-                throw new ArgumentException(
-                    DomainErrorMessages.CityCannotBeEmpty,
-                    nameof(city));
+			if (string.IsNullOrWhiteSpace(city))
+				throw new CityCannotBeEmptyException();
 
-            if (string.IsNullOrWhiteSpace(postalCode))
-                throw new ArgumentException(
-                    DomainErrorMessages.PostalCodeCannotBeEmpty,
-                    nameof(postalCode));
-
+			if (string.IsNullOrWhiteSpace(postalCode))
+				throw new PostalCodeCannotBeEmptyException();
             Street = street;
 			City = city;
 			PostalCode = postalCode;
