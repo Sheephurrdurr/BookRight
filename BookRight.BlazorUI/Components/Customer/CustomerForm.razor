@@ -88,7 +88,9 @@
 
 	private async Task HandleSave()
 	{
-		var data = new CustomerFormData(
+		try
+		{
+			var data = new CustomerFormData(
 				firstName,
 				lastName,
 				email,
@@ -101,10 +103,18 @@
 				preferredTherapistId
 			);
 
-		await OnSave.InvokeAsync(data);
-		message = "Gemt!";
-		alertClass = "alert-success";
-		ResetFields();
+			await OnSave.InvokeAsync(data);
+			message = "Gemt!";
+			alertClass = "alert-success";
+			ResetFields();
+
+		}
+		catch (Exception ex)
+		{
+			message = ex.Message;
+			alertClass = "alert-danger";
+		}
+
 	}
 
 	private void ResetFields()
