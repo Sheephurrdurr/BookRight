@@ -1,8 +1,4 @@
-﻿@using BookRight.BlazorUI.Components.Campaign
-@using BookRight.Facade.DTOs.GetAllTreatmentTypesDTOs
-
-
-<EditForm Model="@Model" OnValidSubmit="OnValidSubmit" FormName="campaign-form">
+﻿<EditForm Model="@Model" OnValidSubmit="OnValidSubmit" FormName="campaign-form">
 	<DataAnnotationsValidator/>
 	<ValidationSummary/>
 
@@ -34,24 +30,12 @@
 			<ValidationMessage For="() => Model.EndDate" />
 		</div>
 
-		<div class="mb-3">
-			<label class="form-label">Behandlingstyper</label>
-			<TreatmentTypeCheckList
-				TreatmentTypes="@TreatmentTypes"
-				SelectedIds="@Model.TreatmentTypeIds"
-				SelectedIdsChanged="@((ids) => { Model.TreatmentTypeIds = ids; })"/>
-		</div>
-
 		<button class="btn btn-primary" type="submit">Opret Kampagne</button>
 
 	</fieldset>
 </EditForm>
 
 @code {
-	[Parameter, EditorRequired]
-	public IReadOnlyList<GetAllTreatmentTypesResponse> TreatmentTypes { get; set; } = [];
-
-
 	[Parameter, EditorRequired]
 	public CreateCampaignInputModel Model { get; set; } = default!;
 

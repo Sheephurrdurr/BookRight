@@ -1,10 +1,11 @@
-﻿using BookRight.Domain.Aggregates.Clinic;
-using BookRight.Domain.Aggregates.TreatmentType;
-using BookRight.Domain.Aggregates.TherapistAggregate;
+﻿using BookRight.Domain.Aggregates.Booking;
+using BookRight.Domain.Aggregates.Clinic;
 using BookRight.Domain.Aggregates.Customer;
-using BookRight.Domain.Aggregates.Booking;
-using BookRight.Domain.ValueObjects;
+using BookRight.Domain.Aggregates.TherapistAggregate;
+using BookRight.Domain.Aggregates.TreatmentType;
 using BookRight.Domain.Enums;
+using BookRight.Domain.Errors;
+using BookRight.Domain.ValueObjects;
 using BookRight.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,9 @@ namespace BookRight.Infrastructure
             await SeedTherapistsAsync();
             await SeedCustomersAsync();
             await SeedBookingsAsync();
+
+            await SeedGeneratedCustomersAsync();
+            await SeedGeneratedBookingsAsync();
         }
 
         private async Task SeedClinicsAsync()
@@ -575,6 +579,110 @@ namespace BookRight.Infrastructure
 
             await _context.SaveChangesAsync();
         }
+        private async Task SeedGeneratedCustomersAsync()
+        {
+            if (_context.Customers.Count() >= 300)
+                return;
+            var existingCustomerCount = _context.Customers.Count();
+            var customersToCreate = 300 - existingCustomerCount;
+
+            if (customersToCreate <= 0)
+                return;
+
+            var therapists = _context.Therapists.ToList();
+            var random = new Random();
+
+            var firstNames = new[]
+             {
+                "Mads","Emma","Noah","Freja","William","Clara","Oscar","Ida","Carl","Alma",
+                "Lucas","Sofia","Malthe","Ella","Oliver","Anna","Emil","Liva","Victor","Mille",
+                "Alexander","Laura","Benjamin","Josefine","Felix","Mathilde","Sebastian","Sarah",
+                "Magnus","Julie","Anton","Karla","Theodor","Marie","Valdemar","Nanna","August",
+                "Agnes","Elias","Johanne","Aksel","Lea","Frederik","Cecilie","Christian","Line",
+                "Andreas","Camilla","Simon","Maja"
+             };
+
+            var lastNames = new[]
+            {
+                "Jensen","Nielsen","Hansen","Pedersen","Andersen","Christensen","Larsen",
+                "Sørensen","Rasmussen","Madsen","Kristensen","Olsen","Thomsen","Poulsen",
+                "Knudsen","Mortensen","Lund","Holm","Friis","Mikkelsen","Jeppesen","Bach",
+                "Lauridsen","Svendsen","Vestergaard","Dam","Møller","Hjort","Bruun","Bonde",
+                "Bjerre","Gregersen","Bøgh","Overgaard","Winther","Kjær","Toft","Schmidt",
+                "Skov","Leth"
+            };
+
+            var cities = new[]
+            {
+                ("Vejle", "7100"),
+                ("Bredballe", "7120"),
+                ("Egtved", "6040"),
+                ("Kolding", "6000"),
+                ("Horsens", "8700")
+             };
+
+            var generatedCustomers = new List<Customer>();
+            for (int i = 1; i <= customersToCreate; i++)
+            {
+                var firstName = firstNames[random.Next(firstNames.Length)];
+                var lastName = lastNames[random.Next(lastNames.Length)];
+
+                var cityInfo = cities[random.Next(cities.Length)];
+
+                var therapist = therapists[random.Next(therapists.Count)];
+
+                if (string.IsNullOrWhiteSpace(firstName)) //First name is required
+                    throw new ArgumentException(
+                        DomainErrorMessages.FirstNameIsRequired,
+                        nameof(firstName));
+
+                if (string.IsNullOrWhiteSpace(lastName)) //Last name is required
+                    throw new ArgumentException(
+                        DomainErrorMessages.LastNameIsRequired,
+                        nameof(lastName));
+                var customer = new Customer
+                    (
+                    new FullName(firstName, lastName),
+                    new Email($"{firstName.ToLower()}.{lastName.ToLower()}{i}@example.com"),
+                    new Address($"Testvej {random.Next(1, 100)}", cityInfo.Item1, cityInfo.Item2),
+                    new PhoneNumber($"4{random.Next(1000000, 9999999)}"),
+                    new DateOnly(
+                        random.Next(1950, 2010),
+                        random.Next(1, 13),
+                        random.Next(1, 28)),
+                    null,
+                    therapist.Id
+                );
+
+                generatedCustomers.Add(customer);
+
+                
+
+                var allCustomers = _context.Customers.ToList();
+
+                var noLoyaltyCustomers = allCustomers.Take(75).ToList();
+
+                var bronzeCustomers = allCustomers
+                    .Skip(75)
+                    .Take(75)
+                    .ToList();
+
+                var silverCustomers = allCustomers
+                    .Skip(150)
+                    .Take(75)
+                    .ToList();
+
+                var goldCustomers = allCustomers
+                    .Skip(225)
+                    .Take(75)
+                    .ToList();
+            }
+            await _context.Customers.AddRangeAsync(generatedCustomers);
+            await _context.SaveChangesAsync();
+        }
+            
+
+        
 
         // This method creates a variety of bookings with different statuses, treatment types, therapists,
         // and customers to provide a rich dataset for testing and development purposes.
@@ -774,6 +882,201 @@ namespace BookRight.Infrastructure
 
             await _context.Bookings.AddRangeAsync(bookings);
             await _context.SaveChangesAsync();
+        }
+        private async Task SeedGeneratedBookingsAsync()
+        {
+            if (_context.Bookings.Count() > 1000)
+                return;
+
+            var random = new Random();
+
+            var therapists = _context.Therapists
+            .Include(t => t.Qualifications)
+            .ToList();
+
+            var treatmentTypes = _context.TreatmentTypes.ToList();
+
+            var clinics = _context.Clinics.ToList();
+            var customers = _context.Customers.ToList();
+            var noLoyaltyCustomers = customers.Take(75).ToList();
+
+            var bronzeCustomers = customers
+                .Skip(75)
+                .Take(75)
+                .ToList();
+
+            var silverCustomers = customers
+                .Skip(150)
+                .Take(75)
+                .ToList();
+
+            var goldCustomers = customers
+                .Skip(225)
+                .Take(75)
+                .ToList();
+
+            var generatedBookings = new List<Booking>();
+            GenerateBookingsForCustomers(
+                noLoyaltyCustomers,
+                2,
+                5,
+                generatedBookings,
+                therapists,
+                treatmentTypes,
+                clinics,
+                random);
+
+            GenerateBookingsForCustomers(
+                bronzeCustomers,
+                6,
+                12,
+                generatedBookings,
+                therapists,
+                treatmentTypes,
+                clinics,
+                random);
+
+            GenerateBookingsForCustomers(
+                silverCustomers,
+                14,
+                24,
+                generatedBookings,
+                therapists,
+                treatmentTypes,
+                clinics,
+                random);
+
+            GenerateBookingsForCustomers(
+                goldCustomers,
+                25,
+                45,
+                generatedBookings,
+                therapists,
+                treatmentTypes,
+                clinics,
+                random);
+            await _context.Bookings.AddRangeAsync(generatedBookings);
+            await _context.SaveChangesAsync();
+
+        }
+
+        private List<TreatmentType> BuildTreatmentPool()
+        {
+            var massage30 = _context.TreatmentTypes.First(t => t.Name == "Sportsmassage 30 min.");
+            var massage60 = _context.TreatmentTypes.First(t => t.Name == "Sportsmassage 60 min.");
+            var fys30 = _context.TreatmentTypes.First(t => t.Name == "Fysioterapi 30 min.");
+            var fys45 = _context.TreatmentTypes.First(t => t.Name == "Fysioterapi 45 min.");
+            var fys60 = _context.TreatmentTypes.First(t => t.Name == "Fysioterapi 60 min.");
+            var kost60 = _context.TreatmentTypes.First(t => t.Name == "Kostvejledning 60 min. førstegangskonsultation");
+            var kost30 = _context.TreatmentTypes.First(t => t.Name == "Kostvejledning 30 min. opfølgning");
+            var aku45 = _context.TreatmentTypes.First(t => t.Name == "Akupunktur 45 min.");
+            var hold60 = _context.TreatmentTypes.First(t => t.Name == "Holdtræning/genoptræning 60 min.");
+
+            var pool = new List<TreatmentType>();
+
+            pool.AddRange(Enumerable.Repeat(massage30, 18));
+            pool.AddRange(Enumerable.Repeat(massage60, 12));
+            pool.AddRange(Enumerable.Repeat(fys30, 15));
+            pool.AddRange(Enumerable.Repeat(fys45, 18));
+            pool.AddRange(Enumerable.Repeat(fys60, 10));
+            pool.AddRange(Enumerable.Repeat(kost60, 5));
+            pool.AddRange(Enumerable.Repeat(kost30, 8));
+            pool.AddRange(Enumerable.Repeat(aku45, 8));
+            pool.AddRange(Enumerable.Repeat(hold60, 6));
+
+            return pool;
+        }
+        private void GenerateBookingsForCustomers(
+        List<Customer> customers,
+        int minBookings,
+        int maxBookings,
+        List<Booking> generatedBookings,
+        List<Therapist> therapists,
+        List<TreatmentType> treatmentTypes,
+        List<Clinic> clinics,
+        Random random)
+        {
+            var treatmentPool = BuildTreatmentPool();
+
+            foreach (var customer in customers)
+            {
+                var favoriteTherapist = therapists[random.Next(therapists.Count)];
+                var favoriteClinic = clinics[random.Next(clinics.Count)];
+
+                int bookingCount = random.Next(minBookings, maxBookings + 1);
+                bookingCount +=
+                maxBookings == 45 && random.Next(100) < 10
+                    ? random.Next(20, 50)
+                    : 0;
+
+                for (int i = 0; i < bookingCount; i++)
+                {
+                    var therapist = random.Next(100) < 70
+                    ? favoriteTherapist
+                    : therapists[random.Next(therapists.Count)];
+
+                    var clinic = random.Next(100) < 75
+                    ? favoriteClinic
+                    : clinics[random.Next(clinics.Count)];
+
+                    var possibleTreatmentTypes = treatmentPool
+                    .Where(t => therapist.Qualifications.Any(q => q.TreatmentTypeId == t.Id))
+                    .ToList();
+
+                    if (!possibleTreatmentTypes.Any())
+                        continue;
+
+                    var treatmentType = possibleTreatmentTypes[random.Next(possibleTreatmentTypes.Count)];
+
+                    // Tilfældig dato indenfor sidste år
+                    var daysBack = random.Next(100) switch
+                    {
+                        < 40 => random.Next(1, 90),     // sidste 3 måneder
+                        < 70 => random.Next(91, 180),   // 3-6 måneder
+                        _ => random.Next(181, 365)      // 6-12 måneder
+                    };
+
+                    var startTime = DateTime.Today
+                        .AddDays(-daysBack)
+                        .AddHours(random.Next(8, 17))
+                        .AddMinutes(random.Next(0, 4) * 15);
+
+                    var endTime = startTime.AddMinutes(treatmentType.DurationMinutes);
+
+                    var booking = new Booking(
+                        Guid.NewGuid(),
+                        customer.Id,
+                        therapist.Id,
+                        clinic.Id,
+                        new TimeSlot(startTime, endTime)
+                    );
+
+                    var qualification = therapist.Qualifications
+                    .FirstOrDefault(q => q.TreatmentTypeId == treatmentType.Id);
+
+                    if (qualification is null)
+                        continue;
+
+                    booking.AddLine(
+                        new BookingLine(
+                            qualification.Id,
+                            treatmentType.Price,
+                            0,
+                            DiscountType.None
+                    ));
+
+                    var statusRoll = random.Next(100);
+
+                    if (statusRoll < 85)
+                        booking.Complete();
+                    else if (statusRoll < 95)
+                        booking.Cancel();
+                    else
+                        booking.MarkAsNoShow();
+
+                    generatedBookings.Add(booking);
+                }
+            }
         }
     }
 }

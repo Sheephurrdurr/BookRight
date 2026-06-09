@@ -35,10 +35,6 @@ namespace BookRight.Domain.Aggregates.CampaignDiscount
                 throw new InvalidPercentageException();
 
             var ids = treatmentTypeIds?.ToList() ?? new List<Guid>();
-            if (ids.Count == 0)
-                throw new ArgumentException(
-                    DomainErrorMessages.TreatmentTypeIdsMustNotBeEmpty,
-                    nameof(treatmentTypeIds));
 
             Id = Guid.NewGuid();
             Name = name;
@@ -54,8 +50,9 @@ namespace BookRight.Domain.Aggregates.CampaignDiscount
 
         public bool AppliesTo(Guid treatmentTypeId)
         {
-            return _appliesToTreatmentTypeIds.Contains(treatmentTypeId);
+            return !_appliesToTreatmentTypeIds.Any()
+                || _appliesToTreatmentTypeIds.Contains(treatmentTypeId);
         }
-           
+
     }
 }
