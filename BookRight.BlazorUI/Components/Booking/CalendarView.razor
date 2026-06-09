@@ -79,7 +79,7 @@
 								? "#64748B"                  //Grey multiple bookings
 								: ClinicToColor(booking.ClinicName);
 
-								<div class="calendar-booking"
+								<div class="calendar-booking @(group.Bookings.Count > 1 ? "multi-booking" : "")"
 									 @onclick="() => SelectBookings(group.Bookings)"
 									 style="top: @Px(top); height: @Px(height); background: @color;">
 
@@ -89,13 +89,22 @@
 											@group.StartTime.ToString("HH:mm") - @group.EndTime.ToString("HH:mm")
 										</div>
 
-										<div class="calendar-booking-title">
-											@group.Bookings.Count bookinger
-										</div>
+										@if (group.Bookings.Count > 1)
+										{
+											<div class="calendar-booking-title">
+												@group.Bookings.Count bookinger
+											</div>
+										}
+										else
+										{
+											<div class="calendar-booking-title">
+												@booking.TreatmentName
+											</div>
 
-										<div class="calendar-booking-clinic">
-											Klik for detaljer
-										</div>
+											<div>
+												@booking.TherapistName
+											</div>
+										}
 									}
 									else
 									{

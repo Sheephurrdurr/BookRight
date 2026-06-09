@@ -112,16 +112,9 @@
     }
 
 .calendar-booking {
-    position: absolute;
-    left: 3px;
-    right: 3px;
-    border-radius: 5px;
-    padding: 6px 8px;
-    color: #fff;
-    font-size: 10px;
-    overflow: hidden;
-    cursor: pointer;
-    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .calendar-booking-time {
@@ -194,4 +187,9 @@
     border-radius: 10px;
     padding: 16px;
     margin-bottom: 16px;
+}
+.multi-booking {
+    width: 70%;
+    left: 15%;
+    text-align: center;
 }
