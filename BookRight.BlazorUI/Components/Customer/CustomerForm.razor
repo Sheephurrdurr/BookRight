@@ -33,8 +33,8 @@
 			<input class="form-control" @bind="street" placeholder="Skriv gadenavn og husnummer..."/>
 		</div>
 		<div class="mb-3">
-			<label  class="form-label">Vejnavn</label>
-			<input class="form-control" @bind="city" placeholder="Skriv vejnavn..."/>
+			<label  class="form-label">By</label>
+			<input class="form-control" @bind="city" placeholder="Skriv by..."/>
 		</div>
 		<div class="mb-3">
 			<label class="form-label">Postnummer</label>
@@ -76,8 +76,8 @@
 	private string firstName = "";
 	private string lastName = "";
 	private string email = "";
-	private string city = "";
 	private string street = "";
+	private string city = "";
 	private string postalCode = "";
 	private string phone = "";
 	private DateOnly dateOfBirth = DateOnly.FromDateTime(DateTime.Today);
@@ -94,8 +94,8 @@
 				firstName,
 				lastName,
 				email,
-				city,
 				street,
+				city,
 				postalCode,
 				phone,
 				dateOfBirth,
