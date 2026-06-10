@@ -1,295 +1,322 @@
-﻿@using BookRight.Facade.DTOs.GetBookingsByWeekDTOs;
-@using BookRight.Facade.Interfaces.BookingUseCases;
+﻿@using BookRight.Facade.DTOs.GetBookingsByWeekDTOs
+@using BookRight.Facade.Interfaces.BookingUseCases
 
-@inject IGetByWeekUseCase GetByWeekUseCase;
+@inject IGetByWeekUseCase GetByWeekUseCase
 
 <PageTitle>Kalender</PageTitle>
 
 <div class="container-fluid mt-3">
-	<div class="d-flex align-items-center justify-content-between mb-3">
-		<h1 class="mb-0">Kalender</h1>
-		<div class="d-flex gap-2 align-items-center">
-			<button class="btn btn-outline-secondary btn-sm" @onclick="PreviousWeek">Forrige Uge</button>
-			<span class="fw-semibold">@WeekStart.ToString("dd. MMM") - @WeekStart.AddDays(6).ToString("dd. MMM yyyy")</span>
-			<button class="btn btn-outline-secondary btn-sm" @onclick="NextWeek">Næste Uge</button>
-			<button class="btn btn-outline-secondary btn-sm" @onclick="GoToToday">I dag</button>
-		</div>
-	</div>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="mb-0">Kalender</h1>
 
-	<div class="calendar-shell">
-		@*Time*@
-		<div class="calendar-time-col">
-			<div class="calendar-time-header"></div>
-			@for (int h = StartHour; h <= EndHour; h++)
-			{
-				<div class="calendar-time-label">@h.ToString("00"):00</div>
-			}
-		</div>
+        <div class="d-flex gap-2 align-items-center">
+            <button class="btn btn-outline-secondary btn-sm" @onclick="PreviousDay">Forrige dag</button>
+            <span class="fw-semibold">@SelectedDate.ToString("dddd dd. MMMM yyyy")</span>
+            <button class="btn btn-outline-secondary btn-sm" @onclick="NextDay">Næste dag</button>
+            <button class="btn btn-outline-secondary btn-sm" @onclick="GoToToday">I dag</button>
+        </div>
+    </div>
 
-		@*Day*@
-		<div class="calendar-days-col">
-			<div class="calendar-day-headers">
-				@for (int i = 0; i < 7; i++)
-				{
-					var day = WeekStart.AddDays(i);
-					var isToday = day == DateOnly.FromDateTime(DateTime.Today);
-					<div class="calendar-day-header @(isToday ? "calendar-today" : "")">
-						<div class="calendar-day-name">@DayName(i)</div>
-						<div class="cal-day-date @(isToday ? "calendar-today-badge" : "")">@day.ToString("dd/MM")</div>
-					</div>
-				}
-			</div>
+    <div class="day-calendar-shell">
 
-			@*Grid*@
-			@{
-				var totalHeight = $"{TotalHeight}px";
-			}
-			<div class="calendar-grid-wrapper" style="height: @(TotalHeight)px;">
-				@*Create the lines to mark hours*@
-				@for (int h = StartHour; h <= EndHour; h++)
-				{
-					<div class="calendar-hour-line" style="top: @Px(HourToTop(h));"></div>
-				}
-				<div class="calendar-grid" style="height: @(TotalHeight)px;">
-					@*"day-track"*@
-					@for (int d = 0; d < 7; d++)
-					{
-						var day = WeekStart.AddDays(d);
-						var dayBookings = bookings
-							.Where(b => DateOnly.FromDateTime(b.StartTime) == day)
-							.ToList();
-						<div class="calendar-day-track @(day == DateOnly.FromDateTime(DateTime.Today) ? "today" : "")"
-							 style="height: @(TotalHeight)px;">
+        <div class="day-time-col">
+            <!-- Time column -->
+            <div class="day-time-header"></div>
 
-							@foreach (var group in dayBookings
-							.GroupBy(b => b.StartTime)
-							.Select(g => new
-							{
-								StartTime = g.Key,
-								EndTime = g.Max(x => x.EndTime),
-								Bookings = g.ToList()
-							}))
-							{
-								var booking = group.Bookings.First();
-								var top = TimeToTop(group.StartTime);
-								var height = group.Bookings.Count > 1
-								? Math.Max(DurationToHeight(group.StartTime, group.EndTime), 60)
-								: Math.Max(DurationToHeight(group.StartTime, group.EndTime), 70);
-								var color = group.Bookings.Count > 1
-								? "#64748B"                  //Grey multiple bookings
-								: ClinicToColor(booking.ClinicName);
+            @for (int h = StartHour; h <= EndHour; h++)
+            {
+                <div class="day-time-label">@h.ToString("00"):00</div>
+            }
+        </div>
 
-								<div class="calendar-booking"
-									 @onclick="() => SelectBookings(group.Bookings)"
-									 style="top: @Px(top); height: @Px(height); background: @color;">
+        <div class="day-calendar-content">
+            <!-- Clinic headers -->
+            <div class="clinic-header-row">
+                @foreach (var clinic in ClinicGroups)
+                {
+                    <div class="clinic-header"
+                         style="border-top-color:@ClinicToColor(clinic.ClinicName);">
+                        @clinic.ClinicName
+                    </div>
+                }
+            </div>
+            <!-- Therapist headers -->
+            <div class="therapist-header-row">
+                @foreach (var therapist in TherapistColumns)
+                {
+                    <div class="therapist-header">
+                        @therapist.TherapistName
+                    </div>
+                }
+            </div>
+            <!-- Calendar grid -->
+            <div class="day-grid-wrapper" style="height:@Px(TotalHeight);">
+                <!-- Hour separator lines -->
+                @for (int h = StartHour; h <= EndHour; h++)
+                {
+                    <div class="day-hour-line" style="top:@Px(HourToTop(h));"></div>
+                }
 
-									@if (group.Bookings.Count > 1)
-									{
-										<div class="calendar-booking-time">
-											@group.StartTime.ToString("HH:mm") - @group.EndTime.ToString("HH:mm")
-										</div>
+                <div class="day-grid" style="height:@Px(TotalHeight); grid-template-columns: repeat(@TherapistColumns.Count, minmax(160px, 1fr));">
+                    <!-- Therapist columns -->
+                    @foreach (var therapist in TherapistColumns)
+                    {
+                        var therapistBookings = DayBookings
+                            .Where(b => b.TherapistId == therapist.TherapistId)
+                            .OrderBy(b => b.StartTime)
+                            .ToList();
 
-										<div class="calendar-booking-title">
-											@group.Bookings.Count bookinger
-										</div>
 
-										<div class="calendar-booking-clinic">
-											Klik for detaljer
-										</div>
-									}
-									else
-									{
-										<div class="calendar-booking-time">
-											@booking.StartTime.ToString("HH:mm") - @booking.EndTime.ToString("HH:mm")
-										</div>
+                        <div class="therapist-track" style="height:@Px(TotalHeight);">
 
-										<div class="calendar-booking-title">
-											@booking.TreatmentName
-										</div>
+                            @foreach (var booking in therapistBookings)
+                            {
+                                var color = ClinicToColor(booking.ClinicName);
+                                var top = TimeToTop(booking.StartTime);
+                                var height = Math.Max(DurationToHeight(booking.StartTime, booking.EndTime), 70);
+                                <!-- Booking card -->
+                                <div class="calendar-booking-card"
+                                     @onclick="() => SelectBooking(booking)"
+                                     style="
+                                    top:@Px(top);
+                                    height:@Px(height);
+                                    border-left-color:@color;">
 
-										<div>
-											@booking.TherapistName
-										</div>
+                                    <div class="booking-time">
+                                        @booking.StartTime.ToString("HH:mm") - @booking.EndTime.ToString("HH:mm")
+                                    </div>
 
-										<div class="calendar-booking-clinic">
-											@booking.ClinicName
-										</div>
-									}
-								</div>
-							}
-						</div>
-					}
-				</div>
+                                    <div class="booking-treatment">
+                                        @booking.TreatmentName
+                                    </div>
 
-			</div>
-		</div>
-	</div>
+                                </div>
+                            }
+
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-@if (selectedBookings.Any())
+<!-- Booking details popup -->
+@if (selectedBooking is not null)
 {
-	<div class="booking-overlay">
-		<div class="booking-popup">
+    <div class="booking-overlay">
+        <div class="booking-popup">
 
-			<h3>@selectedBookings.Count booking(er)</h3>
+            <h3>@selectedBooking.TreatmentName</h3>
 
-			@foreach (var booking in selectedBookings)
-			{
-				<div class="booking-detail-card">
-				<div class="booking-details-grid">
-					<div>
-						<strong>Behandling</strong>
-						@booking.TreatmentName
-					</div>
-					<div>
-						<strong>Tid</strong>
-						@booking.StartTime.ToString("HH:mm") - @booking.EndTime.ToString("HH:mm")
-					</div>
+            <div class="booking-details-grid">
+                <div>
+                    <strong>Tid</strong>
+                    @selectedBooking.StartTime.ToString("HH:mm") - @selectedBooking.EndTime.ToString("HH:mm")
+                </div>
 
-					<div>
-						<strong>Status</strong>
-						@booking.Status
-					</div>
+                <div>
+                    <strong>Status</strong>
+                    @selectedBooking.Status
+                </div>
 
-					<div>
-						<strong>Terapeut</strong>
-						@booking.TherapistName
-					</div>
+                <div>
+                    <strong>Terapeut</strong>
+                    @selectedBooking.TherapistName
+                </div>
 
-					<div>
-						<strong>Klinik</strong>
-						@booking.ClinicName
-					</div>
+                <div>
+                    <strong>Klinik</strong>
+                    @selectedBooking.ClinicName
+                </div>
 
-					<div>
-						<strong>Kunde</strong>
-						@booking.CustomerName
-					</div>
+                <div>
+                    <strong>Kunde</strong>
+                    @selectedBooking.CustomerName
+                </div>
 
-					<div>
-						<strong>Telefon</strong>
-						@booking.CustomerPhone
-					</div>
+                <div>
+                    <strong>Telefon</strong>
+                    @selectedBooking.CustomerPhone
+                </div>
 
-					<div>
-						<strong>E-mail</strong>
-						@booking.CustomerEmail
-					</div>
+                <div>
+                    <strong>E-mail</strong>
+                    @selectedBooking.CustomerEmail
+                </div>
 
-					
-				</div>
-					<button class="btn btn-outline-primary btn-sm">
-						Rediger booking
-					</button>
+                <div>
+                    <strong>Booking ID</strong>
+                    @selectedBooking.BookingId
+                </div>
+            </div>
 
-				</div>
-				
+            @* Btn for edit, but we don't have an EditBookingUseCase*@
+            <button class="btn btn-outline-primary btn-sm me-2">
+                Rediger booking
+            </button>
 
+            <button class="btn btn-secondary btn-sm"
+                    @onclick="() => selectedBooking = null">
+                Luk
+            </button>
 
-
-			}
-
-
-			<button class="btn btn-secondary"
-					@onclick="() => selectedBookings.Clear()">
-				Luk
-			</button>
-
-		</div>
-	</div>
+        </div>
+    </div>
 }
-
-
 
 @code {
-	private const int StartHour = 8;
-	private const int EndHour = 18;
-	private const int HourHeight = 80;
-	private int TotalHeight => (EndHour - StartHour + 1) * HourHeight;
 
-	private DateOnly WeekStart = GetCurrentWeekMonday();
-	private IReadOnlyList<GetByWeekResponse> bookings = [];
-	private List<GetByWeekResponse> selectedBookings = [];
+    // Calendar configuration
+    private const int StartHour = 8;
+    private const int EndHour = 18;
+    private const int HourHeight = 80;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadBookings();
-	}
+    // Total height of the calendar grid based on configured opening hours
+    private int TotalHeight => (EndHour - StartHour + 1) * HourHeight;
 
-	private async Task LoadBookings()
-	{
-		bookings = await GetByWeekUseCase.ExecuteAsync(WeekStart);
-	}
+    // The currently displayed day
+    private DateOnly SelectedDate = DateOnly.FromDateTime(DateTime.Today);
 
-	private async Task PreviousWeek()
-	{
-		WeekStart = WeekStart.AddDays(-7);
-		await LoadBookings();
-	}
+    // Weekly bookings loaded from the use case
+    private IReadOnlyList<GetByWeekResponse> bookings = [];
 
-	private async Task NextWeek()
-	{
-		WeekStart = WeekStart.AddDays(7);
-		await LoadBookings();
-	}
+    // Selected booking shown in the popup
+    private GetByWeekResponse? selectedBooking;
 
-	private async Task GoToToday()
-	{
-		WeekStart = GetCurrentWeekMonday();
-		await LoadBookings();
-	}
+    // Filters weekly bookings down to the currently selected day
+    private List<GetByWeekResponse> DayBookings =>
+        bookings
+            .Where(b => DateOnly.FromDateTime(b.StartTime) == SelectedDate)
+            .ToList();
 
-	private double TimeToTop(DateTime time)
-	{
-		return (time.Hour - StartHour + time.Minute / 60.0) * HourHeight;
-	}
+    // Groups therapists by clinic to create the column layout
+    private List<ClinicGroupView> ClinicGroups =>
+        DayBookings
+            .GroupBy(b => b.ClinicName)
+            .Select(g => new ClinicGroupView
+            {
+                ClinicName = g.Key,
 
-	private double DurationToHeight(DateTime start, DateTime end)
-	{
-		return (end - start).TotalMinutes / 60.0 * HourHeight;
-	}
+                // Prevent duplicate therapist columns
+                Therapists = g
+                    .GroupBy(x => new { x.TherapistId, x.TherapistName })
+                    .Select(t => new TherapistColumnView
+                    {
+                        TherapistId = t.Key.TherapistId,
+                        TherapistName = t.Key.TherapistName,
+                        ClinicName = g.Key
+                    })
+                    .OrderBy(t => t.TherapistName)
+                    .ToList()
+            })
 
-	private double HourToTop(int hour)
-	{
-		return (hour - StartHour) * HourHeight;
-	}
+            // Ensures clinics are always displayed in the same order
+            .OrderBy(g => ClinicSortOrder(g.ClinicName))
+            .ToList();
 
-	private static DateOnly GetCurrentWeekMonday()
-	{
-		var today = DateOnly.FromDateTime(DateTime.Today);
-		int diff = (7 + (int)today.DayOfWeek - (int)DayOfWeek.Monday) % 7;
-		return today.AddDays(-diff);
-	}
+    // Flattens clinic groups into therapist columns used by the grid
+    private List<TherapistColumnView> TherapistColumns =>
+        ClinicGroups
+            .SelectMany(g => g.Therapists)
+            .ToList();
 
-	private static string DayName(int dayIndex) => dayIndex switch
-	{
-		0 => "Mandag",
-		1 => "Tirsdag",
-		2 => "Onsdag",
-		3 => "Torsdag",
-		4 => "Fredag",
-		5 => "Lørdag",
-		6 => "Søndag",
-		_ => ""
-	};
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBookings();
+    }
 
-	private static string Px(double value)
-	{
-		return $"{value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px";
-	}
+    // Loads all bookings for the week containing the selected day
+    private async Task LoadBookings()
+    {
+        bookings = await GetByWeekUseCase.ExecuteAsync(GetCurrentWeekMonday(SelectedDate));
+    }
 
-	private static string ClinicToColor(string clinicName) => clinicName switch
-	{
-		"BookRight Vejle Ved Åen" => "#3B82F6", // blå
-		"BookRight Egtved" => "#10B981", // grøn
-		"BookRight Vejle Bredballe" => "#F59E0B", // orange
-		_ => "#64748B" // grå
-	};
+    private async Task PreviousDay()
+    {
+        SelectedDate = SelectedDate.AddDays(-1);
+        await LoadBookings();
+    }
 
-	private void SelectBookings(IEnumerable<GetByWeekResponse> bookingsToSelect)
-	{
-		selectedBookings = bookingsToSelect.ToList();
-	}
-	
+    private async Task NextDay()
+    {
+        SelectedDate = SelectedDate.AddDays(1);
+        await LoadBookings();
+    }
 
+    private async Task GoToToday()
+    {
+        SelectedDate = DateOnly.FromDateTime(DateTime.Today);
+        await LoadBookings();
+    }
+
+    // Opens booking details popup
+    private void SelectBooking(GetByWeekResponse booking)
+    {
+        selectedBooking = booking;
+    }
+
+    // Converts booking start time into a vertical pixel position
+    private double TimeToTop(DateTime time)
+    {
+        return (time.Hour - StartHour + time.Minute / 60.0) * HourHeight;
+    }
+
+    // Converts booking duration into the visual card height
+    private double DurationToHeight(DateTime start, DateTime end)
+    {
+        return (end - start).TotalMinutes / 60.0 * HourHeight;
+    }
+
+    // Calculates the position of hour separator lines
+    private double HourToTop(int hour)
+    {
+        return (hour - StartHour) * HourHeight;
+    }
+
+    // Retrieves Monday of the week containing the selected day
+    private static DateOnly GetCurrentWeekMonday(DateOnly date)
+    {
+        int diff = (7 + (int)date.DayOfWeek - (int)DayOfWeek.Monday) % 7;
+        return date.AddDays(-diff);
+    }
+
+    // Converts numeric values into CSS pixel values
+    private static string Px(double value)
+    {
+        return $"{value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px";
+    }
+
+    // Assigns a consistent color to each clinic
+    private static string ClinicToColor(string clinicName) => clinicName switch
+    {
+        "BookRight Vejle Ved Åen" => "#3B82F6",
+        "BookRight Egtved" => "#10B981",
+        "BookRight Vejle Bredballe" => "#F59E0B",
+        _ => "#64748B"
+    };
+
+    // View model used for grouping therapists by clinic
+    private sealed class ClinicGroupView
+    {
+        public string ClinicName { get; set; } = "";
+        public List<TherapistColumnView> Therapists { get; set; } = [];
+    }
+
+    // Represents a therapist column in the calendar
+    private sealed class TherapistColumnView
+    {
+        public Guid TherapistId { get; set; }
+        public string TherapistName { get; set; } = "";
+        public string ClinicName { get; set; } = "";
+    }
+
+    // Controls clinic display order in the calendar
+    private static int ClinicSortOrder(string clinicName) => clinicName switch
+    {
+        "BookRight Egtved" => 1,
+        "BookRight Vejle Bredballe" => 2,
+        "BookRight Vejle Ved Åen" => 3,
+        _ => 99
+    };
 }
-

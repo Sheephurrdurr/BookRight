@@ -601,8 +601,11 @@ namespace BookRight.Infrastructure
 
             await _context.SaveChangesAsync();
         }
+
+        // Generates additional customers until the database contains 300 customers
         private async Task SeedGeneratedCustomersAsync()
         {
+            // Prevent duplicate seed data
             if (_context.Customers.Count() >= 300)
                 return;
             var existingCustomerCount = _context.Customers.Count();
@@ -614,6 +617,7 @@ namespace BookRight.Infrastructure
             var therapists = _context.Therapists.ToList();
             var random = new Random();
 
+            // Prevent duplicate seed data
             var firstNames = new[]
              {
                 "Mads","Emma","Noah","Freja","William","Clara","Oscar","Ida","Carl","Alma",
@@ -653,6 +657,7 @@ namespace BookRight.Infrastructure
 
                 var therapist = therapists[random.Next(therapists.Count)];
 
+                // Defensive validation in case seed data arrays are changed later
                 if (string.IsNullOrWhiteSpace(firstName)) //First name is required
                     throw new ArgumentException(
                         DomainErrorMessages.FirstNameIsRequired,
@@ -674,31 +679,11 @@ namespace BookRight.Infrastructure
                         random.Next(1, 28)),
                     null,
                     therapist.Id
-                );
+                    );
 
                 generatedCustomers.Add(customer);
-
-                
-
-                var allCustomers = _context.Customers.ToList();
-
-                var noLoyaltyCustomers = allCustomers.Take(75).ToList();
-
-                var bronzeCustomers = allCustomers
-                    .Skip(75)
-                    .Take(75)
-                    .ToList();
-
-                var silverCustomers = allCustomers
-                    .Skip(150)
-                    .Take(75)
-                    .ToList();
-
-                var goldCustomers = allCustomers
-                    .Skip(225)
-                    .Take(75)
-                    .ToList();
             }
+
             await _context.Customers.AddRangeAsync(generatedCustomers);
             await _context.SaveChangesAsync();
         }
@@ -905,13 +890,16 @@ namespace BookRight.Infrastructure
             await _context.Bookings.AddRangeAsync(bookings);
             await _context.SaveChangesAsync();
         }
+        // Generates historical booking data used for testing and dashboard visualizations
         private async Task SeedGeneratedBookingsAsync()
         {
+            // Prevent duplicate seed data
             if (_context.Bookings.Count() > 1000)
                 return;
 
             var random = new Random();
 
+            // Load therapists including their qualifications to ensure valid treatment assignments
             var therapists = _context.Therapists
             .Include(t => t.Qualifications)
             .ToList();
@@ -920,6 +908,8 @@ namespace BookRight.Infrastructure
 
             var clinics = _context.Clinics.ToList();
             var customers = _context.Customers.ToList();
+
+            // Divide customers into four equal loyalty segments
             var noLoyaltyCustomers = customers.Take(75).ToList();
 
             var bronzeCustomers = customers
@@ -938,6 +928,8 @@ namespace BookRight.Infrastructure
                 .ToList();
 
             var generatedBookings = new List<Booking>();
+
+            // Booking frequency increases with loyalty level
             GenerateBookingsForCustomers(
                 noLoyaltyCustomers,
                 2,
@@ -982,6 +974,7 @@ namespace BookRight.Infrastructure
 
         }
 
+        // Creates a weighted pool to simulate realistic customer demand
         private List<TreatmentType> BuildTreatmentPool()
         {
             var massage30 = _context.TreatmentTypes.First(t => t.Name == "Sportsmassage 30 min.");
@@ -996,6 +989,7 @@ namespace BookRight.Infrastructure
 
             var pool = new List<TreatmentType>();
 
+            // Repeating treatments increases their likelihood of being randomly selected
             pool.AddRange(Enumerable.Repeat(massage30, 18));
             pool.AddRange(Enumerable.Repeat(massage60, 12));
             pool.AddRange(Enumerable.Repeat(fys30, 15));
@@ -1009,53 +1003,59 @@ namespace BookRight.Infrastructure
             return pool;
         }
         private void GenerateBookingsForCustomers(
-        List<Customer> customers,
-        int minBookings,
-        int maxBookings,
-        List<Booking> generatedBookings,
-        List<Therapist> therapists,
-        List<TreatmentType> treatmentTypes,
-        List<Clinic> clinics,
-        Random random)
+            List<Customer> customers,
+            int minBookings,
+            int maxBookings,
+            List<Booking> generatedBookings,
+            List<Therapist> therapists,
+            List<TreatmentType> treatmentTypes,
+            List<Clinic> clinics,
+            Random random)
         {
+            // Weighted treatment pool makes the generated data more realistic
             var treatmentPool = BuildTreatmentPool();
 
             foreach (var customer in customers)
             {
+                // Most customers will usually book the same therapist
                 var favoriteTherapist = therapists[random.Next(therapists.Count)];
-                var favoriteClinic = clinics[random.Next(clinics.Count)];
 
                 int bookingCount = random.Next(minBookings, maxBookings + 1);
-                bookingCount +=
-                maxBookings == 45 && random.Next(100) < 10
+
+                // A small number of gold customers get extra bookings to simulate very loyal customers
+                bookingCount += maxBookings == 45 && random.Next(100) < 10
                     ? random.Next(20, 50)
                     : 0;
 
                 for (int i = 0; i < bookingCount; i++)
                 {
+                    // 70% chance that the customer books their preferred therapist
                     var therapist = random.Next(100) < 70
-                       ? favoriteTherapist
+                        ? favoriteTherapist
                         : therapists[random.Next(therapists.Count)];
 
+                    // Clinic is derived from the therapist to avoid invalid clinic bookings
                     var clinic = clinics.First(c => c.Id == therapist.ClinicId);
 
+                    // Only choose treatments the therapist is qualified to perform
                     var possibleTreatmentTypes = treatmentPool
-                    .Where(t => therapist.Qualifications.Any(q => q.TreatmentTypeId == t.Id))
-                    .ToList();
+                        .Where(t => therapist.Qualifications.Any(q => q.TreatmentTypeId == t.Id))
+                        .ToList();
 
                     if (!possibleTreatmentTypes.Any())
                         continue;
 
                     var treatmentType = possibleTreatmentTypes[random.Next(possibleTreatmentTypes.Count)];
 
-                    // Tilfældig dato indenfor sidste år
+                    // More recent bookings are weighted higher than older bookings
                     var daysBack = random.Next(100) switch
                     {
-                        < 40 => random.Next(1, 90),     // sidste 3 måneder
-                        < 70 => random.Next(91, 180),   // 3-6 måneder
-                        _ => random.Next(181, 365)      // 6-12 måneder
+                        < 40 => random.Next(1, 90),     // Last 3 months
+                        < 70 => random.Next(91, 180),   // 3-6 months ago
+                        _ => random.Next(181, 365)      // 6-12 months ago
                     };
 
+                    // Start times are generated in 15-minute intervals
                     var startTime = DateTime.Today
                         .AddDays(-daysBack)
                         .AddHours(random.Next(8, 17))
@@ -1068,23 +1068,21 @@ namespace BookRight.Infrastructure
                         customer.Id,
                         therapist.Id,
                         clinic.Id,
-                        new TimeSlot(startTime, endTime)
-                    );
+                        new TimeSlot(startTime, endTime));
 
                     var qualification = therapist.Qualifications
-                    .FirstOrDefault(q => q.TreatmentTypeId == treatmentType.Id);
+                        .FirstOrDefault(q => q.TreatmentTypeId == treatmentType.Id);
 
                     if (qualification is null)
                         continue;
 
-                    booking.AddLine(
-                        new BookingLine(
-                            qualification.Id,
-                            treatmentType.Price,
-                            0,
-                            DiscountType.None
-                    ));
+                    booking.AddLine(new BookingLine(
+                        qualification.Id,
+                        treatmentType.Price,
+                        0,
+                        DiscountType.None));
 
+                    // Realistic status distribution for historical booking data
                     var statusRoll = random.Next(100);
 
                     if (statusRoll < 85)

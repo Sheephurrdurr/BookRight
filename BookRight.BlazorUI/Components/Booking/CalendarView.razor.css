@@ -1,142 +1,134 @@
-﻿.calendar-shell {
+﻿/* ---------- Calendar layout ---------- */
+.day-calendar-shell {
     display: flex;
     border: 1px solid #dee2e6;
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
     background: #fff;
 }
 
-.calendar-time-col {
-    width: 55px;
+.day-time-col {
+    width: 64px;
     flex-shrink: 0;
     border-right: 1px solid #dee2e6;
 }
 
-.calendar-time-header {
-    height: 50px;
+.day-time-header {
+    height: 88px;
     border-bottom: 1px solid #dee2e6;
 }
 
-.calendar-time-label {
-    height: 80px; /*Match HourHeight i selve componentets @code del*/
-    display: flex;
-    align-items: flex-start;
+.day-time-label {
+    height: 80px;
     padding-top: 6px;
     padding-right: 8px;
-    font-size: 10px;
-    color: #9ca3af;
-    font-weight: 500;
-    border-bottom: 1px solid #f0f2f5;
+    text-align: right;
+    font-size: 12px;
+    color: #94a3b8;
+    border-bottom: 1px solid #f1f5f9;
 }
 
-.calendar-days-col {
+.day-calendar-content {
     flex: 1;
-    display: flex;
-    flex-direction: column;
     overflow-x: auto;
 }
-
-.calendar-day-headers {
+/* ---------- Headers ---------- */
+.clinic-header-row {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    height: 50px;
-    border-bottom: 1px solid #dee2e6;
-    position: sticky;
-    top: 0;
-    background: #ffff;
-    z-index: 5;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(160px, 1fr);
+    height: 44px;
+    border-bottom: 1px solid #e5e7eb;
 }
 
-.calendar-day-header {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 6px 8px;
-    border-right: 1px solid #f0f2f5;
-}
-
-    .calendar-day-header:last-child {
-        border-right: none;
-    }
-
-.calendar-today {
-    background: #EBF4FC;
-}
-
-.calendar-day-name {
-    font-size: 10px;
-    font-weight: 600;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-}
-
-.calendar-day-date {
-    font-size: 12px;
-    color: #9ca3af;
-}
-
-.calendar-today-badge {
-    color: #185FA5;
+.clinic-header {
+    border-top: 5px solid #64748B;
+    padding: 8px;
     font-weight: 700;
+    text-align: center;
+    background: #f8fafc;
+    border-right: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+/* Sticky headers keep therapists visible while scrolling */
+.therapist-header-row {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(160px, 1fr);
+    height: 44px;
+    border-bottom: 1px solid #e5e7eb;
 }
 
-.calendar-grid-wrapper {
+.therapist-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    font-weight: 600;
+    background: #fff;
+    border-right: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+/* ---------- Grid ---------- */
+.day-grid-wrapper {
     position: relative;
     overflow: hidden;
 }
 
-.calendar-grid {
+.day-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
 }
 
-.calendar-hour-line {
+.day-hour-line {
     position: absolute;
     left: 0;
     right: 0;
-    border-top: 1px solid #f0f2f5;
+    border-top: 1px solid #f1f5f9;
     z-index: 0;
 }
 
-.calendar-day-track {
+.therapist-track {
     position: relative;
+    border-right: 1px solid #f1f5f9;
+    min-width: 160px;
 }
-
-    .calendar-day-track.today {
-        background: #f7fbff;
-    }
-
-    .calendar-day-track:last-child {
-        border-right: none;
-    }
-
-.calendar-booking {
+/* ---------- Booking cards ---------- */
+/* Use box-shadow instead of borders to create card separation */
+.calendar-booking-card {
     position: absolute;
-    left: 3px;
-    right: 3px;
-    border-radius: 5px;
-    padding: 6px 8px;
-    color: #fff;
-    font-size: 10px;
-    overflow: hidden;
+    left: 8px;
+    right: 8px;
+    background: #ffffff;
+    border-left: 6px solid #64748B; /* Colored border indicates clinic affiliation */
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.14);
     cursor: pointer;
-    line-height: 1.4;
+    overflow: hidden;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.calendar-booking-time {
-    font-weight: 600;
+    .calendar-booking-card:hover {
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22);
+        transform: translateY(-1px);
+    }
+
+.booking-time {
+    font-weight: 700;
+    font-size: 12px;
+    color: #0f172a;
+    white-space: nowrap;
 }
 
-.calendar-booking-status {
-    opacity: .85;
+.booking-treatment {
+    font-size: 11px;
+    color: #334155;
+    line-height: 1.2;
 }
-
-.calendar-booking-clinic {
-    font-size: 9px;
-    opacity: 0.85;
-}
-
+/* ---------- Booking popup ---------- */
 .booking-overlay {
     position: fixed;
     inset: 0;
@@ -151,47 +143,26 @@
 .booking-popup {
     background: white;
     color: #111827;
-    padding: 20px;
+    padding: 24px;
     border-radius: 12px;
-    width: 420px;
-    max-width: 90vw;
-    max-height: 85vh;
+    width: 90%;
+    max-width: 900px;
+    max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
 }
-
-    .booking-popup h4 {
-        font-size: 24px;
-        margin-bottom: 16px;
-    }
-
-    .booking-popup p {
-        margin-bottom: 12px;
-    }
 
 .booking-details-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 14px 24px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
     .booking-details-grid strong {
         display: block;
         margin-bottom: 3px;
+        color: #64748b;
+        font-size: 12px;
+        text-transform: uppercase;
     }
-
-.booking-popup {
-    max-width: 900px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-.booking-detail-card {
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    border-left: 5px solid #64748B;
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 16px;
-}
