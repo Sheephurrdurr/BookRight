@@ -74,6 +74,7 @@
                             {
                                 var color = ClinicToColor(booking.ClinicName);
                                 var top = TimeToTop(booking.StartTime);
+                                <!--Prevents short bookings from becoming too small to read/click by enforcing min. height-->
                                 var height = Math.Max(DurationToHeight(booking.StartTime, booking.EndTime), 70);
                                 <!-- Booking card -->
                                 <!--Inline styles are generated dynamically so each booking is positioned according to its time and duration-->
