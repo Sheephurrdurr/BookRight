@@ -1,18 +1,22 @@
-﻿/* ---------- Calendar layout ---------- */
+﻿/*Parent is an element holding other elements (look at .razor)
+Children are the elements inside the parent-element
+*/
+
+/* ---------- Calendar layout ---------- */
 .day-calendar-shell {
-    display: flex;
+    display: flex; /*Displays children next to each other*/
     border: 1px solid #dee2e6;
     border-radius: 10px;
-    overflow: hidden;
+    overflow: hidden; /*Prevents content from exsisting outside the rounded corners*/
     background: #fff;
 }
 
 .day-time-col {
     width: 64px;
-    flex-shrink: 0;
+    flex-shrink: 0; /*Prevents column from from becomming narrower when the space is limited*/
     border-right: 1px solid #dee2e6;
 }
-
+/*Creates empyt space above time labels to align calendar header*/
 .day-time-header {
     height: 88px;
     border-bottom: 1px solid #dee2e6;
@@ -29,8 +33,8 @@
 }
 
 .day-calendar-content {
-    flex: 1;
-    overflow-x: auto;
+    flex: 1; /*Makes this area take up remaining space*/
+    overflow-x: auto; /*Auto adds a horisontal scrollbar, when content dosen´t fit the page*/
 }
 /* ---------- Headers ---------- */
 .clinic-header-row {
