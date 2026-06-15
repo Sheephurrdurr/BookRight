@@ -41,10 +41,10 @@
                 }
             </div>
             <!-- Therapist headers -->
-            <div class="therapist-header-row">
-                @foreach (var therapist in TherapistColumns)
+            <div class="therapist-header-row"> @*Parent who styles the layout with CSS grid*@
+                @foreach (var therapist in TherapistColumns) 
                 {
-                    <div class="therapist-header">
+                    <div class="therapist-header"> @*Every therapist-header created in the loop are children. The parent controls the styling*@
                         @therapist.TherapistName
                     </div>
                 }
@@ -281,7 +281,9 @@
         return date.AddDays(-diff);
     }
 
-    // Converts numeric values into CSS pixel values
+    /*Converts numeric values into CSS pixel values.
+    Inline styles require values such as "80px" instead of plain numbers.
+    InvariantCulture ensures decimal values use '.' which CSS expects*/
     private static string Px(double value)
     {
         return $"{value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px";
