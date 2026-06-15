@@ -1,6 +1,6 @@
 ﻿@using BookRight.Facade.DTOs.GetBookingsByWeekDTOs
 @using BookRight.Facade.Interfaces.BookingUseCases
-
+<!--Injects the use case to follow DI-->
 @inject IGetByWeekUseCase GetByWeekUseCase
 
 <PageTitle>Kalender</PageTitle>
@@ -41,26 +41,27 @@
                 }
             </div>
             <!-- Therapist headers -->
-            <div class="therapist-header-row">
-                @foreach (var therapist in TherapistColumns)
+            <div class="therapist-header-row"> @*Parent who styles the layout with CSS grid*@
+                @foreach (var therapist in TherapistColumns) 
                 {
-                    <div class="therapist-header">
+                    <div class="therapist-header"> <!--Every therapist-header created in the loop are children. The parent controls the styling-->
                         @therapist.TherapistName
                     </div>
                 }
             </div>
             <!-- Calendar grid -->
             <div class="day-grid-wrapper" style="height:@Px(TotalHeight);">
-                <!-- Hour separator lines -->
+                <!-- Creates horizontal separator lines for each hour in the calendar -->
                 @for (int h = StartHour; h <= EndHour; h++)
                 {
                     <div class="day-hour-line" style="top:@Px(HourToTop(h));"></div>
                 }
-
+                <!-- Creates one grid column per therapist -->
                 <div class="day-grid" style="height:@Px(TotalHeight); grid-template-columns: repeat(@TherapistColumns.Count, minmax(160px, 1fr));">
                     <!-- Therapist columns -->
                     @foreach (var therapist in TherapistColumns)
                     {
+                        <!--Filters all bookings to include the current therapist and sorts them by start time*-->
                         var therapistBookings = DayBookings
                             .Where(b => b.TherapistId == therapist.TherapistId)
                             .OrderBy(b => b.StartTime)
@@ -73,8 +74,10 @@
                             {
                                 var color = ClinicToColor(booking.ClinicName);
                                 var top = TimeToTop(booking.StartTime);
+                                <!--Prevents short bookings from becoming too small to read/click by enforcing min. height-->
                                 var height = Math.Max(DurationToHeight(booking.StartTime, booking.EndTime), 70);
                                 <!-- Booking card -->
+                                <!--Inline styles are generated dynamically so each booking is positioned according to its time and duration-->
                                 <div class="calendar-booking-card"
                                      @onclick="() => SelectBooking(booking)"
                                      style="
@@ -102,6 +105,7 @@
     </div>
 </div>
 <!-- Booking details popup -->
+<!-- Only renders the popup when a booking has been selected -->
 @if (selectedBooking is not null)
 {
     <div class="booking-overlay">
@@ -158,6 +162,7 @@
 
             <button class="btn btn-secondary btn-sm"
                     @onclick="() => selectedBooking = null">
+                <!--Closes the popup by removing the selected booking reference-->
                 Luk
             </button>
 
@@ -281,7 +286,9 @@
         return date.AddDays(-diff);
     }
 
-    // Converts numeric values into CSS pixel values
+    /*Converts numeric values into CSS pixel values.
+    Inline styles require values such as "80px" instead of plain numbers.
+    InvariantCulture ensures decimal values use '.' which CSS expects*/
     private static string Px(double value)
     {
         return $"{value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px";
