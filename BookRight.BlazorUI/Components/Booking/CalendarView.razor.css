@@ -1,18 +1,22 @@
-﻿/* ---------- Calendar layout ---------- */
+﻿/*Parent is an element holding other elements (look at .razor)
+Children are the elements inside the parent-element
+*/
+
+/* ---------- Calendar layout ---------- */
 .day-calendar-shell {
-    display: flex;
+    display: flex; /*Displays children next to each other*/
     border: 1px solid #dee2e6;
     border-radius: 10px;
-    overflow: hidden;
+    overflow: hidden; /*Prevents content from exsisting outside the rounded corners*/
     background: #fff;
 }
 
 .day-time-col {
     width: 64px;
-    flex-shrink: 0;
+    flex-shrink: 0; /*Prevents column from from becomming narrower when the space is limited*/
     border-right: 1px solid #dee2e6;
 }
-
+/*Creates empyt space above time labels to align calendar header*/
 .day-time-header {
     height: 88px;
     border-bottom: 1px solid #dee2e6;
@@ -29,14 +33,14 @@
 }
 
 .day-calendar-content {
-    flex: 1;
-    overflow-x: auto;
+    flex: 1; /*Makes this area take up remaining space*/
+    overflow-x: auto; /*Auto adds a horisontal scrollbar, when content dosen´t fit the page*/
 }
 /* ---------- Headers ---------- */
 .clinic-header-row {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(160px, 1fr);
+    display: grid; /*creates a grid layout*/
+    grid-auto-flow: column; /*places child elements in columns*/
+    grid-auto-columns: minmax(160px, 1fr); /*gives each column a minimum width of px and allows it to grow equally*/
     height: 44px;
     border-bottom: 1px solid #e5e7eb;
 }
@@ -44,23 +48,23 @@
 .clinic-header {
     border-top: 5px solid #64748B;
     padding: 8px;
-    font-weight: 700;
-    text-align: center;
+    font-weight: 700; /*700 makes the text bold*/
+    text-align: center; /*centers the text horizontally*/
     background: #f8fafc;
     border-right: 1px solid #e5e7eb;
-    white-space: nowrap;
+    white-space: nowrap; /*prevents the text from wrapping onto multiple lines*/
 }
 /* Sticky headers keep therapists visible while scrolling */
 .therapist-header-row {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(160px, 1fr);
+    display: grid; 
+    grid-auto-flow: column; 
+    grid-auto-columns: minmax(160px, 1fr); 
     height: 44px;
     border-bottom: 1px solid #e5e7eb;
 }
 
 .therapist-header {
-    display: flex;
+    display: flex;/*Grid is for placing columns and flexBox inside every header to center align the content vertical and horisontal*/
     align-items: center;
     justify-content: center;
     padding: 8px;
@@ -71,7 +75,7 @@
 }
 /* ---------- Grid ---------- */
 .day-grid-wrapper {
-    position: relative;
+    position: relative; /*creates a position reference (parent) for children with the position: absolute*/
     overflow: hidden;
 }
 
@@ -80,40 +84,40 @@
 }
 
 .day-hour-line {
-    position: absolute;
-    left: 0;
+    position: absolute; /*removes the element from the normal layout and therefore can be placed exactly in relation to it's nearest parent with position: relative*/
+    left: 0; /*When both left and right: 0 it creates a stretch across the full width*/
     right: 0;
     border-top: 1px solid #f1f5f9;
-    z-index: 0;
+    z-index: 0; /*Controls stacking order. Lower values appear behind higher ones*/
 }
 
 .therapist-track {
     position: relative;
     border-right: 1px solid #f1f5f9;
-    min-width: 160px;
+    min-width: 160px; /*Prevents the width from becomming narrower than 160px*/
 }
 /* ---------- Booking cards ---------- */
 /* Use box-shadow instead of borders to create card separation */
 .calendar-booking-card {
-    position: absolute;
+    position: absolute; /*allows the card to be placed freely inside its relative parent*/
     left: 8px;
     right: 8px;
     background: #ffffff;
     border-left: 6px solid #64748B; /* Colored border indicates clinic affiliation */
     border-radius: 10px;
     padding: 10px 12px;
-    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.14);
-    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.14); /*creates a shadow which gives a "card-effect"*/
+    cursor: pointer; /*changes cursor to "hand" to indicate the card is clickable*/
     overflow: hidden;
-    z-index: 2;
+    z-index: 2; /*places the card above background elements*/
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: column; /*stacks children vertically*/
+    justify-content: center; /*centers content vertically inside the card*/
 }
 
-    .calendar-booking-card:hover {
+    .calendar-booking-card:hover { /*hover applies styles when mouse is over the element*/
         box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22);
-        transform: translateY(-1px);
+        transform: translateY(-1px); /*moves the card slightly upward to create a hover effect (moving the element 1 px up)*/
     }
 
 .booking-time {
@@ -130,13 +134,13 @@
 }
 /* ---------- Booking popup ---------- */
 .booking-overlay {
-    position: fixed;
-    inset: 0;
+    position: fixed; /*Keeps overlay in the same spot even when scrolling*/
+    inset: 0; /*makes the overlay cover the entire viewport (screen)*/
     background: rgba(0, 0, 0, 0.35);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 9999; /*ensures popup appears above all other elements*/
     padding: 24px;
 }
 
@@ -147,15 +151,15 @@
     border-radius: 12px;
     width: 90%;
     max-width: 900px;
-    max-height: 80vh;
+    max-height: 80vh; /*limits the popup height to 80% of the viewport*/
     overflow-y: auto;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); /*Automatically adds scrolbar, when content exceeds availale height*/
 }
 
 .booking-details-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px 24px;
+    grid-template-columns: 1fr 1fr; /*creates two equally sized columns*/
+    gap: 14px 24px; /*controls the spacing between rows and columns*/
     margin-bottom: 20px;
 }
 
@@ -164,5 +168,5 @@
         margin-bottom: 3px;
         color: #64748b;
         font-size: 12px;
-        text-transform: uppercase;
+        text-transform: uppercase; /*converts text to capital letters*/
     }
