@@ -84,11 +84,14 @@ namespace BookRight.Infrastructure.Repositories
             
         }
 
-        public async Task CreateAsync(Booking booking)
+        public async Task CreateAsync(Booking booking) //Mangel på SRP
         {
             await _context.Bookings.AddAsync(booking);
             await _context.SaveChangesAsync();
         }
+
+        /*public async Task SaveChangesAsync(Booking booking)
+        {  await _context.SaveChangesAsync(); }*/
 
         public async Task UpdateAsync(Booking booking)
         {
