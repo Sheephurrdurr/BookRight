@@ -92,7 +92,7 @@ namespace BookRight.Infrastructure
                 30, // Duration in minutes
                 1, // Max participants
                 new Money(350),// Price for the treatment
-                true, // Can be combined with other treatments?
+                true, // Can be combined with other treatments
                 "Massage"
             );
 
@@ -137,7 +137,7 @@ namespace BookRight.Infrastructure
                 60,
                 1,
                 new Money(799),
-                false,
+                false, // kan ikke kombineres med andre behandlinger
                 "Kostvejledning"
             );
 

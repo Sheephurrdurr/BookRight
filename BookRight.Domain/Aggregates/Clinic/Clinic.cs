@@ -16,13 +16,13 @@ namespace BookRight.Domain.Aggregates.Clinic
         private readonly List<ClinicOpeningHour> _openingHours = new();
 
         // Andre klasser kan kun læse åbningstiderne, ikke ændre dem direkte
-        public IReadOnlyCollection<ClinicOpeningHour> OpeningHours => _openingHours.AsReadOnly();
+        public IReadOnlyCollection<ClinicOpeningHour> OpeningHours => _openingHours.AsReadOnly(); //Child Entity
 
-        private readonly List<TherapistSchedule> _therapistSchedules = new();
+        private readonly List<TherapistSchedule> _therapistSchedules = new(); //Child Entity, som repræsenterer en therapists arbejdsplan i klinikken. Det er en del af Clinic-aggregatet, fordi det er tæt knyttet til Clinic og ikke giver mening uden den.
         public IReadOnlyCollection<TherapistSchedule> TherapistSchedules => _therapistSchedules.AsReadOnly();
 
-        private readonly List<Therapist> _therapists = new();
-        public IReadOnlyCollection<Therapist> Therapists 
+        private readonly List<Therapist> _therapists = new(); //DDD bryder !!  Vi har en direkte reference til Therapist, som er en anden aggregate root. 
+        public IReadOnlyCollection<Therapist> Therapists // DDD bryder !!
             => _therapists.AsReadOnly();
 
 

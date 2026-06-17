@@ -17,6 +17,9 @@ namespace BookRight.Domain.Aggregates.TherapistAggregate
         private readonly List<TimeSlot> _blockedSlots = new(); //private field for at gemme timeslots til en therapist.
         public IReadOnlyCollection<TimeSlot> BlockedSlots => _blockedSlots.AsReadOnly(); //property for tilgang til timeslots.
         private TherapistSchedule() { } // for EF core 
+
+
+        // Factory method, som sikrer at TherapistSchedule altid oprettes med gyldige værdier.
         public static TherapistSchedule Create(
                 Guid therapistId,
                 Guid clinicId,
@@ -44,7 +47,7 @@ namespace BookRight.Domain.Aggregates.TherapistAggregate
             };
         }
 
-
+        // Tjekker om behandleren arbejder og ikke allerede har en booking i samme tidsrum.
         public bool IsAvailable(TimeSlot slot)
         {
             if (slot is null)
