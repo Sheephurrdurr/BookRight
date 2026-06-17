@@ -5,8 +5,8 @@ using BookRight.Domain.ValueObjects;
 
 namespace BookRight.Domain.Services
 {
-    public class DoubleBookingVerificationService //Responsible for enforcing booking rules that involve multiple bookings. The logic can't belong to a single Booking entity, bcause a Booking only knows its own state
-                                                  // and not other bookings that should be checked for overlaps
+    //Service for preventing doubleBookings. The logic has to have knowledge of multiple Booking-entities, and because if that, it dosen't belong to a single Booking entity
+    public class DoubleBookingVerificationService
     {
         public void CustomerBookingVerification(IEnumerable<Booking> existingCustomerBooking, TimeSlot slot) //Verifies customer doesn't already have an active booking, that overlaps with the requested timeslot
         {
