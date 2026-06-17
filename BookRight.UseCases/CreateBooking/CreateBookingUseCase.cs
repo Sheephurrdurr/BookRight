@@ -49,6 +49,7 @@ namespace BookRight.UseCases.CreateBooking
             _priceCalculatorService = priceCalculatorService;
         }
 
+        //Her bruges data fra request-DTO (input-data Blazor). Pakkes sammen. Der samles et Booking-domæneobjekt (03).
         public async Task<CreateBookingResponse> ExecuteAsync(CreateBookingRequest request)
         {
             // Henter kunden. Hvis kunden ikke findes, stoppes use casen.
@@ -266,7 +267,7 @@ namespace BookRight.UseCases.CreateBooking
                 booking.AddLine(line);
             }
 
-            // Gemmer bookingen i databasen via repository.
+            // Gemmer bookingen i databasen via repository i Infrastructure (04).
             await _bookingRepository.CreateAsync(booking);
 
             // Returnerer resultatet til UI/facade.

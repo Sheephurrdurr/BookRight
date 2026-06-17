@@ -7,6 +7,8 @@ namespace BookRight.Domain.ValueObjects
 //The Money object ensures that Money never can't be negative, invalid calculations are prevented.
 //Ex. 
 // Instead of using decimal directly everywhere in the system, we wrap it inside Money to protect domain logic.
+//For at holde forretningslogik i Domain
+
 {
     // public  -> Kan bruges fra andre layers/projekter.
     // sealed  -> Kan ikke nedarves.

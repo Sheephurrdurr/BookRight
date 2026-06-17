@@ -8,6 +8,8 @@ namespace BookRight.Domain.Aggregates.Booking
 {
     public class BookingLine
     {
+        //BookingLine har ingen relation til specific Booking.
+      //public Booking Booking { get; private set; }
         public Guid Id { get; private set; }
         public Guid TherapistTreatmentTypeId { get; private set; }
 
