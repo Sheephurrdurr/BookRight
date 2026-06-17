@@ -167,7 +167,7 @@
 
 		private CreateBookingResponse? finalResponse = null;
 
-	protected override async Task OnInitializedAsync()
+	protected override async Task OnInitializedAsync()  // Denne metode åbn
 	{
 		// Henter grunddata til siden, når komponenten åbnes.
 		// Data bruges til dropdowns for kunder, klinikker, behandlere, behandlinger og kampagner.
@@ -270,16 +270,21 @@
 			selectedLines.Remove(line);
 		}
 
+
 	private async Task HandleCreateBooking()
 	{
-		// Forhindrer at brugeren starter flere booking-processer samtidigt.
+		// Forhindrer brugeren i at starte flere bookinger samtidig,
+		// fx ved at klikke flere gange på knappen.
 		if (isLoading)
 			return;
 
+		// Sætter loading til true mens bookingen behandles.
 		isLoading = true;
 
 		try
 		{
+			// Simpel UI-validering:
+			// Kunde, klinik og mindst én bookinglinje skal være valgt.
 			if (string.IsNullOrEmpty(selectedCustomerId) ||
 				string.IsNullOrEmpty(selectedClinicId) ||
 				!selectedLines.Any())
@@ -289,52 +294,71 @@
 				return;
 			}
 
-				var request = new CreateBookingRequest
-				{
-					CustomerId = Guid.Parse(selectedCustomerId),
-					ClinicId = Guid.Parse(selectedClinicId),
-					TherapistId = Guid.Parse(firstTherapistId),
+			// Opretter DTO'en som sendes videre til Use Case-laget.
+			var request = new CreateBookingRequest
+			{
+				// Konverterer de valgte værdier fra string til Guid.
+				CustomerId = Guid.Parse(selectedCustomerId),
+				ClinicId = Guid.Parse(selectedClinicId),
+				TherapistId = Guid.Parse(firstTherapistId),
 
+				// Kampagnerabat er valgfri.
+				// Hvis ingen rabat er valgt sendes null.
 				CampaignDiscountId = string.IsNullOrEmpty(selectedCampaignDiscountId)
 					? (Guid?)null
 					: Guid.Parse(selectedCampaignDiscountId),
 
+				// Starttidspunkt for bookingen.
 				StartTime = startTime,
+
+				// Bookinglinjer med behandlinger som kunden ønsker.
 				Lines = selectedLines
 			};
 
+			// Kalder Use Case-laget asynkront.
+			// Her forlader vi UI-laget og sender data til forretningslogikken.
 			var response = await CreateBookingUseCase.ExecuteAsync(request);
 
+			// Hvis Use Casen lykkedes.
 			if (response.Success)
 			{
 				bookingMessage = "Booking oprettet!";
 				bookingAlertClass = "alert alert-success";
 
+				// Nulstiller formularen så den er klar til næste booking.
 				selectedCustomerId = "";
 				selectedClinicId = "";
 				selectedTherapistId = "";
 				selectedCampaignDiscountId = "";
 				firstTherapistId = "";
+
+				// Sætter standardværdier igen.
 				startTime = DateTime.Now;
 				remainingSlots = null;
 				isFullyBooked = false;
+
+				// Gemmer svaret så UI kan vise bookingoplysninger.
 				finalResponse = response;
 			}
 			else
 			{
+				// Use Casen returnerede en business-fejl.
+				// Fx dobbeltbooking eller ugyldigt tidspunkt.
 				bookingMessage = response.Message;
 				bookingAlertClass = "alert alert-danger";
 			}
 		}
 		catch (Exception ex)
 		{
+			// Uventede fejl håndteres her.
 			bookingMessage = $"Fejl: {ex.Message}";
 			bookingAlertClass = "alert alert-danger";
 		}
 		finally
 		{
-			// Loading afsluttes altid, både ved succes og fejl.
+			// Kører ALTID, også hvis der opstår exception.
+			// Sørger for at loading-indikatoren fjernes igen.
 			isLoading = false;
 		}
 	}
-}
+} 

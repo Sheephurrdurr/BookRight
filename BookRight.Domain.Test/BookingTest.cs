@@ -9,8 +9,8 @@ namespace BookRight.Domain.Test
 {
 	public class BookingTest
 	{
-		// Test 1 : Booking kan oprettes korrekt
-		[Fact]
+        // Test 1 : Booking kan oprettes korrekt eller mere "Booking kan oprettes uden exception".
+        [Fact]
 		public void Create_ValidBooking_ShouldSucceed()
 		{
 			//Arrange
