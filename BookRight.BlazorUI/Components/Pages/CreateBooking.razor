@@ -23,7 +23,7 @@
 	@inject IGetAllCampaignDiscountsUseCase GetAllCampaignDiscountsUseCase
 
 
-	<PageTitle>Opret Booking</PageTitle>
+	<PageTitle>Opret Booking</PageTitle> <!--HTML-->
 
 	<div class="container mt-4">
 		<h1 class="mb-4">Opret Booking</h1>
@@ -270,8 +270,7 @@
 			selectedLines.Remove(line);
 		}
 
-
-	private async Task HandleCreateBooking()
+	private async Task HandleCreateBooking() //Alle inputfelter samles i en request-DTO igennem Facade-interfacet (01)
 	{
 		// Forhindrer brugeren i at starte flere bookinger samtidig,
 		// fx ved at klikke flere gange på knappen.
@@ -315,9 +314,7 @@
 				Lines = selectedLines
 			};
 
-			// Kalder Use Case-laget asynkront.
-			// Her forlader vi UI-laget og sender data til forretningslogikken.
-			var response = await CreateBookingUseCase.ExecuteAsync(request);
+			var response = await CreateBookingUseCase.ExecuteAsync(request); //Kalder Use Case med request-DTO igennem Facade-lag (02)
 
 			// Hvis Use Casen lykkedes.
 			if (response.Success)
